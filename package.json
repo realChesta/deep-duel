@@ -1,0 +1,46 @@
+{
+  "name": "deep-duel",
+  "version": "1.0.0",
+  "engines": {
+    "node": "6.11.1"
+  },
+  "description": "People are STILL making fun of that?",
+  "main": "main.js",
+  "dependencies": {
+    "browserify": "^13.0.1",
+    "express": "^4.14.0",
+    "lance-gg": "~1.0.0",
+    "query-string": "^4.2.3",
+    "socket.io": "^1.4.8",
+    "pixi.js": "^4.5.0",
+    "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "babelify": "^7.3.0",
+    "eslint": "^3.16.1",
+    "eslint-config-google": "^0.7.1",
+    "watchify": "^3.7.0"
+  },
+  "scripts": {
+    "start": "node src/main/nodeServer.js",
+    "postinstall": "browserify src/main/client.js -i nodejs-physijs -o dist/bundle.js ",
+    "build": "browserify src/main/client.js -i nodejs-physijs -o dist/bundle.js ",
+    "watchify": "watchify src/main/client.js -i nodejs-physijs -o dist/bundle.js -v -d"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "browserify": {
+    "transform": ["babelify"]
+  },
+  "keywords": [
+    "game",
+    "lance",
+    "lance-gg",
+    "multiplayer",
+    "websockets"
+  ],
+  "author": "N2D4 & chesta",
+  "license": "Apache-2.0"
+}
