@@ -44,7 +44,7 @@ class DDClientEngine extends ClientEngine {
     if (this.pressedKeys.space) {
       this.sendInput('fire', { movement: false });
     }
-    
+
   }
 
   onKeyChange(e, isDown) {

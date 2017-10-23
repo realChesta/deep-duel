@@ -1,6 +1,7 @@
 'use strict';
 
 const Entity = require('./Entity');
+const {serialize: {Serializer}} = require('lance-gg');
 
 class Player extends Entity {
 
@@ -15,7 +16,7 @@ class Player extends Entity {
 
 
   fire() {
-    // TODO Add missiles
+    // TODO Add projectiles
   }
 
 }

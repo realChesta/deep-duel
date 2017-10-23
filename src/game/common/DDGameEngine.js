@@ -10,6 +10,11 @@ class DDGameEngine extends GameEngine {
     super(options);
 
     this.on('preStep', this.preStep);
+    this.on('objectAdded', this.onObjectAdded.bind(this));
+    this.on('objectDestroyed', this.onObjectDestroyed.bind(this));
+
+    this.playerIdCur = 0;
+    this.players = {};
   }
 
   start() {
@@ -44,6 +49,34 @@ class DDGameEngine extends GameEngine {
       }
     }
   }
+
+  addPlayer() {
+    var object = new Player(++this.world.idCount, 200, 200, ++this.playerIdCur);
+    this.addObjectToWorld(object);
+  }
+
+  removePlayer(playerId) {
+    if (!this.players[playerId])
+      return;
+    this.removeObjectFromWorld(this.players[playerId].id);
+  }
+
+  onObjectAdded(object) {
+    if (object instanceof Player) {
+      var playerId = object.playerId;
+      if (this.players[playerId])
+        removePlayer(playerId);
+      this.players[playerId] = object;
+    }
+  }
+
+  onObjectDestroyed(object) {
+    if (object instanceof Player) {
+      var playerId = object.playerId;
+      delete this.players[playerId];
+    }
+  }
+
 
 
   preStep() {
