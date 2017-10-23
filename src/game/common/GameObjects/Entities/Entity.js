@@ -4,7 +4,9 @@ const RenderedObject = require('../RenderedObject');
 
 class Entity extends RenderedObject {
 
-  get bendingMultiple() { return 0.8; }
+  get bendingMultiple() {
+    return 0.8;
+  }
 
   constructor(id, x, y) {
     super(id);
@@ -13,7 +15,7 @@ class Entity extends RenderedObject {
   }
 
   onAddToWorld(gameEngine) {
-
+    super.onAddToWorld();
   }
 
   getSpeed() {

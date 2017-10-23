@@ -14,6 +14,11 @@ class RenderedObject extends DynamicObject {
     this.class = RenderedObject;
   }
 
+  drawSprite(container) {
+    console.warn("No draw function defined for " + this + "!");
+  }
+  initRenderContainer(container) {}
+  onRenderContainerDestroy(container) {}
 }
 
 module.exports = RenderedObject;
