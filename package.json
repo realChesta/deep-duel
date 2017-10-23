@@ -32,7 +32,9 @@
     "url": ""
   },
   "browserify": {
-    "transform": ["babelify"]
+    "transform": [
+      "babelify"
+    ]
   },
   "keywords": [
     "game",

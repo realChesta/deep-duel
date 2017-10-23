@@ -39,7 +39,7 @@ class DDRenderer extends Renderer {
 
   addRenderedObject(object) {
     if (this.renderedObjects[object.id]) {
-      removeRenderedObject(object);
+      this.removeRenderedObject(object);
     }
 
     var container = new PIXI.Container();

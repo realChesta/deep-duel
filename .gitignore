@@ -64,7 +64,10 @@ typings/
 .floo
 .flooignore
 
+# IntelliJ
+.idea/
 
+package-lock.json
 
 # OS generated files
 .DS_Store

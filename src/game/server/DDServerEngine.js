@@ -14,14 +14,10 @@ class DDServerEngine extends ServerEngine {
 
   onPlayerConnected(socket) {
     super.onPlayerConnected(socket);
-
-    this.gameEngine.addPlayer();
   }
 
   onPlayerDisconnected(socketId, playerId) {
     super.onPlayerDisconnected(socketId, playerId);
-
-    this.gameEngine.removePlayer(playerId);
   }
 
 }

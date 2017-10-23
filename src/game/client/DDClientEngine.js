@@ -20,8 +20,12 @@ class DDClientEngine extends ClientEngine {
     };
 
     let that = this;
-    document.onkeydown = (e) => { that.onKeyChange(e, true); };
-    document.onkeyup = (e) => { that.onKeyChange(e, false); };
+    document.onkeydown = (e) => {
+      that.onKeyChange(e, true);
+    };
+    document.onkeyup = (e) => {
+      that.onKeyChange(e, false);
+    };
   }
 
   // our pre-step is to process all inputs
@@ -29,20 +33,22 @@ class DDClientEngine extends ClientEngine {
 
     if (this.pressedKeys.up) {
       if (!this.pressedKeys.down)       // if both buttons are pressed, don't send anything
-        this.sendInput('up', { movement: true });
-    } else if (this.pressedKeys.down) {
-      this.sendInput('down', { movement: true });
+        this.sendInput('up', {movement: true});
+    }
+    else if (this.pressedKeys.down) {
+      this.sendInput('down', {movement: true});
     }
 
     if (this.pressedKeys.left) {
       if (!this.pressedKeys.right)
-        this.sendInput('left', { movement: true });
-    } else if (this.pressedKeys.right) {
-      this.sendInput('right', { movement: true });
+        this.sendInput('left', {movement: true});
+    }
+    else if (this.pressedKeys.right) {
+      this.sendInput('right', {movement: true});
     }
 
     if (this.pressedKeys.space) {
-      this.sendInput('fire', { movement: false });
+      this.sendInput('fire', {movement: false});
     }
 
   }
@@ -52,13 +58,17 @@ class DDClientEngine extends ClientEngine {
 
     if (e.keyCode == '38' || e.keyCode == '87') {
       this.pressedKeys.up = isDown;
-    } else if (e.keyCode == '40' || e.keyCode == '83') {
+    }
+    else if (e.keyCode == '40' || e.keyCode == '83') {
       this.pressedKeys.down = isDown;
-    } else if (e.keyCode == '37' || e.keyCode == '65') {
+    }
+    else if (e.keyCode == '37' || e.keyCode == '65') {
       this.pressedKeys.left = isDown;
-    } else if (e.keyCode == '39' || e.keyCode == '68') {
+    }
+    else if (e.keyCode == '39' || e.keyCode == '68') {
       this.pressedKeys.right = isDown;
-    } else if (e.keyCode == '32') {
+    }
+    else if (e.keyCode == '32') {
       this.pressedKeys.space = isDown;
     }
   }
