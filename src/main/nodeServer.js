@@ -6,19 +6,27 @@ const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, './index.html');
+const STYLE = path.join(__dirname, './style.css');
 const BUNDLE = path.join(__dirname, '../../dist/bundle.js');
 
 const files = {
   '/': INDEX,
   '/index.html': INDEX,
-  '/dist/bundle.js': BUNDLE
+  '/style.css': STYLE,
+  '/dist/bundle.js': BUNDLE,
 };
 
 // define routes and socket
 const server = express();
+
 Object.keys(files).forEach(
   (key) => server.get(key, (req, res) => res.sendFile(files[key]))
 );
+
+server.use('/assets', function(req, res, next) {
+  res.sendFile(path.join(__dirname, '../../assets' + req.path));
+});
+
 let requestHandler = server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 const io = socketIO(requestHandler);
 

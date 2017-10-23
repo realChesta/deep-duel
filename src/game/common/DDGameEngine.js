@@ -16,15 +16,16 @@ class DDGameEngine extends GameEngine {
     this.on('playerDisconnected', this.onPlayerDisconnected.bind(this));
 
     this.players = {};
+
+    this.settings = {
+      width: 100,
+      height: 100,
+      diagonalSpeed: 0    // 0...1
+    };
   }
 
   start() {
     super.start();
-
-    this.worldSettings = {
-      width: 400,
-      height: 400
-    };
   }
 
   initGame() {
@@ -38,16 +39,20 @@ class DDGameEngine extends GameEngine {
     let player = this.players[playerId];
     if (player) {
       if (inputData.input === 'up') {
-        player.movingY = -1;
+        player.movingY = inputData.options.isDown ? -1 : 0;
+        //player.direction = 2;
       }
       else if (inputData.input === 'down') {
-        player.movingY = 1;
+        player.movingY = inputData.options.isDown ? 1 : 0;
+        //player.direction = 0;
       }
       else if (inputData.input === 'right') {
-        player.movingX = 1;
+        player.movingX = inputData.options.isDown ? 1 : 0;
+        //player.direction = 3;
       }
       else if (inputData.input === 'left') {
-        player.movingX = -1;
+        player.movingX = inputData.options.isDown ? -1 : 0;
+        //player.direction = 1;
       }
       else if (inputData.input === 'fire') {
         player.fire();
@@ -56,11 +61,9 @@ class DDGameEngine extends GameEngine {
   }
 
   onPlayerJoined(event) {
-    console.log("Player joined", event);
-    let player = new Player(++this.world.idCount, 200, 200, event.playerId);
+    let player = new Player(++this.world.idCount, 50, 50, event.playerId);
     this.players[this.world.idCount] = player;
     this.addObjectToWorld(player);
-    this.addObjectToWorld(new Entity(++this.world.idCount, 150, 200));
   }
 
   onPlayerDisconnected(event) {
@@ -89,11 +92,26 @@ class DDGameEngine extends GameEngine {
     var keys = Object.keys(this.players);
     for (var i = 0; i < keys.length; i++) {
       var player = this.players[keys[i]];
-      var dv = player.movingX * player.movingX + player.movingY * player.movingY;
-      if (dv == 0) continue; // fuck this
-      player.position.x += player.movingX * player.getSpeed() / dv;
-      player.position.y += player.movingY * player.getSpeed() / dv;
-      player.movingX = player.movingY = 0;
+      var movingX = player.movingX, movingY = player.movingY;
+      var dv = movingX * movingX + movingY * movingY;
+      if (dv == 0) {
+        player.currentAction = Player.ActionType.Idle;
+        continue;
+      }
+
+      if (movingX === 1) player.direction = 3;
+      else if (movingX === -1) player.direction = 1;
+
+      if (movingY === 1) player.direction = 0;
+      else if (movingY === -1) player.direction = 2;
+
+      dv = Math.pow(dv, 1 - this.settings.diagonalSpeed);
+      player.position.x += movingX * player.getSpeed() / dv;
+      player.position.y += movingY * player.getSpeed() / dv;
+
+      player.currentAction = Player.ActionType.Running;
+
+      //player.movingX = player.movingY = 0;
     }
   }
 
@@ -101,8 +119,6 @@ class DDGameEngine extends GameEngine {
   registerClasses(serializer) {
     serializer.registerClass(Entity);
     serializer.registerClass(Player);
-
-    console.log('serializer: ', serializer.registeredClasses);
   }
 }
 
