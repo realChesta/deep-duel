@@ -1,12 +1,12 @@
 const {ClientEngine} = require('lance-gg');
 const DDRenderer = require('./Rendering/DDRenderer');
 
+// TODO Clean-up/rewrite keyboard handling
 class DDClientEngine extends ClientEngine {
 
   constructor(gameEngine, options) {
     super(gameEngine, options, DDRenderer);
 
-    this.gameEngine.on('client__preStep', this.preStep.bind(this));
     this.gameEngine.on('objectAdded', this.renderer.addRenderedObject.bind(this.renderer));
     this.gameEngine.on('objectDestroyed', this.renderer.removeRenderedObject.bind(this.renderer));
 
@@ -19,58 +19,44 @@ class DDClientEngine extends ClientEngine {
       space: false
     };
 
-    let that = this;
-    document.onkeydown = (e) => {
-      that.onKeyChange(e, true);
-    };
-    document.onkeyup = (e) => {
-      that.onKeyChange(e, false);
-    };
   }
 
-  // our pre-step is to process all inputs
-  preStep() {
-
-    if (this.pressedKeys.up) {
-      if (!this.pressedKeys.down)       // if both buttons are pressed, don't send anything
-        this.sendInput('up', {movement: true});
-    }
-    else if (this.pressedKeys.down) {
-      this.sendInput('down', {movement: true});
-    }
-
-    if (this.pressedKeys.left) {
-      if (!this.pressedKeys.right)
-        this.sendInput('left', {movement: true});
-    }
-    else if (this.pressedKeys.right) {
-      this.sendInput('right', {movement: true});
-    }
-
-    if (this.pressedKeys.space) {
-      this.sendInput('fire', {movement: false});
-    }
-
+  addInputEvents(to) {
+    let that = this;
+    to.onkeydown = (e) => {
+      that.onKeyChange.call(that, e, true);
+    };
+    to.onkeyup = (e) => {
+      that.onKeyChange.call(that, e, false);
+    };
   }
 
   onKeyChange(e, isDown) {
     e = e || window.event;
 
+    var preventDefault = true;
     if (e.keyCode == '38' || e.keyCode == '87') {
-      this.pressedKeys.up = isDown;
+      this.sendInput('up', {isDown: isDown});
     }
     else if (e.keyCode == '40' || e.keyCode == '83') {
-      this.pressedKeys.down = isDown;
+      this.sendInput('down', {isDown: isDown});
     }
     else if (e.keyCode == '37' || e.keyCode == '65') {
-      this.pressedKeys.left = isDown;
+      this.sendInput('left', {isDown: isDown});
     }
     else if (e.keyCode == '39' || e.keyCode == '68') {
-      this.pressedKeys.right = isDown;
+      this.sendInput('right', {isDown: isDown});
     }
     else if (e.keyCode == '32') {
-      this.pressedKeys.space = isDown;
+      this.sendInput('fire', {isDown: isDown});
     }
+    else {
+      preventDefault = false;
+    }
+
+    if (preventDefault)
+      e.preventDefault();
+
   }
 }
 

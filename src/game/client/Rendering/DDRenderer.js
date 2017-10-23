@@ -2,16 +2,47 @@
 
 const {render: {Renderer}} = require('lance-gg');
 const PIXI = require('pixi.js');
+const Player = require('../../common/GameObjects/Entities/Player');
 
 class DDRenderer extends Renderer {
+
 
   constructor(gameEngine, clientEngine) {
     super(gameEngine, clientEngine);
 
-    this.renderer = PIXI.autoDetectRenderer(400, 400);
     this.stage = new PIXI.Container();
+    this.stage.scale.set(4, 4);
+    this.renderer = PIXI.autoDetectRenderer(this.stage.scale.x * this.gameEngine.settings.width, this.stage.scale.y * this.gameEngine.settings.height);
 
     this.renderedObjects = {};
+  }
+
+
+  //TODO: call this somewhere
+  load(callback) {
+
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
+    PIXI.loader
+      .add(DDRenderer.player_sheets[Player.ActionType.Idle].contents)
+      .add(DDRenderer.player_sheets[Player.ActionType.Running].contents)
+      .load(callback);
+  }
+
+  static createAnimatedSprite(jsonPath, nOfFrames, fps, x, y) {
+    let frames = [];
+
+    for (let i = 0; i < nOfFrames; i++) {
+      frames.push(PIXI.Texture.fromFrame(jsonPath.replace(/^.*[\\\/]/, '').replace('\.json', i + '.png')));
+    }
+
+    let anim = new PIXI.extras.AnimatedSprite(frames);
+    anim.x -= x;
+    anim.y -= y;
+
+    anim.animationSpeed = fps / 60;
+
+    return anim;
   }
 
 
@@ -60,5 +91,30 @@ class DDRenderer extends Renderer {
   }
 
 }
+
+DDRenderer.player_sheets = [
+  //idle
+  {
+    frames: 7,
+    fps: 5,
+    contents: [
+      'assets/player/idle/player_idle_front.json',
+      'assets/player/idle/player_idle_left.json',
+      'assets/player/idle/player_idle_back.json',
+      'assets/player/idle/player_idle_right.json'
+    ]
+  },
+  //run
+  {
+    frames: 8,
+    fps: 13,
+    contents: [
+      'assets/player/run/player_run_front.json',
+      'assets/player/run/player_run_left.json',
+      'assets/player/run/player_run_back.json',
+      'assets/player/run/player_run_right.json'
+    ]
+  }
+];
 
 module.exports = DDRenderer;
