@@ -1,7 +1,6 @@
 const {ClientEngine} = require('lance-gg');
 const DDRenderer = require('./Rendering/DDRenderer');
 
-// TODO Clean-up/rewrite keyboard handling
 class DDClientEngine extends ClientEngine {
 
   constructor(gameEngine, options) {

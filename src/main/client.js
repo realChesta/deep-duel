@@ -28,15 +28,17 @@ if (options.syncOptions.sync === 'extrapolate')
 const gameEngine = new DDGameEngine(options);
 const clientEngine = new DDClientEngine(gameEngine, options);
 
+console.log("sup");
+let wait = require('../game/common/Utils/SpriteLoader').loadAll();
 
-$().ready(function () {
-  clientEngine.renderer.load(function () {    // TODO Add a loading screen
-    var view = clientEngine.renderer.getView();
-    var gameRenderer = $('#gameRenderer');
-    gameRenderer.append(view);
-    clientEngine.addInputEvents(document);    // TODO Replace document with gameRenderer
-    gameRenderer.focus();
-    gameRenderer.click((e) => gameRenderer.focus());
-    clientEngine.start();
-  });
+$().ready(async function() {
+  console.log("rdy");
+  await wait;         // TODO Add a loading screen
+  var view = clientEngine.renderer.getView();
+  var gameRenderer = $('#gameRenderer');
+  gameRenderer.append(view);
+  clientEngine.addInputEvents(gameRenderer[0]);
+  gameRenderer.focus();
+  gameRenderer.click((e) => gameRenderer.focus());
+  clientEngine.start();
 });
