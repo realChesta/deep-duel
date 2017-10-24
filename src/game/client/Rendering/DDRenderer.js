@@ -2,7 +2,7 @@
 
 const {render: {Renderer}} = require('lance-gg');
 const PIXI = require('pixi.js');
-const Player = require('../../common/GameObjects/Entities/Player');
+const Player = require('../../common/GameObjects/Entities/Character');
 
 class DDRenderer extends Renderer {
 
@@ -24,8 +24,8 @@ class DDRenderer extends Renderer {
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
     PIXI.loader
-      .add(DDRenderer.player_sheets[Player.ActionType.Idle].contents)
-      .add(DDRenderer.player_sheets[Player.ActionType.Running].contents)
+      .add(Object.values(DDRenderer.player_sheets[Player.ActionType.Idle].contents))
+      .add(Object.values(DDRenderer.player_sheets[Player.ActionType.Running].contents))
       .load(callback);
   }
 
@@ -37,8 +37,8 @@ class DDRenderer extends Renderer {
     }
 
     let anim = new PIXI.extras.AnimatedSprite(frames);
-    anim.x -= x;
-    anim.y -= y;
+    anim.x += x;
+    anim.y += y;
 
     anim.animationSpeed = fps / 60;
 
@@ -53,6 +53,7 @@ class DDRenderer extends Renderer {
 
   draw() {
     super.draw();
+    console.log("Hi!");
 
     Object.keys(this.renderedObjects).forEach(
       (key) => this.drawObject.call(this, this.gameEngine.world.objects[key])
@@ -97,24 +98,30 @@ DDRenderer.player_sheets = [
   {
     frames: 7,
     fps: 5,
-    contents: [
-      'assets/player/idle/player_idle_front.json',
-      'assets/player/idle/player_idle_left.json',
-      'assets/player/idle/player_idle_back.json',
-      'assets/player/idle/player_idle_right.json'
-    ]
+    contents: {
+      down: 'assets/player/idle/player_idle_front.json',
+      left: 'assets/player/idle/player_idle_left.json',
+      up: 'assets/player/idle/player_idle_back.json',
+      right: 'assets/player/idle/player_idle_right.json'
+    }
   },
   //run
   {
     frames: 8,
     fps: 13,
-    contents: [
-      'assets/player/run/player_run_front.json',
-      'assets/player/run/player_run_left.json',
-      'assets/player/run/player_run_back.json',
-      'assets/player/run/player_run_right.json'
-    ]
+    contents: {
+      down: 'assets/player/run/player_run_front.json',
+      left: 'assets/player/run/player_run_left.json',
+      up: 'assets/player/run/player_run_back.json',
+      right: 'assets/player/run/player_run_right.json'
+    }
   }
 ];
+
+
+// TODO HACK
+require('../../common/Utils/SpriteLoader')
+  .addAll('player.idle', Object.values(DDRenderer.player_sheets[0].contents))
+  .addAll('player.running', Object.values(DDRenderer.player_sheets[1].contents));
 
 module.exports = DDRenderer;

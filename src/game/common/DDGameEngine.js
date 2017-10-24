@@ -2,7 +2,7 @@
 
 const {GameEngine} = require('lance-gg');
 const Entity = require('./GameObjects/Entities/Entity');
-const Player = require('./GameObjects/Entities/Player');
+const Player = require('./GameObjects/Entities/Character');
 
 class DDGameEngine extends GameEngine {
 
@@ -19,8 +19,7 @@ class DDGameEngine extends GameEngine {
 
     this.settings = {
       width: 100,
-      height: 100,
-      diagonalSpeed: 0    // 0...1
+      height: 100
     };
   }
 
@@ -36,28 +35,7 @@ class DDGameEngine extends GameEngine {
   processInput(inputData, playerId) {
     super.processInput(inputData, playerId);
 
-    let player = this.players[playerId];
-    if (player) {
-      if (inputData.input === 'up') {
-        player.movingY = inputData.options.isDown ? -1 : 0;
-        //player.direction = 2;
-      }
-      else if (inputData.input === 'down') {
-        player.movingY = inputData.options.isDown ? 1 : 0;
-        //player.direction = 0;
-      }
-      else if (inputData.input === 'right') {
-        player.movingX = inputData.options.isDown ? 1 : 0;
-        //player.direction = 3;
-      }
-      else if (inputData.input === 'left') {
-        player.movingX = inputData.options.isDown ? -1 : 0;
-        //player.direction = 1;
-      }
-      else if (inputData.input === 'fire') {
-        player.fire();
-      }
-    }
+    this.players[playerId].processInput(inputData);
   }
 
   onPlayerJoined(event) {
@@ -90,28 +68,10 @@ class DDGameEngine extends GameEngine {
 
   preStep() {
     var keys = Object.keys(this.players);
-    for (var i = 0; i < keys.length; i++) {
-      var player = this.players[keys[i]];
-      var movingX = player.movingX, movingY = player.movingY;
-      var dv = movingX * movingX + movingY * movingY;
-      if (dv == 0) {
-        player.currentAction = Player.ActionType.Idle;
-        continue;
-      }
-
-      if (movingX === 1) player.direction = 3;
-      else if (movingX === -1) player.direction = 1;
-
-      if (movingY === 1) player.direction = 0;
-      else if (movingY === -1) player.direction = 2;
-
-      dv = Math.pow(dv, 1 - this.settings.diagonalSpeed);
-      player.position.x += movingX * player.getSpeed() / dv;
-      player.position.y += movingY * player.getSpeed() / dv;
-
-      player.currentAction = Player.ActionType.Running;
-
-      //player.movingX = player.movingY = 0;
+    for (let i = 0; i < keys.length; i++) {
+      let player = this.players[keys[i]];
+      player.calcVelocity();
+      player.tickInputs();
     }
   }
 
