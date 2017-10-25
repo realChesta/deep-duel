@@ -1,6 +1,7 @@
 'use strict';
 
 const url = require('url');
+const {serialize: {TwoVector}} = require('lance-gg');
 
 // The SpriteLoader exists on both client and server, but only actually loads something on some implementations of the former.
 class SpriteLoader {
@@ -14,25 +15,30 @@ class SpriteLoader {
    * Each asset collection consists out of multiple stylesheets, and each
    * stylesheet consists of multiple textures.
    *
-   * While passing a spritesheet JSON into the PIXI.loader, it already converts it into a
-   * bunch of textures automatically, we have to do it manually for asset
-   * collections. Taking the player as an example, player.json is the asset
-   * collection JSON, player_idle_left.json is a spritesheet JSON and each one
-   * of the tiles in playeR_idle_left.png is a texture.
+   * While passing a spritesheet JSON into the PIXI.loader, it already converts
+   * it into a bunch of textures automatically, we have to do it manually for
+   * asset collections. Taking the player as an example, player.json is the
+   * asset collection JSON, player_idle_left.json is a spritesheet JSON and each
+   * one of the tiles in playeR_idle_left.png is a texture.
    *
    * We use PIXI's loader for all three "stages" of resources, but manually
    * extend it using middleware functions (to handle assets).
    */
 
 
+  // TODO Currently, you specify assets by their names - however, in a future version, make .add() return an object that identifies them instead
   static add(name, path) {
+    if (path === undefined)
+      path = name;
+
     SpriteLoader.toLoad[name] = path;
+    console.log(SpriteLoader.toLoad);
     return SpriteLoader;
   }
 
   static addAll(name, paths) {
     for (let path of paths) {
-      SpriteLoader.add(name + path, path);
+      SpriteLoader.add(name + '; ' + path, path);
     }
     return SpriteLoader;
   }
@@ -42,7 +48,9 @@ class SpriteLoader {
     const PIXI = require('pixi.js');
 
     // Add all the sprites to the PIXI loader
-    for (let name of Object.keys(SpriteLoader.toLoad)) {
+    let toL = Object.keys(SpriteLoader.toLoad);
+    if (toL)
+    for (let name of toL) {
       PIXI.loader.add(name, SpriteLoader.toLoad[name], SpriteLoader.onResourceLoaded);
     }
 
@@ -53,8 +61,9 @@ class SpriteLoader {
     }
 
     // Actually start loading now. We don't want a callback, rather await syntax so we wrap it in a Promise
-    await new Promise(resolve => {
-      PIXI.loader.load(resolve);
+    await new Promise((resolve) => {
+      console.log(PIXI.loader);
+      PIXI.loader.load(() => resolve());
     });
 
     SpriteLoader.toLoad = {};
@@ -71,23 +80,31 @@ class SpriteLoader {
 
 
   static onResourceLoaded(resource) {
-    if (resource.extension == 'json' && resource.data.type === 'asset')
-      SpriteLoader.loadedAssets[resource.name] = generateAssetCollection(resource);
-    else if (resource.extension == 'json' && resource.data.frames) // This is used by Pixi's spritesheet parser. There could be some false negatives (any JSON file with a frames property), but I did not get up with it
-      SpriteLoader.loadedSpritesheets[resource.name] = generateSpritesheet(resource);
+    if (resource.extension === 'json' && resource.data.type === 'asset')
+      SpriteLoader.loadedAssets[resource.name] = SpriteLoader.generateAssetCollection(resource);
+    else if (resource.extension === 'json' && resource.data.frames) // This is used by Pixi's spritesheet parser. There could be some false negatives (any JSON file with a frames property), but I did not get up with it
+      SpriteLoader.loadedSpritesheets[resource.name] = SpriteLoader.generateSpritesheet(resource);
   }
 
   static generateAssetCollection(resource) {
-    return resource.actions;
+    console.log(resource);
+    return {
+      actions: resource.actions,
+      defaultAction: resource.data.defaultAction,
+      defaultDirection: resource.data.defaultDirection
+    };
   }
 
   static generateSpritesheet(resource) {
+    if (resource.extension !== 'json' || !resource.data.frames)
+      return;
     let textures = resource.textures; // All textures in an array.
-    let fps = resource.data.meta.fps; // resource.data is the JSON data
-    let size = new TwoVector(resource.data.meta.size.x, resource.data.meta.size.y);
-    let offset = new TwoVector(resource.data.meta.offset.x, resource.data.meta.offset.y);
+    let meta = resource.data.meta; // resource.data is the JSON data
+    let fps = meta.fps;
+    let size = meta.sourceSize === undefined ? {} : new TwoVector(meta.sourceSize.w, meta.sourceSize.h);
+    let offset = meta.offset === undefined ? {} : new TwoVector(meta.offset.x, meta.offset.y);
 
-    // Not all Pixi spritesheet JSONs necessarily have all these properties (especially fps and offset, which are not standard), so we're gonna warn the user if they're not found
+    // all Pixi spritesheet JSONs necessarily have all these properties (especially fps and offset, which are not standard), so we're gonna warn the user if they're not found
     let check = {'fps': fps, 'size.x': size.x, 'size.y': size.y, 'offset.x': offset.x, 'offset.y': offset.y};
     for (let key of Object.keys(check)) {
       if (check[key] === undefined) {
@@ -109,16 +126,16 @@ class SpriteLoader {
     resource.actions = {};
     let promises = [];
     let options = {
-      loadType: require('resource-loader').Resource.LOAD_TYPE.IMAGE,
+      loadType: require('resource-loader').Resource.LOAD_TYPE.JSON,
       parentResource: resource
     };
     for (let action of Object.keys(resource.data.actions)) {
       resource.actions[action] = [];    // note the difference between resource.data.actions and resource.actions
       for (let direction of Object.keys(resource.data.actions[action])) {
-        let path = url.resolve(this.baseUrl, resource.data.actions[action][direction]);
-        let promise = addSingle(this, path, path, options);
-        promise.then((loader, sheetResource) => {
-          resource.actions[action][direction] = generateSpritesheet(sheetResource);
+        let path = url.resolve(resource.url, resource.data.actions[action][direction]);
+        let promise = SpriteLoader.addAsyncToCustom(this, path, path, options);
+        promise.then((sheetResource) => {
+          resource.actions[action][direction] = SpriteLoader.generateSpritesheet(sheetResource);
         });
         promises.push(promise);
       }
@@ -130,7 +147,7 @@ class SpriteLoader {
     });
   }
 
-  static async addSingle(loader, name, path, options) {
+  static async addAsyncToCustom(loader, name, path, options) {
     return new Promise(resolve => {
       loader.add(name, path, options, resolve);
     });

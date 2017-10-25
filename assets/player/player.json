@@ -1,5 +1,7 @@
 {
   "type": "asset",
+  "defaultAction": "idle",
+  "defaultDirection": "down",
   "actions": {
     "idle": {
       "down": "idle/player_idle_front.json",
@@ -7,7 +9,7 @@
       "up": "idle/player_idle_back.json",
       "right": "idle/player_idle_right.json"
     },
-    "run": {
+    "running": {
       "down": "run/player_run_front.json",
       "left": "run/player_run_left.json",
       "up": "run/player_run_back.json",

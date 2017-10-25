@@ -28,12 +28,18 @@ if (options.syncOptions.sync === 'extrapolate')
 const gameEngine = new DDGameEngine(options);
 const clientEngine = new DDClientEngine(gameEngine, options);
 
-console.log("sup");
-let wait = require('../game/common/Utils/SpriteLoader').loadAll();
+// We already want to start loading some elements early, eg. so they can already register their sprites.
+// We therefore simply need to require them, as this will call their code and they'll be able to set things up.
+// Example: Player needs some assets loaded by SpriteLoader, so we already load the Player class which will also load these assets.
+require("../game/common/GameObjects/Entities/Player");
 
-$().ready(async function() {
-  console.log("rdy");
-  await wait;         // TODO Add a loading screen
+
+let spriteLoaderPromise = require('../game/common/Utils/SpriteLoader').loadAll();
+
+onReady();
+async function onReady() {
+  await new Promise(resolve => $(resolve));   // wrapper promise for $.ready(...)
+  await spriteLoaderPromise;  // TODO Add a loading screen
   var view = clientEngine.renderer.getView();
   var gameRenderer = $('#gameRenderer');
   gameRenderer.append(view);
@@ -41,4 +47,4 @@ $().ready(async function() {
   gameRenderer.focus();
   gameRenderer.click((e) => gameRenderer.focus());
   clientEngine.start();
-});
+}
