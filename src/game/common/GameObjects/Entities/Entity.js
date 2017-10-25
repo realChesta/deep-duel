@@ -15,7 +15,7 @@ class Entity extends RenderedObject {
   }
 
   onAddToWorld(gameEngine) {
-    super.onAddToWorld();
+    super.onAddToWorld(gameEngine);
   }
 
   getSpeed() {

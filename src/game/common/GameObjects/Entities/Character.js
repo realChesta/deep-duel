@@ -1,7 +1,7 @@
 'use strict';
 
 const Creature = require('./Creature');
-const {serialize: {Serializer}} = require('lance-gg');
+const {serialize: {Serializer}} = require('lance-gg'); // QUESTION: this is never used in this class, is this necessary for the Serializer in some way or can it be removed?
 const Direction = require('../../Utils/Direction');
 
 class Character extends Creature {
@@ -53,6 +53,7 @@ class Character extends Creature {
 
   fire() {
     // TODO Add projectiles
+    //
   }
 
   onAddToWorld() {

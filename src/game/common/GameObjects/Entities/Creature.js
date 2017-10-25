@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const Entity = require('./Entity');
 const Direction = require('../../Utils/Direction');
@@ -13,7 +13,7 @@ class Creature extends Entity {
 
   get action() { return this._action; }
   set action(val) {
-    if (val == this._action)
+    if (val === this._action)
       return;
     this.onActionChange(this._action, val);
     this._action = val;
@@ -23,7 +23,7 @@ class Creature extends Entity {
 
   get direction() { return this._direction; }
   set direction(val) {
-    if (val == this.direction)
+    if (val === this.direction)
       return;
     this.onDirectionChange(this._direction, val);
     this._direction = val;
