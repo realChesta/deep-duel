@@ -2,8 +2,12 @@
 
 const {GameEngine} = require('lance-gg');
 const Entity = require('./GameObjects/Entities/Entity');
-const Player = require('./GameObjects/Entities/Character');
+const Creature = require('./GameObjects/Entities/Creature');
+const Character = require('./GameObjects/Entities/Character');
+const Player = require('./GameObjects/Entities/Player');
 
+
+// TODO Rename playerId everywhere
 class DDGameEngine extends GameEngine {
 
   constructor(options) {
@@ -15,7 +19,7 @@ class DDGameEngine extends GameEngine {
     this.on('playerJoined', this.onPlayerJoined.bind(this));
     this.on('playerDisconnected', this.onPlayerDisconnected.bind(this));
 
-    this.players = {};
+    this.characters = {};
 
     this.settings = {
       width: 100,
@@ -35,49 +39,51 @@ class DDGameEngine extends GameEngine {
   processInput(inputData, playerId) {
     super.processInput(inputData, playerId);
 
-    this.players[playerId].processInput(inputData);
+    this.characters[playerId].processInput(inputData);
   }
 
   onPlayerJoined(event) {
-    let player = new Player(++this.world.idCount, 50, 50, event.playerId);
-    this.players[this.world.idCount] = player;
-    this.addObjectToWorld(player);
+    let character = new Player(++this.world.idCount, 50, 50, event.playerId);
+    this.characters[this.world.idCount] = character;
+    this.addObjectToWorld(character);
   }
 
   onPlayerDisconnected(event) {
     var playerId = event.playerId;
-    if (!this.players[playerId])
+    if (!this.characters[playerId])
       return;
-    this.removeObjectFromWorld(this.players[playerId].id);
+    this.removeObjectFromWorld(this.characters[playerId].id);
   }
 
   onObjectAdded(object) {
-    if (object instanceof Player) {
+    if (object instanceof Character) {
       var playerId = object.playerId;
-      this.players[playerId] = object;
+      this.characters[playerId] = object;
     }
   }
 
   onObjectDestroyed(object) {
-    if (object instanceof Player) {
+    if (object instanceof Character) {
       var playerId = object.playerId;
-      delete this.players[playerId];
+      delete this.characters[playerId];
     }
   }
 
 
   preStep() {
-    var keys = Object.keys(this.players);
+    var keys = Object.keys(this.characters);
     for (let i = 0; i < keys.length; i++) {
-      let player = this.players[keys[i]];
-      player.calcVelocity();
-      player.tickInputs();
+      let character = this.characters[keys[i]];
+      character.calcVelocity();
+      character.tickInputs();
     }
   }
 
 
   registerClasses(serializer) {
     serializer.registerClass(Entity);
+    serializer.registerClass(Creature);
+    serializer.registerClass(Character);
     serializer.registerClass(Player);
   }
 }

@@ -1,13 +1,17 @@
+'use strict'
+
 const {ClientEngine} = require('lance-gg');
 const DDRenderer = require('./Rendering/DDRenderer');
+const RenderedObject = require('../common/GameObjects/RenderedObject');
 
 class DDClientEngine extends ClientEngine {
 
   constructor(gameEngine, options) {
     super(gameEngine, options, DDRenderer);
 
-    this.gameEngine.on('objectAdded', this.renderer.addRenderedObject.bind(this.renderer));
-    this.gameEngine.on('objectDestroyed', this.renderer.removeRenderedObject.bind(this.renderer));
+    this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
+    this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
+    this.gameEngine.on('preStep', this.preStep.bind(this));
 
     // keep a reference for key press state
     this.pressedKeys = {
@@ -15,10 +19,21 @@ class DDClientEngine extends ClientEngine {
       up: false,
       left: false,
       right: false,
-      space: false
+      fire: false
     };
 
   }
+
+  onObjectAdded(object) {
+    if (object instanceof RenderedObject)
+      this.renderer.addRenderedObject(object);
+  }
+
+  onObjectDestroyed(object) {
+    if (object instanceof RenderedObject)
+      this.renderer.removeRenderedObject(object);
+  }
+
 
   addInputEvents(to) {
     let that = this;
@@ -30,24 +45,26 @@ class DDClientEngine extends ClientEngine {
     };
   }
 
+  // TODO make it nicer, remove ugly if statements
+  // TODO make each input packet smaller (they're not compressed)
   onKeyChange(e, isDown) {
     e = e || window.event;
 
     var preventDefault = true;
     if (e.keyCode == '38' || e.keyCode == '87') {
-      this.sendInput('up', {isDown: isDown});
+      this.handleKeyChange('up', isDown);
     }
     else if (e.keyCode == '40' || e.keyCode == '83') {
-      this.sendInput('down', {isDown: isDown});
+      this.handleKeyChange('down', isDown);
     }
     else if (e.keyCode == '37' || e.keyCode == '65') {
-      this.sendInput('left', {isDown: isDown});
+      this.handleKeyChange('left', isDown);
     }
     else if (e.keyCode == '39' || e.keyCode == '68') {
-      this.sendInput('right', {isDown: isDown});
+      this.handleKeyChange('right', isDown);
     }
     else if (e.keyCode == '32') {
-      this.sendInput('fire', {isDown: isDown});
+      this.handleKeyChange('fire', isDown);
     }
     else {
       preventDefault = false;
@@ -56,6 +73,21 @@ class DDClientEngine extends ClientEngine {
     if (preventDefault)
       e.preventDefault();
 
+  }
+
+  handleKeyChange(key, isDown) {
+    if (this.pressedKeys[key] !== isDown) {
+      this.pressedKeys[key] = isDown;
+      this.sendInput(key, {isDown: isDown})
+    }
+  }
+
+  preStep() {   // TODO Only fire this occasionally, based on lag
+    for (let key of Object.keys(this.pressedKeys)) {
+      if (this.pressedKeys[key]) {
+        this.sendInput(key, {isDown: true});
+      }
+    }
   }
 }
 

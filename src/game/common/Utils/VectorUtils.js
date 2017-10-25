@@ -11,7 +11,7 @@ class VectorUtils {
   }
 
   static getAngle(vec1, vec2) {
-    return Math.acos(dotProduct(vec1, vec2) / (vec1.length() * vec2.length()));
+    return Math.acos(VectorUtils.dotProduct(vec1, vec2) / (vec1.length() * vec2.length()));
   }
 }
 
