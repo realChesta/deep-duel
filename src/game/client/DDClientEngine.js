@@ -45,29 +45,39 @@ class DDClientEngine extends ClientEngine {
     };
   }
 
-  // TODO make it nicer, remove ugly if statements
   // TODO make each input packet smaller (they're not compressed)
   onKeyChange(e, isDown) {
     e = e || window.event;
 
-    var preventDefault = true;
-    if (e.keyCode == '38' || e.keyCode == '87') {
-      this.handleKeyChange('up', isDown);
-    }
-    else if (e.keyCode == '40' || e.keyCode == '83') {
-      this.handleKeyChange('down', isDown);
-    }
-    else if (e.keyCode == '37' || e.keyCode == '65') {
-      this.handleKeyChange('left', isDown);
-    }
-    else if (e.keyCode == '39' || e.keyCode == '68') {
-      this.handleKeyChange('right', isDown);
-    }
-    else if (e.keyCode == '32') {
-      this.handleKeyChange('fire', isDown);
-    }
-    else {
-      preventDefault = false;
+    let preventDefault = true;
+
+    switch (e.keyCode) {
+      case '38':
+      case '87':
+        this.handleKeyChange('up', isDown);
+        break;
+
+      case '40':
+      case '83':
+        this.handleKeyChange('down', isDown);
+        break;
+
+      case '37':
+      case '65':
+        this.handleKeyChange('left', isDown);
+        break;
+
+      case '39':
+      case '68':
+        this.handleKeyChange('right', isDown);
+        break;
+
+      case '32':
+        this.handleKeyChange('fire', isDown);
+        break;
+
+      default:
+        preventDefault = false;
     }
 
     if (preventDefault)

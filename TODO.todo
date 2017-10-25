@@ -1,4 +1,5 @@
 Todos may be found shattered around in code
 
+// BUG Multiplayer animations don't work
 // BUG Syncing is kinda buggy. To reproduce, open the game in two windows, then pause one's script while moving in the other
 // TODO Maybe; add diagonal animations
