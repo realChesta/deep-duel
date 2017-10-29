@@ -27,12 +27,12 @@ class SpriteLoader {
 
 
   // TODO Currently, you specify assets by their names - however, in a future version, make .add() return an object that identifies them instead
+  // TODO When an asset is fetched that was registered but not yet loaded, warn the user and synchronously load it
   static add(name, path) {
     if (path === undefined)
       path = name;
 
     SpriteLoader.toLoad[name] = path;
-    console.log(SpriteLoader.toLoad);
     return SpriteLoader;
   }
 
@@ -43,6 +43,10 @@ class SpriteLoader {
     return SpriteLoader;
   }
 
+  static setResourceDirectory(dir) {
+    SpriteLoader.resourceDirectory = dir;
+  }
+
 
   static async loadAll() {
     const PIXI = require('pixi.js');
@@ -51,7 +55,7 @@ class SpriteLoader {
     let toL = Object.keys(SpriteLoader.toLoad);
     if (toL)
     for (let name of toL) {
-      PIXI.loader.add(name, SpriteLoader.toLoad[name], SpriteLoader.onResourceLoaded);
+      PIXI.loader.add(name, SpriteLoader.resourceDirectory + SpriteLoader.toLoad[name], SpriteLoader.onResourceLoaded);
     }
 
     // Initialize Pixi's loader to use custom middleware functions (if it wasn't already)
@@ -62,7 +66,6 @@ class SpriteLoader {
 
     // Actually start loading now. We don't want a callback, rather await syntax so we wrap it in a Promise
     await new Promise((resolve) => {
-      console.log(PIXI.loader);
       PIXI.loader.load(() => resolve());
     });
 
@@ -87,7 +90,6 @@ class SpriteLoader {
   }
 
   static generateAssetCollection(resource) {
-    console.log(resource);
     return {
       actions: resource.actions,
       defaultAction: resource.data.defaultAction,
@@ -147,7 +149,7 @@ class SpriteLoader {
     });
   }
 
-  static async addAsyncToCustom(loader, name, path, options) {
+  static addAsyncToCustom(loader, name, path, options) {
     return new Promise(resolve => {
       loader.add(name, path, options, resolve);
     });
@@ -160,5 +162,6 @@ SpriteLoader.toLoad = {};
 SpriteLoader.loadedAssets = {};
 SpriteLoader.loadedSpritesheets = {};
 SpriteLoader.inittedLoader = false;
+SpriteLoader.resourceDirectory = '';
 
 module.exports = SpriteLoader;
