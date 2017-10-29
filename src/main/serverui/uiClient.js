@@ -39,6 +39,7 @@ async function onReady() {
 
   var reloadAll = $('.reloadAll');
   reloadAll.click(function() {
+    console.log("Restarting server...");
     location.reload(true);
   });
 
@@ -53,7 +54,7 @@ async function onReady() {
 
 async function rebuildServer() {
   const name = "browserify (npm)";
-  let process = spawn('npm', ['run-script', 'browserify']);
+  let process = spawn('npm', ['run-script', 'browserify'], {shell: true, windowsHide: true});
 
   process.stdout.on('data', (data) => {
     console.log(name + ": " + data);

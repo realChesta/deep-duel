@@ -10,7 +10,7 @@ class DDRenderer extends Renderer {
   constructor(gameEngine, clientEngine) {
     super(gameEngine, clientEngine);
 
-    // TODO If the renderer is uninitialised (especially on server UI), remove these handlers
+    // TODO When the renderer gets uninitialised/removed (especially on server UI), remove these handlers
     this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
     this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
 
@@ -23,7 +23,6 @@ class DDRenderer extends Renderer {
     this.renderedObjects = {};    // TODO rename to renderedObjectsContainer
 
     if (!this.clientEngine) {
-      console.log("No client engine found - manually setting up rendering loop");
       let trenderer = this;
       let renderLoop = (function() {
         trenderer.draw();
