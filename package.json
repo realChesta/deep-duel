@@ -26,9 +26,8 @@
     "start": "node src/main/server/nodeServer.js",
 
     "cmd-p": "node src/main/server/nodeServer.js",
-    "ui-p": "electron src/main/serverui/serverUI.js",
     "cmd": "npm run-script browserify && npm run-script cmd-p",
-    "ui": "npm run-script browserify && npm run-script ui-p",
+    "ui": "electron src/main/serverui/serverUI.js",
 
     "postinstall": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
     "build": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",

@@ -24,7 +24,7 @@ class Creature extends Entity {
     console.log("syncTo", this._action, other._action);
     this.direction = Direction.getClosest(other.directionVector);
 
-    if (this.action)    // TODO HACK
+    if (other._action)    // TODO HACK
       this.action = other._action;
   }
 

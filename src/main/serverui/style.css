@@ -5,6 +5,10 @@ body {
   color: white;
 }
 
+a {
+  color: white;
+}
+
 #gameRenderer {
   display: inline-block;
   border: solid 1px white;
