@@ -1,8 +1,10 @@
-'use strict'
+'use strict';
 
 const {serialize: {TwoVector}} = require('lance-gg');
 const VectorUtils = require('./VectorUtils');
 
+
+// TODO make serializable
 class Direction {
 
   constructor(name, vec) {
@@ -12,6 +14,10 @@ class Direction {
     this.name = name;
   }
 
+  copy(other) {
+    this.name = other.name;
+    this.vector.copy(other.vector);
+  }
 
   static getSum(dirArray) {
     var sum = new TwoVector(0, 0);

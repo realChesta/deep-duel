@@ -5,7 +5,7 @@
     "node": "6.11.1"
   },
   "description": "People are STILL making fun of that?",
-  "main": "main.js",
+  "main": "src/main/server/nodeServer.js",
   "dependencies": {
     "browserify": "^13.0.1",
     "express": "^4.14.0",
@@ -13,7 +13,8 @@
     "query-string": "^4.2.3",
     "socket.io": "^1.4.8",
     "pixi.js": "^4.5.0",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "electron": "~1.7.8"
   },
   "devDependencies": {
     "babelify": "^7.3.0",
@@ -22,10 +23,18 @@
     "watchify": "^3.7.0"
   },
   "scripts": {
-    "start": "node src/main/nodeServer.js",
-    "postinstall": "browserify src/main/client.js -i nodejs-physijs -o dist/bundle.js ",
-    "build": "browserify src/main/client.js -i nodejs-physijs -o dist/bundle.js ",
-    "watchify": "watchify src/main/client.js -i nodejs-physijs -o dist/bundle.js -v -d"
+    "start": "node src/main/server/nodeServer.js",
+
+    "cmd": "node src/main/server/nodeServer.js",
+    "ui": "electron src/main/serverui/serverUI.js",
+    "cmd-b": "npm run-script browserify && npm run-script cmd",
+    "ui-b": "npm run-script browserify && npm run-script ui",
+
+    "postinstall": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
+    "build": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
+    
+    "browserify": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
+    "watchify": "watchify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js -v -d"
   },
   "repository": {
     "type": "git",

@@ -2,36 +2,29 @@
 
 const {ClientEngine} = require('lance-gg');
 const DDRenderer = require('./Rendering/DDRenderer');
-const RenderedObject = require('../common/GameObjects/RenderedObject');
+
+const keys = {
+  'up': [38, 87],
+  'down': [40, 83],
+  'left': [37, 65],
+  'right': [39, 68],
+  'fire': [32]
+};
+
+const parsedKeys = parseKeyJson(keys);
 
 class DDClientEngine extends ClientEngine {
 
   constructor(gameEngine, options) {
     super(gameEngine, options, DDRenderer);
 
-    this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
-    this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
     this.gameEngine.on('preStep', this.preStep.bind(this));
 
-    // keep a reference for key press state
-    this.pressedKeys = {
-      down: false,
-      up: false,
-      left: false,
-      right: false,
-      fire: false
-    };
+    this.pressedKeys = {};
+    for (let key of Object.keys(keys)) {
+      this.pressedKeys[key] = false;
+    }
 
-  }
-
-  onObjectAdded(object) {
-    if (object instanceof RenderedObject)
-      this.renderer.addRenderedObject(object);
-  }
-
-  onObjectDestroyed(object) {
-    if (object instanceof RenderedObject)
-      this.renderer.removeRenderedObject(object);
   }
 
 
@@ -45,44 +38,18 @@ class DDClientEngine extends ClientEngine {
     };
   }
 
+  // TODO: find a nice place to put the keys object and stop parsing it on every keystroke
   // TODO make each input packet smaller (they're not compressed)
   onKeyChange(e, isDown) {
     e = e || window.event;
 
     let preventDefault = true;
 
-    switch (e.keyCode) {
-      case '38':
-      case '87':
-        this.handleKeyChange('up', isDown);
-        break;
-
-      case '40':
-      case '83':
-        this.handleKeyChange('down', isDown);
-        break;
-
-      case '37':
-      case '65':
-        this.handleKeyChange('left', isDown);
-        break;
-
-      case '39':
-      case '68':
-        this.handleKeyChange('right', isDown);
-        break;
-
-      case '32':
-        this.handleKeyChange('fire', isDown);
-        break;
-
-      default:
-        preventDefault = false;
-    }
+    if (parsedKeys[e.keyCode])
+      this.handleKeyChange(parsedKeys[e.keyCode], isDown);
 
     if (preventDefault)
       e.preventDefault();
-
   }
 
   handleKeyChange(key, isDown) {
@@ -92,13 +59,27 @@ class DDClientEngine extends ClientEngine {
     }
   }
 
-  preStep() {   // TODO Only fire this occasionally, based on lag
-    for (let key of Object.keys(this.pressedKeys)) {
-      if (this.pressedKeys[key]) {
-        this.sendInput(key, {isDown: true});
-      }
+  preStep() {
+    if (this.gameEngine.world.stepCount % 20 == 0) {
+      // send keep alive packet
+      this.socket.emit('keepAlive');      // TODO combine socket.emit and gameEngine.emit with an API
+      this.gameEngine.emit('keepAlive', {playerId: this.playerId});
     }
   }
+
+
+}
+
+function parseKeyJson(json) {
+  var keyDict = {};
+
+  for (var action of Object.keys(json)) {
+    for (var key in json[action]) {
+      keyDict[json[action][key]] = action;
+    }
+  }
+
+  return keyDict
 }
 
 module.exports = DDClientEngine;

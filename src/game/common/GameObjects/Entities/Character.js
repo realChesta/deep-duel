@@ -1,7 +1,6 @@
 'use strict';
 
 const Creature = require('./Creature');
-const {serialize: {Serializer}} = require('lance-gg'); // QUESTION: this is never used in this class, is this necessary for the Serializer in some way or can it be removed?
 const Direction = require('../../Utils/Direction');
 
 class Character extends Creature {
@@ -18,19 +17,20 @@ class Character extends Creature {
   }
 
 
-  processInput(inputData) {
+  processInput(gameEngine, inputData) {
     if (inputData.options.isDown)
-      this.input[inputData.input] = 30;
+      this.input[inputData.input] = gameEngine.world.stepCount;
     else
       delete this.input[inputData.input];
   }
 
-  calcVelocity() {
+  calcVelocity(gameEngine) {
     var arr = [];
-    Object.keys(Direction.AXES).forEach(function (key) {
-      if (this.input[key] >= 0)
+    for (let key of Object.keys(Direction.AXES)) {
+      if (this.input[key]) {
         arr[arr.length] = Direction.AXES[key];
-    }.bind(this));
+      }
+    }
     this.direction = Direction.getSum(arr);
 
     if (this.direction == Direction.ZERO) {
@@ -44,16 +44,23 @@ class Character extends Creature {
     this.velocity.multiplyScalar(this.getSpeed());
   }
 
-  tickInputs() {
+  tickInputs(gameEngine) {
     for (let key of Object.keys(this.input)) {
-      if (--this.input[key] <= 0)
+      if (gameEngine.world.stepCount - this.input[key] >= Character.keyGravity)
         delete this.input[key];
+    }
+  }
+
+  keepAlive(gameEngine) {
+    for (let key of Object.keys(this.input)) {
+      if (this.input[key] > 0) {
+        this.input[key] = gameEngine.world.stepCount;
+      }
     }
   }
 
   fire() {
     // TODO Add projectiles
-    //
   }
 
   onAddToWorld() {
@@ -61,5 +68,7 @@ class Character extends Creature {
   }
 
 }
+
+Character.keyGravity = 60;
 
 module.exports = Character;

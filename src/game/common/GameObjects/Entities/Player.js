@@ -5,7 +5,6 @@ const SpriteLoader = require('../../Utils/SpriteLoader');
 
 class Player extends Character {
 
-
   initRenderContainer(container) {
     const MultiSprite = require('../../../client/Rendering/MultiSprite');
     this.sprite = new MultiSprite('playerAssets');
@@ -33,6 +32,6 @@ class Player extends Character {
 
 }
 
-require('../../Utils/SpriteLoader').add('playerAssets', 'assets/player/player.json');
+require('../../Utils/SpriteLoader').add('playerAssets', 'assets/playerv2/playerv2.json');
 
 module.exports = Player;
