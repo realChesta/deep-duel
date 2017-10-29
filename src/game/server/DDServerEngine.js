@@ -26,6 +26,11 @@ class DDServerEngine extends ServerEngine {
     super.onPlayerDisconnected(socketId, playerId);
   }
 
+
+  disconnectAllClients() {
+
+  }
+
 }
 
 module.exports = DDServerEngine;

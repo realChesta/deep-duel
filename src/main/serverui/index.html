@@ -1,11 +1,24 @@
 <html>
 <head>
   <title>Deep Duel Server UI</title>
+  <meta http-equiv="Cache-control" content="no-cache">
+
   <script src="uiClient.js" type="text/javascript"></script>
   <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
 </head>
 <body>
-  <div id="gameRenderer" tabindex="1"></div>
+
+  <div id="loading">
+    <p class="loadingLabel">
+      Loading...
+    </p>
+  </div>
+
+  <div id="content" visibility="hidden">
+    <div id="gameRenderer" tabindex="1"></div><br>
+    <a href="javascript:void(0)" class="reloadAll">Restart Server</a>
+  </div>
+
 </body>
 </html>
