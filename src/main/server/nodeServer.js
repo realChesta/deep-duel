@@ -37,7 +37,7 @@ const {physics: {SimplePhysicsEngine}} = require('lance-gg');
 
 // Game Instances
 const physicsEngine = new SimplePhysicsEngine();
-const gameEngine = new DDGameEngine({ physicsEngine, traceLevel: 1 });
+const gameEngine = new DDGameEngine({ physicsEngine });
 const serverEngine = new DDServerEngine(io, gameEngine, { debug: {}, updateRate: 6 });
 
 // start the game

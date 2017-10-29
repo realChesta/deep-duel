@@ -8,24 +8,19 @@ class Creature extends Entity {
   constructor(id, x, y) {
     super(id, x, y);
 
-    this._direction = Direction.DOWN; //0,1,2,3 = v,<,^,>
-    this._action = Creature.ActionType.Idle;
+    this._direction = Direction.ZERO; //0,1,2,3 = v,<,^,>
+    this.action = Creature.ActionType.Idle;
   }
 
   static get netScheme() {
     return Object.assign({
       directionVector: {type: Serializer.TYPES.CLASSINSTANCE},
-      _action: {type: Serializer.TYPES.STRING}
     }, super.netScheme);
   }
 
   syncTo(other) {
     super.syncTo(other);
-    console.log("syncTo", this._action, other._action);
     this.direction = Direction.getClosest(other.directionVector);
-
-    if (other._action)    // TODO HACK
-      this.action = other._action;
   }
 
   get directionVector() {

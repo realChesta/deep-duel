@@ -6,6 +6,9 @@ const Creature = require('./GameObjects/Entities/Creature');
 const Character = require('./GameObjects/Entities/Character');
 const Player = require('./GameObjects/Entities/Player');
 
+// Apply band-aid patch to lance-gg
+require('./Utils/buggy-gg');
+
 
 // TODO Rename playerId everywhere
 class DDGameEngine extends GameEngine {

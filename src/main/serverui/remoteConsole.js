@@ -1,5 +1,7 @@
 // no strict mode! We're doing hacky stuff here
 
+// TODO catch window.onerror
+
 const nodeConsole = require('console');
 
 let originalConsole = window.console;
@@ -13,16 +15,16 @@ for (let prop of Object.getOwnPropertyNames(originalConsole)) {
 }
 
 
-let oldWarn = newConsole.warn;
 newConsole.warn = function() {
+  originalConsole.warn.apply(originalConsole, arguments);
   arguments[0] = "\x1b[33m" + arguments[0] + "\x1b[0m";
-  oldWarn.apply(newConsole, arguments);
+  nodeConsole.warn.apply(nodeConsole, arguments);
 }
 
-let oldError = newConsole.error;
 newConsole.error = function() {
+  originalConsole.error.apply(originalConsole, arguments);
   arguments[0] = "\x1b[41m" + "\x1b[37m" + arguments[0] + "\x1b[0m";
-  oldError.apply(newConsole, arguments);
+  nodeConsole.error.apply(nodeConsole, arguments);
 }
 
 

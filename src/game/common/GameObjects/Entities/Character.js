@@ -9,15 +9,15 @@ class Character extends Creature {
     super(id, x, y);
     this.playerId = playerId;
 
-    this.sprites = [];
-
-    this.input = {};
-
     this.class = Character;
   }
 
 
   processInput(gameEngine, inputData) {
+    if (this.input === undefined) {
+      this.input = {};
+    }
+
     if (inputData.options.isDown)
       this.input[inputData.input] = gameEngine.world.stepCount;
     else
@@ -25,13 +25,15 @@ class Character extends Creature {
   }
 
   calcVelocity(gameEngine) {
-    var arr = [];
-    for (let key of Object.keys(Direction.AXES)) {
-      if (this.input[key]) {
-        arr[arr.length] = Direction.AXES[key];
+    if (this.input) {       // While we have input data, override Direction received by the server // TODO Think about this for another second
+      var arr = [];
+      for (let key of Object.keys(Direction.AXES)) {
+        if (this.input[key]) {
+          arr[arr.length] = Direction.AXES[key];
+        }
       }
+      this.direction = Direction.getSum(arr);
     }
-    this.direction = Direction.getSum(arr);
 
     if (this.direction == Direction.ZERO) {
       this.action = Creature.ActionType.Idle;
@@ -45,13 +47,23 @@ class Character extends Creature {
   }
 
   tickInputs(gameEngine) {
+    if (this.input === undefined)
+      return;
+
     for (let key of Object.keys(this.input)) {
       if (gameEngine.world.stepCount - this.input[key] >= Character.keyGravity)
         delete this.input[key];
     }
+
+    if (Object.keys(this.input).length <= 0) {
+      delete this.input;
+    }
   }
 
   keepAlive(gameEngine) {
+    if (this.input === undefined)
+      return;
+
     for (let key of Object.keys(this.input)) {
       if (this.input[key] > 0) {
         this.input[key] = gameEngine.world.stepCount;

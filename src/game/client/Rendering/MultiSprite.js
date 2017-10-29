@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const PIXI = require('pixi.js');
 const SpriteLoader = require('../../common/Utils/SpriteLoader');
