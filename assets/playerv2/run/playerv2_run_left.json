@@ -1,0 +1,52 @@
+{ "frames": {
+   "playerv2_run_left 0.ase": {
+    "frame": { "x": 0, "y": 0, "w": 27, "h": 43 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 27, "h": 43 },
+    "sourceSize": { "w": 27, "h": 43 },
+    "duration": 50
+   },
+   "playerv2_run_left 1.ase": {
+    "frame": { "x": 27, "y": 0, "w": 27, "h": 43 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 27, "h": 43 },
+    "sourceSize": { "w": 27, "h": 43 },
+    "duration": 50
+   },
+   "playerv2_run_left 2.ase": {
+    "frame": { "x": 54, "y": 0, "w": 27, "h": 43 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 27, "h": 43 },
+    "sourceSize": { "w": 27, "h": 43 },
+    "duration": 50
+   },
+   "playerv2_run_left 3.ase": {
+    "frame": { "x": 81, "y": 0, "w": 27, "h": 43 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 27, "h": 43 },
+    "sourceSize": { "w": 27, "h": 43 },
+    "duration": 50
+   },
+   "playerv2_run_left 4.ase": {
+    "frame": { "x": 108, "y": 0, "w": 27, "h": 43 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 27, "h": 43 },
+    "sourceSize": { "w": 27, "h": 43 },
+    "duration": 50
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.1.8-dev",
+  "image": "playerv2_run_left.png",
+  "format": "RGBA8888",
+  "size": { "w": 135, "h": 43 },
+  "scale": "1",
+   "fps": "25"
+ }
+}

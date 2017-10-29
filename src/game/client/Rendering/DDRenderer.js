@@ -2,6 +2,7 @@
 
 const {render: {Renderer}} = require('lance-gg');
 const PIXI = require('pixi.js');
+const RenderedObject = require('../../common/GameObjects/RenderedObject');
 
 class DDRenderer extends Renderer {
 
@@ -9,12 +10,27 @@ class DDRenderer extends Renderer {
   constructor(gameEngine, clientEngine) {
     super(gameEngine, clientEngine);
 
+    // TODO If the renderer is uninitialised (especially on server UI), remove these handlers
+    this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
+    this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
+
+
     this.stage = new PIXI.Container();
-    this.stage.scale.set(4, 4);
+    this.stage.scale.set(2, 2);
     this.renderer = PIXI.autoDetectRenderer(this.stage.scale.x * this.gameEngine.settings.width, this.stage.scale.y * this.gameEngine.settings.height);
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
-    this.renderedObjects = {};
+    this.renderedObjects = {};    // TODO rename to renderedObjectsContainer
+
+    if (!this.clientEngine) {
+      console.log("No client engine found - manually setting up rendering loop");
+      let trenderer = this;
+      let renderLoop = (function() {
+        trenderer.draw();
+        window.requestAnimationFrame(renderLoop);
+      }).bind(true);
+      this.init().then(() => window.requestAnimationFrame(renderLoop));
+    }
   }
 
 
@@ -24,13 +40,19 @@ class DDRenderer extends Renderer {
 
 
   draw() {
-    super.draw();
+    if (this.clientEngine)
+      super.draw();
 
-    Object.keys(this.renderedObjects).forEach(
-      (key) => this.drawObject.call(this, this.gameEngine.world.objects[key])
-    );
+    for (let key of Object.keys(this.renderedObjects)) {
+      this.drawObject.call(this, this.gameEngine.world.objects[key]);
+    }
 
     this.renderer.render(this.stage);
+  }
+
+  runClientStep() {
+    if (this.clientEngine)
+      super.runClientStep();
   }
 
   drawObject(object) {
@@ -40,7 +62,18 @@ class DDRenderer extends Renderer {
     object.drawSprite(container);
   }
 
+  onObjectAdded(object) {
+    if (object instanceof RenderedObject)
+      this.addRenderedObject(object);
+  }
+
+  onObjectDestroyed(object) {
+    if (object instanceof RenderedObject)
+      this.removeRenderedObject(object);
+  }
+
   addRenderedObject(object) {
+    console.log(object);
     if (this.renderedObjects[object.id]) {
       this.removeRenderedObject(object);
     }

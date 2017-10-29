@@ -1,0 +1,68 @@
+{ "frames": {
+   "playerv2_idle_back 0.ase": {
+    "frame": { "x": 0, "y": 0, "w": 20, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 20, "h": 49 },
+    "sourceSize": { "w": 20, "h": 49 },
+    "duration": 500
+   },
+   "playerv2_idle_back 1.ase": {
+    "frame": { "x": 20, "y": 0, "w": 20, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 20, "h": 49 },
+    "sourceSize": { "w": 20, "h": 49 },
+    "duration": 500
+   },
+   "playerv2_idle_back 2.ase": {
+    "frame": { "x": 40, "y": 0, "w": 20, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 20, "h": 49 },
+    "sourceSize": { "w": 20, "h": 49 },
+    "duration": 500
+   },
+   "playerv2_idle_back 3.ase": {
+    "frame": { "x": 60, "y": 0, "w": 20, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 20, "h": 49 },
+    "sourceSize": { "w": 20, "h": 49 },
+    "duration": 250
+   },
+   "playerv2_idle_back 4.ase": {
+    "frame": { "x": 80, "y": 0, "w": 20, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 20, "h": 49 },
+    "sourceSize": { "w": 20, "h": 49 },
+    "duration": 250
+   },
+   "playerv2_idle_back 5.ase": {
+    "frame": { "x": 100, "y": 0, "w": 20, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 20, "h": 49 },
+    "sourceSize": { "w": 20, "h": 49 },
+    "duration": 250
+   },
+   "playerv2_idle_back 6.ase": {
+    "frame": { "x": 120, "y": 0, "w": 20, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 20, "h": 49 },
+    "sourceSize": { "w": 20, "h": 49 },
+    "duration": 250
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.1.8-dev",
+  "image": "playerv2_idle_back.png",
+  "format": "RGBA8888",
+  "size": { "w": 140, "h": 49 },
+  "scale": "1",
+   "fps": "7"
+ }
+}

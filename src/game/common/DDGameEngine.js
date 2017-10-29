@@ -18,12 +18,13 @@ class DDGameEngine extends GameEngine {
     this.on('objectDestroyed', this.onObjectDestroyed.bind(this));
     this.on('playerJoined', this.onPlayerJoined.bind(this));
     this.on('playerDisconnected', this.onPlayerDisconnected.bind(this));
+    this.on('keepAlive', this.keepAlive.bind(this));
 
     this.characters = {};
 
     this.settings = {
-      width: 100,
-      height: 100
+      width: 256,
+      height: 256
     };
   }
 
@@ -39,7 +40,7 @@ class DDGameEngine extends GameEngine {
   processInput(inputData, playerId) {
     super.processInput(inputData, playerId);
 
-    this.characters[playerId].processInput(inputData);
+    this.characters[playerId].processInput(this, inputData);
   }
 
   onPlayerJoined(event) {
@@ -53,6 +54,13 @@ class DDGameEngine extends GameEngine {
     if (!this.characters[playerId])
       return;
     this.removeObjectFromWorld(this.characters[playerId].id);
+  }
+
+  keepAlive(event) {
+    var playerId = event.playerId;
+    if (!this.characters[playerId])
+      return;
+    this.characters[playerId].keepAlive(this);
   }
 
   onObjectAdded(object) {
@@ -74,8 +82,14 @@ class DDGameEngine extends GameEngine {
     var keys = Object.keys(this.characters);
     for (let i = 0; i < keys.length; i++) {
       let character = this.characters[keys[i]];
-      character.calcVelocity();
-      character.tickInputs();
+      character.calcVelocity(this);
+      character.tickInputs(this);
+    }
+
+    for (let player of Object.values(this.characters)) {
+      if (!player._action) {
+        console.log(player);
+      }
     }
   }
 

@@ -1,0 +1,19 @@
+{
+  "type": "asset",
+  "defaultAction": "idle",
+  "defaultDirection": "down",
+  "actions": {
+    "idle": {
+      "down": "idle/playerv2_idle_front.json",
+      "left": "idle/playerv2_idle_left.json",
+      "up": "idle/playerv2_idle_back.json",
+      "right": "idle/playerv2_idle_right.json"
+    },
+    "running": {
+      "down": "run/playerv2_run_front.json",
+      "left": "run/playerv2_run_left.json",
+      "up": "run/playerv2_run_back.json",
+      "right": "run/playerv2_run_right.json"
+    }
+  }
+}
