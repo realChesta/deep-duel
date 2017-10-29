@@ -1,6 +1,6 @@
 const qsOptions = require('query-string').parse(location.search);
-const DDClientEngine = require('../game/client/DDClientEngine');
-const DDGameEngine = require('../game/common/DDGameEngine');
+const DDClientEngine = require('../../game/client/DDClientEngine');
+const DDGameEngine = require('../../game/common/DDGameEngine');
 const {physics: {SimplePhysicsEngine}} = require('lance-gg');
 const $ = require('jquery');
 
@@ -28,13 +28,10 @@ if (options.syncOptions.sync === 'extrapolate')
 const gameEngine = new DDGameEngine(options);
 const clientEngine = new DDClientEngine(gameEngine, options);
 
-// We already want to start loading some elements early, eg. so they can already register their sprites.
-// We therefore simply need to require them, as this will call their code and they'll be able to set things up.
-// Example: Player needs some assets loaded by SpriteLoader, so we already load the Player class which will also load these assets.
-require("../game/common/GameObjects/Entities/Player");
 
 
-let spriteLoaderPromise = require('../game/common/Utils/SpriteLoader').loadAll();
+let spriteLoaderPromise = require("../../game/client/ResourcePreloader").preload();
+
 
 onReady();
 async function onReady() {

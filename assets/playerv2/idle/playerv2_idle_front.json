@@ -1,0 +1,68 @@
+{ "frames": {
+   "playerv2_idle_front 0.ase": {
+    "frame": { "x": 0, "y": 0, "w": 23, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 23, "h": 49 },
+    "sourceSize": { "w": 23, "h": 49 },
+    "duration": 100
+   },
+   "playerv2_idle_front 1.ase": {
+    "frame": { "x": 23, "y": 0, "w": 23, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 23, "h": 49 },
+    "sourceSize": { "w": 23, "h": 49 },
+    "duration": 100
+   },
+   "playerv2_idle_front 2.ase": {
+    "frame": { "x": 46, "y": 0, "w": 23, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 23, "h": 49 },
+    "sourceSize": { "w": 23, "h": 49 },
+    "duration": 100
+   },
+   "playerv2_idle_front 3.ase": {
+    "frame": { "x": 69, "y": 0, "w": 23, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 23, "h": 49 },
+    "sourceSize": { "w": 23, "h": 49 },
+    "duration": 100
+   },
+   "playerv2_idle_front 4.ase": {
+    "frame": { "x": 92, "y": 0, "w": 23, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 23, "h": 49 },
+    "sourceSize": { "w": 23, "h": 49 },
+    "duration": 100
+   },
+   "playerv2_idle_front 5.ase": {
+    "frame": { "x": 115, "y": 0, "w": 23, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 23, "h": 49 },
+    "sourceSize": { "w": 23, "h": 49 },
+    "duration": 100
+   },
+   "playerv2_idle_front 6.ase": {
+    "frame": { "x": 138, "y": 0, "w": 23, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 23, "h": 49 },
+    "sourceSize": { "w": 23, "h": 49 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.1.8-dev",
+  "image": "playerv2_idle_front.png",
+  "format": "RGBA8888",
+  "size": { "w": 161, "h": 49 },
+  "scale": "1",
+   "fps": "5"
+ }
+}

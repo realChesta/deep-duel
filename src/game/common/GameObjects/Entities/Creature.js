@@ -2,6 +2,7 @@
 
 const Entity = require('./Entity');
 const Direction = require('../../Utils/Direction');
+const Serializer = require('lance-gg').serialize.Serializer;
 
 class Creature extends Entity {
   constructor(id, x, y) {
@@ -11,7 +12,34 @@ class Creature extends Entity {
     this._action = Creature.ActionType.Idle;
   }
 
-  get action() { return this._action; }
+  static get netScheme() {
+    return Object.assign({
+      directionVector: {type: Serializer.TYPES.CLASSINSTANCE},
+      _action: {type: Serializer.TYPES.STRING}
+    }, super.netScheme);
+  }
+
+  syncTo(other) {
+    super.syncTo(other);
+    console.log("syncTo", this._action, other._action);
+    this.direction = Direction.getClosest(other.directionVector);
+
+    if (this.action)    // TODO HACK
+      this.action = other._action;
+  }
+
+  get directionVector() {
+    return this._direction.vector;
+  }
+
+  set directionVector(val) {
+    this.direction = Direction.getClosest(val);
+  }
+
+  get action() {
+    return this._action;
+  }
+
   set action(val) {
     if (val === this._action)
       return;
@@ -20,8 +48,10 @@ class Creature extends Entity {
   }
 
 
+  get direction() {
+    return this._direction;
+  }
 
-  get direction() { return this._direction; }
   set direction(val) {
     if (val === this.direction)
       return;
@@ -30,13 +60,15 @@ class Creature extends Entity {
   }
 
 
+  onActionChange(oldAction, newAction) {
+  }
 
-  onActionChange(oldAction, newAction) {}
-  onDirectionChange(oldDirection, newDirection) {}
+  onDirectionChange(oldDirection, newDirection) {
+  }
 
 }
 
-// TODO create an extendable class
+// TODO create an extendable class instead of a String enumeration
 Creature.ActionType = {
   Idle: 'idle',
   Running: 'running',

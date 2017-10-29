@@ -19,7 +19,7 @@ class Entity extends RenderedObject {
   }
 
   getSpeed() {
-    return 1;
+    return 2;
   }
 
 }
