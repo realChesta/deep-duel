@@ -25,7 +25,6 @@
   "scripts": {
     "start": "node src/main/server/nodeServer.js",
 
-<<<<<<< HEAD
     "cmd-p": "node src/main/server/nodeServer.js",
     "ui-p": "electron src/main/serverui/serverUI.js",
     "cmd": "npm run-script browserify && npm run-script cmd-p",
@@ -34,16 +33,6 @@
     "postinstall": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
     "build": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
 
-=======
-    "cmd": "node src/main/server/nodeServer.js",
-    "ui": "electron src/main/serverui/serverUI.js",
-    "cmd-b": "npm run-script browserify && npm run-script cmd",
-    "ui-b": "npm run-script browserify && npm run-script ui",
-
-    "postinstall": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
-    "build": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
-    
->>>>>>> ef3160df365dcf2a1422c087e94f2756fa94821c
     "browserify": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
     "watchify": "watchify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js -v -d"
   },
