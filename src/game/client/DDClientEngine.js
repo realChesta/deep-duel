@@ -1,7 +1,8 @@
 'use strict'
 
-const {ClientEngine} = require('lance-gg');
+const {ClientEngine, physics: {SimplePhysicsEngine}} = require('lance-gg');
 const DDRenderer = require('./Rendering/DDRenderer');
+const DDGameEngine = require('../common/DDGameEngine');
 
 const keys = {
   'up': [38, 87],
@@ -15,8 +16,9 @@ const reversedKeys = parseKeysObject(keys);
 
 class DDClientEngine extends ClientEngine {
 
-  constructor(gameEngine, options) {
-    super(gameEngine, options, DDRenderer);
+  constructor(clientOptions) {
+    let options = DDClientEngine.getCustomizedOptions(clientOptions);
+    super(new DDGameEngine(options), options, DDRenderer);
 
     this.gameEngine.on('preStep', this.preStep.bind(this));
 
@@ -25,6 +27,25 @@ class DDClientEngine extends ClientEngine {
       this.pressedKeys[key] = false;
     }
 
+  }
+
+
+  static getCustomizedOptions(clientOptions) {
+    const options = {
+      delayInputCount: 3,
+      clientIDSpace: 1000000,
+      syncOptions: {
+        sync: clientOptions.sync || 'extrapolate',
+        localObjBending: 0.0,
+        remoteObjBending: 0.8,
+        bendingIncrements: 6
+      }
+    };
+
+    if (options.syncOptions.sync === 'extrapolate')
+      options.physicsEngine = new SimplePhysicsEngine();
+
+    return Object.assign(options, clientOptions);
   }
 
 
