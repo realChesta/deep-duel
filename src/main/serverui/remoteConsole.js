@@ -1,7 +1,5 @@
 // no strict mode! We're doing hacky stuff here
 
-// TODO catch window.onerror
-
 const nodeConsole = require('console');
 
 let originalConsole = window.console;
@@ -13,7 +11,6 @@ for (let prop of Object.getOwnPropertyNames(originalConsole)) {
     nodeConsole[prop].apply(nodeConsole, arguments);
   }
 }
-
 
 newConsole.warn = function() {
   originalConsole.warn.apply(originalConsole, arguments);
@@ -27,5 +24,12 @@ newConsole.error = function() {
   nodeConsole.error.apply(nodeConsole, arguments);
 }
 
-
 console = newConsole;
+
+
+
+
+window.onerror = function(event, source, lineno, colno, error) {
+  console.error(source + "(" + lineno + ":" + colno + ") :" + event.message);
+  console.error(error);
+}

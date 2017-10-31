@@ -1,5 +1,7 @@
 'use strict';
 
+require('../common/Utils/buggy-gg');
+
 class ResourcePreloader {
   // We already want to start loading some elements early, eg. so they can already register their sprites.
   // We therefore simply need to require them, as this will call their code and they'll be able to set things up.

@@ -1,7 +1,5 @@
 'use strict';
 
-// HACK
-
 /*
  * There's a bug in lance-gg which makes strings getting pruned incorrectly
  * (Serializable:130; it prunes all changed strings, instead of those not

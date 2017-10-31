@@ -5,12 +5,13 @@ require('./remoteConsole');
 const DDRenderer = require('../../game/client/Rendering/DDRenderer');
 const $ = require('jquery');
 const {spawn} = require('child_process');
+const NodeServer = require('../server/nodeServer.js');
 
 
 require('../../game/common/Utils/SpriteLoader').setResourceDirectory('../../../');
 
 let spriteLoaderPromise = require('../../game/client/ResourcePreloader').preload();
-let rebuildServerPromise = rebuildServer();
+let buildServerPromise = buildServer();
 
 onReady();
 
@@ -21,15 +22,14 @@ async function onReady() {
   let loadingLabel = $('.loadingLabel');
 
   loadingLabel.text("Loading sprites...");
-  await spriteLoaderPromise;  // TODO Add a loading screen
+  await spriteLoaderPromise;
 
   loadingLabel.text("Preparing server...");
-  await rebuildServerPromise;
+  await buildServerPromise;
 
   loadingLabel.text("Finishing up...");
-
-  const NodeServer = require('../server/nodeServer.js');
-  let renderer = new DDRenderer(NodeServer.getGameEngine());
+  let server = new NodeServer();
+  let renderer = new DDRenderer(server.getGameEngine(), undefined, true);
 
   var view = renderer.getView();
   var gameRenderer = $('#gameRenderer');
@@ -52,7 +52,7 @@ async function onReady() {
 
 
 
-async function rebuildServer() {
+async function buildServer() {
   const name = "browserify (npm)";
   let process = spawn('npm', ['run-script', 'browserify'], {shell: true, windowsHide: true});
 

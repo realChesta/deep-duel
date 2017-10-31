@@ -26,21 +26,10 @@ class SpriteLoader {
    */
 
 
-  // TODO Currently, you specify assets by their names - however, in a future version, make .add() return an object that identifies them instead
-  // TODO When an asset is fetched that was registered but not yet loaded, warn the user and synchronously load it
-  static add(name, path) {
-    if (path === undefined)
-      path = name;
-
-    SpriteLoader.toLoad[name] = path;
-    return SpriteLoader;
-  }
-
-  static addAll(name, paths) {
-    for (let path of paths) {
-      SpriteLoader.add(name + '; ' + path, path);
-    }
-    return SpriteLoader;
+  static add(path) {
+    let assetsId = SpriteLoader.currentId++;
+    SpriteLoader.toLoad[assetsId] = path;
+    return assetsId;
   }
 
   static setResourceDirectory(dir) {
@@ -103,18 +92,24 @@ class SpriteLoader {
     let textures = resource.textures; // All textures in an array.
     let meta = resource.data.meta; // resource.data is the JSON data
     let fps = meta.fps;
-    let size = meta.sourceSize === undefined ? {} : new TwoVector(meta.sourceSize.w, meta.sourceSize.h);
-    let offset = meta.offset === undefined ? {} : new TwoVector(meta.offset.x, meta.offset.y);
+    let offset = {};
+    if (meta.offset === 'center' && size instanceof TwoVector) {
+      offset = size.clone().multiplyScalar(-0.5);
+    }
+    else if (meta.offset !== undefined){
+      offset = new TwoVector(meta.offset.x, meta.offset.y);
+    }
 
-    // all Pixi spritesheet JSONs necessarily have all these properties (especially fps and offset, which are not standard), so we're gonna warn the user if they're not found
-    let check = {'fps': fps, 'size.x': size.x, 'size.y': size.y, 'offset.x': offset.x, 'offset.y': offset.y};
+
+    // Not all Pixi spritesheet JSONs necessarily have all these properties (especially fps and offset, which are not standard), so we're gonna warn the user if they're not found
+    let check = {'fps': fps, 'offset.x': offset.x, 'offset.y': offset.y};
     for (let key of Object.keys(check)) {
       if (check[key] === undefined) {
         console.warn(key + " of resource " + resource.name + " is undefined! (from URL " + resource.url + ")");
       }
     }
 
-    return {textures, fps, size, offset};
+    return {textures, fps, offset};
   }
 
   static useLoadedAssetCollection(resource, next) {
@@ -158,6 +153,7 @@ class SpriteLoader {
 
 }
 
+SpriteLoader.currentId = 0;
 SpriteLoader.toLoad = {};
 SpriteLoader.loadedAssets = {};
 SpriteLoader.loadedSpritesheets = {};

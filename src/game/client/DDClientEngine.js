@@ -11,7 +11,7 @@ const keys = {
   'fire': [32]
 };
 
-const parsedKeys = parseKeyJson(keys);
+const reversedKeys = parseKeysObject(keys);
 
 class DDClientEngine extends ClientEngine {
 
@@ -38,15 +38,15 @@ class DDClientEngine extends ClientEngine {
     };
   }
 
-  // TODO: find a nice place to put the keys object and stop parsing it on every keystroke
-  // TODO make each input packet smaller (they're not compressed)
   onKeyChange(e, isDown) {
     e = e || window.event;
 
-    let preventDefault = true;
+    let preventDefault = false;
 
-    if (parsedKeys[e.keyCode])
-      this.handleKeyChange(parsedKeys[e.keyCode], isDown);
+    if (reversedKeys[e.keyCode]) {
+      this.handleKeyChange(reversedKeys[e.keyCode], isDown);
+      preventDefault = true;
+    }
 
     if (preventDefault)
       e.preventDefault();
@@ -62,24 +62,34 @@ class DDClientEngine extends ClientEngine {
   preStep() {
     if (this.gameEngine.world.stepCount % 20 == 0) {
       // send keep alive packet
-      this.socket.emit('keepAlive');      // TODO combine socket.emit and gameEngine.emit with an API
-      this.gameEngine.emit('keepAlive', {playerId: this.playerId});
+      this.broadcastEvent('keepAlive');
+      // TODO Check if client input and server Direction match, if not, fix that
     }
   }
 
+  /**
+   * Broadcasts a message with some data to the server and the game engine.
+   * Other clients won't receive it by default
+   */
+  broadcastEvent(msg, data) {
+    this.socket.emit('bc', {msg: msg, data: data});
+    this.gameEngine.emit(msg, Object.assign({
+      playerId: this.playerId
+    }, data));
+  }
 
 }
 
-function parseKeyJson(json) {
+function parseKeysObject() {
   var keyDict = {};
 
-  for (var action of Object.keys(json)) {
-    for (var key in json[action]) {
-      keyDict[json[action][key]] = action;
+  for (var action of Object.keys(keys)) {
+    for (var key in keys[action]) {
+      keyDict[keys[action][key]] = action;
     }
   }
 
-  return keyDict
+  return keyDict;
 }
 
 module.exports = DDClientEngine;
