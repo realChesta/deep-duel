@@ -1,11 +1,12 @@
 'use strict';
 
-const {ServerEngine} = require('lance-gg');
+const {ServerEngine, physics: {SimplePhysicsEngine}} = require('lance-gg');
+const DDGameEngine = require('../common/DDGameEngine');
 
 class DDServerEngine extends ServerEngine {
 
-  constructor(io, gameEngine, inputOptions) {
-    super(io, gameEngine, inputOptions);
+  constructor(io, inputOptions) {
+    super(io, new DDGameEngine({ physicsEngine: new SimplePhysicsEngine() }), inputOptions);
   }
 
   start() {

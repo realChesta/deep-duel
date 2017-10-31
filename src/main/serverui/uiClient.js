@@ -29,6 +29,7 @@ async function onReady() {
 
   loadingLabel.text("Finishing up...");
   let server = new NodeServer();
+  server.start();
   let renderer = new DDRenderer(server.getGameEngine(), undefined, true);
 
   var view = renderer.getView();

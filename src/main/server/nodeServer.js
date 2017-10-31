@@ -34,7 +34,7 @@ function getIO(port) {
   if (!port) port = DEFAULT_PORT;
 
   let requestHandler = server.listen(port, () => console.log(`Listening on ${ port }`));
-  const io = socketIO(requestHandler);
+  return socketIO(requestHandler);
 }
 
 
