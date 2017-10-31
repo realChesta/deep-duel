@@ -1,13 +1,14 @@
 'use strict';
 
+// Apply band-aid patch to lance-gg
+require('./Utils/buggy-gg');
+
 const {GameEngine} = require('lance-gg');
 const Entity = require('./GameObjects/Entities/Entity');
 const Creature = require('./GameObjects/Entities/Creature');
 const Character = require('./GameObjects/Entities/Character');
 const Player = require('./GameObjects/Entities/Player');
 
-// Apply band-aid patch to lance-gg
-require('./Utils/buggy-gg');
 
 
 // TODO Rename playerId everywhere
@@ -47,7 +48,7 @@ class DDGameEngine extends GameEngine {
   }
 
   onPlayerJoined(event) {
-    let character = new Player(++this.world.idCount, 50, 50, event.playerId);
+    let character = new Player(++this.world.idCount, 128, 128, event.playerId);
     this.characters[this.world.idCount] = character;
     this.addObjectToWorld(character);
   }

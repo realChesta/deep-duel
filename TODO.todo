@@ -1,7 +1,6 @@
 Todos may be found shattered around in code
 
-// BUG Multiplayer animations don't work
-// BUG Syncing is kinda buggy. To reproduce, open the game in two windows, then pause one's script while moving in the other
+// BUG Syncing is kinda buggy. To reproduce, open the game in two windows, then pause one's script while moving in the other. Full syncs only happen when a player joins, but they should regularly happen
 // TODO Maybe; add diagonal animations
 // TODO Consider splitting common and client parts of some classes even further - eg. split Player into PlayerRenderer (client-only) and Player, whereas the former is returned by the latter
-// TODO Improve the server UI
+// TODO Adjust player sprite offsets

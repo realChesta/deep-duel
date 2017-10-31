@@ -7,7 +7,7 @@ class Player extends Character {
 
   initRenderContainer(container) {
     const MultiSprite = require('../../../client/Rendering/MultiSprite');
-    this.sprite = new MultiSprite('playerAssets');
+    this.sprite = new MultiSprite(playerAssetsId);
     container.addChild(this.sprite);
   }
 
@@ -32,6 +32,6 @@ class Player extends Character {
 
 }
 
-require('../../Utils/SpriteLoader').add('playerAssets', 'assets/playerv2/playerv2.json');
+const playerAssetsId = require('../../Utils/SpriteLoader').add('assets/playerv2/playerv2.json');
 
 module.exports = Player;

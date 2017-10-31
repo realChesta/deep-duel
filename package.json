@@ -23,9 +23,9 @@
     "watchify": "^3.7.0"
   },
   "scripts": {
-    "start": "node src/main/server/nodeServer.js",
+    "start": "node src/main/server/launchServer.js",
 
-    "cmd-p": "node src/main/server/nodeServer.js",
+    "cmd-p": "node src/main/server/launchServer.js",
     "cmd": "npm run-script browserify && npm run-script cmd-p",
     "ui": "electron src/main/serverui/serverUI.js",
 

@@ -14,11 +14,15 @@ class DDServerEngine extends ServerEngine {
 
   onPlayerConnected(socket) {
     super.onPlayerConnected(socket);
-    let playerId = this.gameEngine.world.playerCount;
+    let playerId = socket.playerId;
 
-    socket.on('keepAlive', (() => {
-      let event = {playerId: playerId};
-      this.gameEngine.emit('keepAlive', event);
+    socket.on('bc', ((a) => {
+      this.resetIdleTimeout(socket);
+      let msg = a.msg;
+      let data = Object.assign({
+        playerId: playerId
+      }, a.data);
+      this.gameEngine.emit(msg, data);
     }).bind(this));
   }
 

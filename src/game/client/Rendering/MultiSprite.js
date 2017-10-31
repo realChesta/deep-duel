@@ -4,10 +4,10 @@ const PIXI = require('pixi.js');
 const SpriteLoader = require('../../common/Utils/SpriteLoader');
 
 class MultiSprite extends PIXI.Container {
-  constructor(name, defaultAction, defaultDirection) {
+  constructor(assetsId, defaultAction, defaultDirection) {
     super();
 
-    let assetCollection = SpriteLoader.getAssetCollection(name);
+    let assetCollection = SpriteLoader.getAssetCollection(assetsId);
     let actions = assetCollection.actions;
 
     this.sprites = {};
@@ -16,9 +16,9 @@ class MultiSprite extends PIXI.Container {
       for (let direction of Object.keys(actions[action])) {
         let spritesheet = actions[action][direction];
         let anim = new PIXI.extras.AnimatedSprite(Object.values(spritesheet.textures));
-        anim.animationSpeed = spritesheet.fps / 60; // TODO: Dynamic FPS detection from PIXI.ticker.shared. Note that Ticker.shared returns the current, not the goal FPS
-        // TODO Implement offset (set anim.x/y to spritesheet.offset.x/y)
-        console.warn("MultiSprite offset has not yet been implemented! MultiSprite.constructor");
+        anim.animationSpeed = spritesheet.fps / 60; // TODO: Dynamic FPS detection from PIXI.ticker.shared. Note that Ticker.shared returns the current, not the goal FPS (default FPS is 60)
+        anim.x = spritesheet.offset.x;
+        anim.y = spritesheet.offset.y;
         dir[direction] = anim;
       }
       this.sprites[action] = dir;
