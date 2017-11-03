@@ -20,7 +20,7 @@ class Creature extends Entity {
 
   syncTo(other) {
     super.syncTo(other);
-    this.direction = Direction.getClosest(other.directionVector);
+    // Serializable.syncTo already deals with syncing properties. (I have absolutely no idea why DynamicObject does it nevertheless)
   }
 
   get directionVector() {
@@ -71,4 +71,5 @@ Creature.ActionType = {
   Shooting: 'shooting'
 };
 
+require('../../Utils/ClassLoader').registerClass(Creature);
 module.exports = Creature;

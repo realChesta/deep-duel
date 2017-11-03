@@ -100,7 +100,6 @@ class DDRenderer extends Renderer {
   }
 
   addRenderedObject(object) {
-    console.log(object);
     if (this.renderedObjects[object.id]) {
       this.removeRenderedObject(object);
     }

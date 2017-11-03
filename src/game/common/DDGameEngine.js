@@ -3,6 +3,7 @@
 // Apply band-aid patch to lance-gg
 require('./Utils/buggy-gg');
 
+const ClassLoader = require('./Utils/ClassLoader');
 const {GameEngine} = require('lance-gg');
 const Entity = require('./GameObjects/Entities/Entity');
 const Creature = require('./GameObjects/Entities/Creature');
@@ -98,12 +99,13 @@ class DDGameEngine extends GameEngine {
   }
 
 
+
   registerClasses(serializer) {
-    serializer.registerClass(Entity);
-    serializer.registerClass(Creature);
-    serializer.registerClass(Character);
-    serializer.registerClass(Player);
+    // All we do is hijack the serializer
+    Object.assign(ClassLoader.classRegisterer, serializer.registeredClasses);
+    serializer.setClassRegisterer(ClassLoader.classRegisterer);
   }
+
 }
 
 module.exports = DDGameEngine;

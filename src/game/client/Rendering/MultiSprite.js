@@ -16,7 +16,7 @@ class MultiSprite extends PIXI.Container {
       for (let direction of Object.keys(actions[action])) {
         let spritesheet = actions[action][direction];
         let anim = new PIXI.extras.AnimatedSprite(Object.values(spritesheet.textures));
-        anim.animationSpeed = spritesheet.fps / 60; // TODO: Dynamic FPS detection from PIXI.ticker.shared. Note that Ticker.shared returns the current, not the goal FPS (default FPS is 60)
+        anim.animationSpeed = spritesheet.fps / 60; // TODO Switch from PIXI animator/timer to custom one that can be sync'd
         anim.x = spritesheet.offset.x;
         anim.y = spritesheet.offset.y;
         dir[direction] = anim;

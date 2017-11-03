@@ -1,16 +1,21 @@
 'use strict';
 
+const {serialize: {Serializer, Serializable}} = require('lance-gg');
+const Utils = require('lance-gg/src/lib/Utils');
+
+
 /*
+ * Utility fixing some things in lance-gg. To use, simply require it in any
+ * class. As soon as this script is referenced/loaded, the patch will be applied
+*/
+
+
+
+/**
  * There's a bug in lance-gg which makes strings getting pruned incorrectly
  * (Serializable:130; it prunes all changed strings, instead of those not
- * changed. This utility applies a band-aid fix. To use, simply require it in
- * any class. As soon as this script is referenced/loaded, the bug will be
- * patched
+ * changed.
  */
-
-
-
-const {serialize: {Serializer, Serializable}} = require('lance-gg');
 
 // literal copypaste right here, just changed what needed to be changed
 Serializable.prototype.prunedStringsClone = function(serializer, prevObject) {
@@ -32,3 +37,34 @@ Serializable.prototype.prunedStringsClone = function(serializer, prevObject) {
 
   return prunedCopy;
 }
+
+
+
+
+/**
+ * We want to share registered classes of some serializers, which is why we
+ * manually add a way to set registeredClasses to a reference
+ */
+
+Serializer.prototype.setClassRegisterer = function(registeredClasses) {
+ this.registeredClasses = registeredClasses;
+ this.registeredClasses.prototype = ClassRegisterer;
+}
+
+class ClassRegisterer {
+  constructor(from) {
+    if (from)
+      Object.assign(this, from);
+  }
+
+  registerClass(classObj, classId) {
+    classId = classId ? classId : Utils.hashStr(classObj.name);
+    if (this[classId]) {
+      console.error(`Serializer: accidental override of classId ${classId} when registering class`, classObj, new Error().stack);
+    }
+
+    this[classId] = classObj;
+  }
+}
+
+ Serializer.ClassRegisterer = ClassRegisterer;
