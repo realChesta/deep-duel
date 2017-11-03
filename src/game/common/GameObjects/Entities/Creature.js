@@ -20,7 +20,7 @@ class Creature extends Entity {
 
   syncTo(other) {
     super.syncTo(other);
-    // Serializable.syncTo already deals with syncing properties. (I have absolutely no idea why DynamicObject does it nevertheless)
+    this.directionVector = other.directionVector;
   }
 
   get directionVector() {
