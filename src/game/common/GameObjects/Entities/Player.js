@@ -34,4 +34,5 @@ class Player extends Character {
 
 const playerAssetsId = require('../../Utils/SpriteLoader').add('assets/playerv2/playerv2.json');
 
+require('../../Utils/ClassLoader').registerClass(Player);
 module.exports = Player;

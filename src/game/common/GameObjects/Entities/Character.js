@@ -83,4 +83,5 @@ class Character extends Creature {
 
 Character.keyGravity = 60;
 
+require('../../Utils/ClassLoader').registerClass(Character);
 module.exports = Character;

@@ -24,4 +24,5 @@ class Entity extends RenderedObject {
 
 }
 
+require('../../Utils/ClassLoader').registerClass(Entity);
 module.exports = Entity;
