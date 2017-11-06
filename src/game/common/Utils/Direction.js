@@ -4,7 +4,7 @@ const {serialize: {TwoVector}} = require('lance-gg');
 const VectorUtils = require('./VectorUtils');
 
 
-// TODO make serializable
+// TODO think about whether it makes sense to serialize this
 class Direction {
 
   constructor(name, vec) {

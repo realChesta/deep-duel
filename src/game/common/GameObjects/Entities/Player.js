@@ -16,18 +16,12 @@ class Player extends Character {
     delete this.sprite;
   }
 
-  onActionChange(oldAction, newAction) {
-    super.onActionChange();
+  onAnimationChange(newAction, newDirection) {
+    super.onAnimationChange(newAction, newDirection);
 
-    if (this.sprite !== undefined)
-      this.sprite.setAction(newAction);
-  }
-
-  onDirectionChange(oldDirection, newDirection) {
-    super.onDirectionChange();
-
-    if (this.sprite !== undefined)
-      this.sprite.setDirection(newDirection);
+    if (this.sprite !== undefined) {
+      this.sprite.update(newAction, newDirection);
+    }
   }
 
 }

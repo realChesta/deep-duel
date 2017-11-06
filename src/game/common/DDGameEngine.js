@@ -90,12 +90,6 @@ class DDGameEngine extends GameEngine {
       character.calcVelocity(this);
       character.tickInputs(this);
     }
-
-    for (let player of Object.values(this.characters)) {
-      if (!player._action) {
-        console.log(player);
-      }
-    }
   }
 
 

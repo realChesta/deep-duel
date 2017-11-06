@@ -29,13 +29,13 @@ class MultiSprite extends PIXI.Container {
 
   setAction(val) {
     if (this.action !== val)
-      this.update(val, this.direction);
+      this.update(val, undefined);
   }
 
   setDirection(val) {
     val = val.name;
     if (this.direction !== val)
-      this.update(this.action, val);
+      this.update(undefined, val);
   }
 
 
@@ -56,14 +56,20 @@ class MultiSprite extends PIXI.Container {
   }
 
   update(newAction, newDirection) {
-    if (this.action != undefined && this.direction != undefined) {
+    if (this.action !== undefined && this.direction !== undefined) {
       let anim = this.getCurrentAnimatedSprite();
       anim.stop();
       this.removeChild(anim);
     }
-    this.action = newAction;
+
+    this.action = newAction || this.action;
     if (newDirection !== 'zero')
-      this.direction = newDirection;
+      this.direction = newDirection || this.direction;
+
+    if (this.action === undefined || this.direction === undefined) {
+      return;
+    }
+
     let anim = this.getCurrentAnimatedSprite();
     anim.play();
     this.addChild(anim);

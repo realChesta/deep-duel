@@ -3,43 +3,48 @@
 const Entity = require('./Entity');
 const Direction = require('../../Utils/Direction');
 const Serializer = require('lance-gg').serialize.Serializer;
+const CreatureState = require('./CreatureState');
 
 class Creature extends Entity {
   constructor(id, x, y) {
     super(id, x, y);
 
-    this._direction = Direction.ZERO; //0,1,2,3 = v,<,^,>
-    this.action = Creature.ActionType.Idle;
+    this.state = new CreatureState(((newActionName) => {
+      this.onAnimationChange(newActionName, undefined);
+    }).bind(this));
+    // TODO Consider moving direction to CreatureState
+    // Actually pretty certain we gotta do that. Fits CreatureState much better
+    this.direction = Direction.ZERO;
   }
 
   static get netScheme() {
     return Object.assign({
       directionVector: {type: Serializer.TYPES.CLASSINSTANCE},
+      state: {type: Serializer.TYPES.CLASSINSTANCE}
     }, super.netScheme);
   }
 
   syncTo(other) {
     super.syncTo(other);
-    this.directionVector = other.directionVector;
+    this.direction = other.direction;
   }
 
   get directionVector() {
-    return this._direction.vector;
+    return this.direction.vector;
   }
 
   set directionVector(val) {
     this.direction = Direction.getClosest(val);
   }
 
-  get action() {
-    return this._action;
+  get state() {
+    return this._state;
   }
 
-  set action(val) {
-    if (val === this._action)
+  set state(val) {
+    if (val === this._state)
       return;
-    this.onActionChange(this._action, val);
-    this._action = val;
+    this._state = val;
   }
 
 
@@ -50,26 +55,20 @@ class Creature extends Entity {
   set direction(val) {
     if (val === this.direction)
       return;
-    this.onDirectionChange(this._direction, val);
+    this.onAnimationChange(undefined, val.name);
     this._direction = val;
   }
 
 
-  onActionChange(oldAction, newAction) {
-  }
+  onAnimationChange(newAction, newDirection) {}
 
-  onDirectionChange(oldDirection, newDirection) {
+
+  onAddToWorld(gameEngine) {
+    super.onAddToWorld(gameEngine);
+    gameEngine.on('step', this.state.tick.bind(this.state));
   }
 
 }
-
-// TODO create an extendable class instead of a String enumeration
-Creature.ActionType = {
-  Idle: 'idle',
-  Running: 'running',
-  Melee: 'melee',
-  Shooting: 'shooting'
-};
 
 require('../../Utils/ClassLoader').registerClass(Creature);
 module.exports = Creature;
