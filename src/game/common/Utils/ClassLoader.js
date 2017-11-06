@@ -5,6 +5,7 @@ const {serialize: {Serializer}} = require('lance-gg');
 class ClassLoader {
     static registerClass(c, id) {
       ClassLoader.classRegisterer.registerClass(c, id);
+      return ClassLoader;
     }
 }
 

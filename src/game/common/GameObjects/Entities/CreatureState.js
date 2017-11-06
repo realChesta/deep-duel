@@ -1,17 +1,35 @@
 'use strict';
 
+const {serialize: {Serializable}} = require('lance-gg');
 const CreatureAction = require('./Actions/CreatureAction');
 
 class CreatureState extends Serializable {
 
   static get netScheme() {
     return Object.assign({
-      mainAction: {type: Serializer.TYPES.CLASSINSTANCE},
+      // Quite dusty here...
     }, super.netScheme);
   }
 
-  constructor() {
-    this.mainAction = CreatureAction.Idle;
+  syncTo(other) {
+    // Quite dusty here...
+  }
+
+  constructor(animationChangeCallback) {
+    super();
+    this.mainAction = new CreatureAction(animationChangeCallback);
+  }
+
+  tick() {
+    this.mainAction.tick();
+  }
+
+  getActionAnimationName() {
+    return this.mainAction.type.animationName;
+  }
+
+  setMainActionType(type) {
+    return this.mainAction.setType(type);
   }
 
 }

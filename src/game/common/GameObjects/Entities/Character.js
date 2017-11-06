@@ -1,6 +1,7 @@
 'use strict';
 
 const Creature = require('./Creature');
+const CreatureAction = require('./Actions/CreatureAction');
 const Direction = require('../../Utils/Direction');
 
 class Character extends Creature {
@@ -35,15 +36,18 @@ class Character extends Creature {
       this.direction = Direction.getSum(arr);
     }
 
+    let succAtSet;
     if (this.direction == Direction.ZERO) {
-      this.action = Creature.ActionType.Idle;
+      succAtSet = this.state.setMainActionType(CreatureAction.Type.Idle);
     }
     else {
-      this.action = Creature.ActionType.Running;
+      succAtSet = this.state.setMainActionType(CreatureAction.Type.Running);
     }
 
-    this.velocity.copy(this.direction.vector);
-    this.velocity.multiplyScalar(this.getSpeed());
+    if (succAtSet) {
+      this.velocity.copy(this.direction.vector);
+      this.velocity.multiplyScalar(this.getSpeed());
+    }
   }
 
   tickInputs(gameEngine) {
