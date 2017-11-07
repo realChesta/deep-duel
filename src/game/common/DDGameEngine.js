@@ -18,7 +18,7 @@ class DDGameEngine extends GameEngine {
   constructor(options) {
     super(options);
 
-    this.on('preStep', this.preStep);
+    this.on('preStep', this.preStep.bind(this));
     this.on('objectAdded', this.onObjectAdded.bind(this));
     this.on('objectDestroyed', this.onObjectDestroyed.bind(this));
     this.on('playerJoined', this.onPlayerJoined.bind(this));

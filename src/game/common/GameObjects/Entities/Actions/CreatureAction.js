@@ -58,8 +58,8 @@ class CreatureAction extends Serializable {
     this.lockedFor = val.getLockDuration();
     this.switchIn = val.getActionLength();
     this.switchTo = val.getNextAction();
-    if (this.type !== undefined && this.type.animationName !== val.animationName) {
-      this.animationChangeCallback(val.animationName);
+    if (this.type !== undefined && this.type.getAnimationName() !== val.getAnimationName()) {
+      this.animationChangeCallback(val.getAnimationName());
     }
     this._type = val;
     return true;
@@ -86,21 +86,25 @@ CreatureAction.registeredTypes = {};
 
 
 
-
+// TODO Use some JS tricks to auto-generate all of the ugly getters/setters
 class Type {
   constructor(creatureClass, name, id) {
-    this.name = this.animationName = name;
-    this.fullName = creatureClass + "." + name;
+    this.name = name;
+    this.fullName = creatureClass.class + "." + name;
     this.setLockDuration(0);
-    this.setNextAction(null);
-    this.setActionLength(0);
+    this.setNextAction(CreatureAction.Type.Idle);
+    this.setActionLength(2);      // TODO re-consider; maybe use post-step to tick? If so, also do it in the input handling?
+    this.setAnimationName(name);
+    this.setUseInputMovement(false);
+    this.setInputMovementSpeed(0.0);
+    this.setFreezeDirection(true);
 
     if (id === undefined)
       id = Utils.hashStr(this.fullName);
     this.id = id;
 
     if (CreatureAction.registeredTypes[id]) {
-        console.error("Type constructor: accidental override of type id ${id} when registering type", classObj);
+        console.error("Type constructor: accidental override of type id " + id + " when registering type", this.fullName);
     }
     CreatureAction.registeredTypes[id] = this;
   }
@@ -109,29 +113,57 @@ class Type {
   getLockDuration() {
     return this.lockDuration;
   }
-
   setLockDuration(val) {
     this.lockDuration = val;
     return this;
   }
 
-
   getActionLength() {
     return this.actionLength;
   }
-
   setActionLength(val) {
     this.actionLength = val;
     return this;
   }
 
-
   getNextAction() {
     return this.nextAction;
   }
-
   setNextAction(val) {
     this.nextAction = val;
+    return this;
+  }
+
+
+  getAnimationName() {
+    return this.animationName;
+  }
+  setAnimationName(val) {
+    this.animationName = val;
+    return this;
+  }
+
+  getUseInputMovement() {
+    return this.useInputMovement;
+  }
+  setUseInputMovement(val) {
+    this.useInputMovement = val;
+    return this;
+  }
+
+  getInputMovementSpeed() {
+    return this.inputMovementSpeed;
+  }
+  setInputMovementSpeed(val) {
+    this.inputMovementSpeed = val;
+    return this;
+  }
+
+  getFreezeDirection() {
+    return this.freezeDirection;
+  }
+  setFreezeDirection(val) {
+    this.freezeDirection = val;
     return this;
   }
 
@@ -139,8 +171,12 @@ class Type {
 
 CreatureAction.Type = Type;
 
-CreatureAction.Type.Idle = new CreatureAction.Type(Creature, 'idle');
-CreatureAction.Type.Running = new CreatureAction.Type(Creature, 'running');
+CreatureAction.Type.Idle = new CreatureAction.Type(Creature, 'idle').setUseInputMovement(true)
+    .setNextAction(null)
+    .setFreezeDirection(false);
+CreatureAction.Type.Running = new CreatureAction.Type(Creature, 'running').setUseInputMovement(true)
+    .setInputMovementSpeed(1.0)
+    .setFreezeDirection(false);
 
 
 

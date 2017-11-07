@@ -9,7 +9,7 @@ class DDRenderer extends Renderer {
 
   constructor(gameEngine, clientEngine, debugMode) {
     super(gameEngine, clientEngine);
-    this.debugMode = debugMode;
+    this.debugMode = debugMode || (clientEngine.debugMode ? true : false);
 
     // TODO When the renderer gets uninitialised/removed (especially on server UI), remove these handlers
     this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));

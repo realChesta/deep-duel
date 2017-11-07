@@ -40,7 +40,14 @@ class MultiSprite extends PIXI.Container {
 
 
   getAnimatedSprite(action, direction) {
-    let sprite = this.sprites[action][direction];
+    if (action === undefined || direction === undefined)
+      return undefined;
+
+    let spriteActions = this.sprites[action];
+    if (spriteActions === undefined)
+      return undefined;
+
+    let sprite = spriteActions[direction];
     if (sprite === undefined) {
       let arr = this.direction.split('-');
       while (sprite === undefined && arr.length > 0) {
@@ -56,8 +63,9 @@ class MultiSprite extends PIXI.Container {
   }
 
   update(newAction, newDirection) {
-    if (this.action !== undefined && this.direction !== undefined) {
-      let anim = this.getCurrentAnimatedSprite();
+    let anim = this.getCurrentAnimatedSprite();
+
+    if (anim !== undefined) {
       anim.stop();
       this.removeChild(anim);
     }
@@ -70,9 +78,13 @@ class MultiSprite extends PIXI.Container {
       return;
     }
 
-    let anim = this.getCurrentAnimatedSprite();
-    anim.play();
-    this.addChild(anim);
+    anim = this.getCurrentAnimatedSprite();
+    if (anim !== undefined) {
+      anim.play();
+      this.addChild(anim);
+    } else {
+      console.warn("No animation defined for " + this.action + " " + this.direction + "!");
+    }
   }
 
 }
