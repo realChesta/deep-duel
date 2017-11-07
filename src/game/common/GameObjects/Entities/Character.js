@@ -19,14 +19,29 @@ class Character extends Creature {
       this.input = {};
     }
 
-    if (inputData.options.isDown)
-      this.input[inputData.input] = gameEngine.world.stepCount;
-    else
-      delete this.input[inputData.input];
+    if (inputData.options.isDown !== undefined) {   // Toggle/axis key
+      if (inputData.options.isDown === true)
+        this.input[inputData.input] = gameEngine.world.stepCount;
+      else
+        delete this.input[inputData.input];
+
+
+    } else {          // Push key
+      if (inputData.input === 'attack') {
+        this.attack();
+      }
+
+    }
+  }
+
+  attack() {
+    this.state.setMainActionType(Character.ActionTypes.Attack);
   }
 
   calcVelocity(gameEngine) {
-    if (this.input) {       // While we have input data, override Direction received by the server // TODO Think about this for another second
+    let action = this.state.mainAction;
+
+    if (this.input && !action.type.getFreezeDirection()) {       // While we have input data and the action allows us to, override Direction received by the server // TODO Think about this for another second
       var arr = [];
       for (let key of Object.keys(Direction.AXES)) {
         if (this.input[key]) {
@@ -36,17 +51,16 @@ class Character extends Creature {
       this.direction = Direction.getSum(arr);
     }
 
-    let succAtSet;
-    if (this.direction == Direction.ZERO) {
-      succAtSet = this.state.setMainActionType(CreatureAction.Type.Idle);
-    }
-    else {
-      succAtSet = this.state.setMainActionType(CreatureAction.Type.Running);
+    if (this.direction !== Direction.ZERO) {
+      action.setType(Character.ActionTypes.Running);
     }
 
-    if (succAtSet) {
-      this.velocity.copy(this.direction.vector);
-      this.velocity.multiplyScalar(this.getSpeed());
+    if (action.type.getUseInputMovement()) {
+      let v = this.direction.vector.clone();
+      v.multiplyScalar(this.getSpeed());
+      v.multiplyScalar(action.type.getInputMovementSpeed());
+      this.position.add(v);
+      this.velocity.set(0, 0);      // TODO Add actual friction physics instead of this shullbit
     }
   }
 
@@ -79,11 +93,15 @@ class Character extends Creature {
     // TODO Add projectiles
   }
 
-  onAddToWorld() {
-
-  }
-
 }
+
+Character.ActionTypes = {
+  Idle: CreatureAction.Type.Idle,
+  Running: CreatureAction.Type.Running,
+  Attack: new CreatureAction.Type(Character, 'attack')
+      .setLockDuration(30)
+      .setActionLength(60)
+};
 
 Character.keyGravity = 60;
 

@@ -65,7 +65,7 @@ class Creature extends Entity {
 
   onAddToWorld(gameEngine) {
     super.onAddToWorld(gameEngine);
-    gameEngine.on('step', this.state.tick.bind(this.state));
+    gameEngine.on('preStep', this.state.tick.bind(this.state));
   }
 
 }

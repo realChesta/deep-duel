@@ -4,15 +4,19 @@ const {ClientEngine, physics: {SimplePhysicsEngine}} = require('lance-gg');
 const DDRenderer = require('./Rendering/DDRenderer');
 const DDGameEngine = require('../common/DDGameEngine');
 
-const keys = {
+const toggleKeys = {
   'up': [38, 87],
   'down': [40, 83],
   'left': [37, 65],
-  'right': [39, 68],
-  'fire': [32]
+  'right': [39, 68]
 };
 
-const reversedKeys = parseKeysObject(keys);
+const pushKeys = {
+  'attack': [32]
+}
+
+const reversedToggleKeys = parseKeysObject(toggleKeys);
+const reversedPushKeys = parseKeysObject(pushKeys);
 
 class DDClientEngine extends ClientEngine {
 
@@ -23,7 +27,7 @@ class DDClientEngine extends ClientEngine {
     this.gameEngine.on('preStep', this.preStep.bind(this));
 
     this.pressedKeys = {};
-    for (let key of Object.keys(keys)) {
+    for (let key of Object.keys(toggleKeys)) {
       this.pressedKeys[key] = false;
     }
 
@@ -64,8 +68,14 @@ class DDClientEngine extends ClientEngine {
 
     let preventDefault = false;
 
-    if (reversedKeys[e.keyCode]) {
-      this.handleKeyChange(reversedKeys[e.keyCode], isDown);
+    if (reversedToggleKeys[e.keyCode]) {
+      this.handleKeyChange(reversedToggleKeys[e.keyCode], isDown);
+      preventDefault = true;
+    }
+
+    if (isDown && reversedPushKeys[e.keyCode]) {
+      if (!e.repeat)
+        this.sendInput(reversedPushKeys[e.keyCode], {});
       preventDefault = true;
     }
 
@@ -101,7 +111,7 @@ class DDClientEngine extends ClientEngine {
 
 }
 
-function parseKeysObject() {
+function parseKeysObject(keys) {
   var keyDict = {};
 
   for (var action of Object.keys(keys)) {
