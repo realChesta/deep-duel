@@ -39,30 +39,18 @@ class MultiSprite extends PIXI.Container {
   }
 
 
-  getAnimatedSprite(action, direction) {
-    if (action === undefined || direction === undefined)
+  getAnimatedSprite(actionName, facingDirectionName) {
+    if (actionName === undefined || facingDirectionName === undefined)
       return undefined;
 
-    let spriteActions = this.sprites[action];
-    if (spriteActions === undefined)
-      return undefined;
-
-    let sprite = spriteActions[direction];
-    if (sprite === undefined) {
-      let arr = this.direction.split('-');
-      while (sprite === undefined && arr.length > 0) {
-        arr.pop();
-        sprite = this.sprites[this.action][arr.join('-')];
-      }
-    }
-    return sprite;
+    return splitUntilIndex(splitUntilIndex(this.sprites, actionName), facingDirectionName);
   }
 
   getCurrentAnimatedSprite() {
     return this.getAnimatedSprite(this.action, this.direction);
   }
 
-  update(newAction, newDirection) {
+  update(newActionName, newDirectionName) {
     let anim = this.getCurrentAnimatedSprite();
 
     if (anim !== undefined) {
@@ -70,9 +58,9 @@ class MultiSprite extends PIXI.Container {
       this.removeChild(anim);
     }
 
-    this.action = newAction || this.action;
-    if (newDirection !== 'zero')
-      this.direction = newDirection || this.direction;
+    this.action = newActionName || this.action;
+    if (newDirectionName !== 'zero')
+      this.direction = newDirectionName || this.direction;
 
     if (this.action === undefined || this.direction === undefined) {
       return;
@@ -88,5 +76,29 @@ class MultiSprite extends PIXI.Container {
   }
 
 }
+
+
+
+function* backSpliterator(s) {
+  let arr = s.split('-');
+  while (arr.length > 0) {
+    yield arr.join('-');
+    arr.pop();
+  }
+}
+
+function splitUntilIndex(obj, s) {
+  if (obj == undefined)
+    return undefined;
+
+  let e;
+  let spliterator = backSpliterator(s);
+  let n;
+  while (e === undefined && !(n = spliterator.next()).done) {
+    e = obj[n.value];
+  }
+  return e;
+}
+
 
 module.exports = MultiSprite;

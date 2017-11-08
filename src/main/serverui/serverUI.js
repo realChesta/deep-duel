@@ -1,11 +1,14 @@
 'use strict';
 
 const electron = require('electron');
-const {app, BrowserWindow} = electron;
+const {app, BrowserWindow, powerSaveBlocker} = electron;
 const url = require('url');
 const path = require('path');
 
 let mainWindow;
+
+app.commandLine.appendSwitch("disable-background-timer-throttling");
+powerSaveBlocker.start('prevent-display-sleep');
 
 function createWindow () {
   mainWindow = new BrowserWindow({

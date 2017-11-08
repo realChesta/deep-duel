@@ -1,6 +1,6 @@
 'use strict';
 
-const {serialize: {Serializable}} = require('lance-gg');
+const {serialize: {Serializable, Serializer}} = require('lance-gg');
 const Utils = require('lance-gg/src/lib/Utils');
 const Creature = require('../Creature');
 
@@ -10,42 +10,33 @@ class CreatureAction extends Serializable {
     return Object.assign({
       typeId: {type: Serializer.TYPES.INT32},
       lockedFor: {type: Serializer.TYPES.INT32},
-      switchIn: {type: Serializer.TYPES.INT32},
-      switchToId: {type: Serializer.TYPES.INT32},
+      switchIn: {type: Serializer.TYPES.INT32}
     }, super.netScheme);
   }
 
   syncTo(other) {
-    this.type = other.type;
+    super.syncTo(other);
+    // TODO remove console.log("a", this.type, other.type)
+    this.forceSetType(other.type);
+    this.lockedFor = other.lockedFor;
+    this.switchIn = other.switchIn;
   }
 
   constructor(animationChangeCallback) {
     super();
     this.animationChangeCallback = animationChangeCallback;
-    this.lockedFor = 0;
-    this.switchIn = 0;
-    this.switchTo = null;
     this.setType(CreatureAction.Type.Idle);
   }
+
+
 
   get typeId() {
     return this.type.id;
   }
 
   set typeId(val) {
-    this.type = CreatureAction.registeredTypes[val];
+    this.forceSetType(CreatureAction.registeredTypes[val]);
   }
-
-  get switchToId() {
-    return this.switchTo.id;
-  }
-
-  set switchToId(val) {
-    this.switchTo = CreatureAction.registeredTypes[val];
-  }
-
-
-
 
   get type() {
     return this._type;
@@ -57,13 +48,18 @@ class CreatureAction extends Serializable {
 
     this.lockedFor = val.getLockDuration();
     this.switchIn = val.getActionLength();
-    this.switchTo = val.getNextAction();
-    if (this.type !== undefined && this.type.getAnimationName() !== val.getAnimationName()) {
+    this.forceSetType(val);
+    return true;
+  }
+
+  forceSetType(val) {
+    if (this.animationChangeCallback !== undefined && this.type !== undefined && this.type.getAnimationName() !== val.getAnimationName()) {
       this.animationChangeCallback(val.getAnimationName());
     }
     this._type = val;
-    return true;
   }
+
+
 
 
   // TODO Stop repeatedly decrementing these and start storing step count instead
@@ -71,10 +67,10 @@ class CreatureAction extends Serializable {
     this.lockedFor--;
     this.switchIn--;
 
-    if (this.switchTo && this.switchIn <= 0) {
-      let switchTo = this.switchTo;
-      this.switchTo = null;
-      this.setType(switchTo);
+    if (this.switchIn <= 0) {
+      let switchTo = this.type.getNextAction();
+      if (switchTo)
+        this.setType(switchTo);
     }
   }
 

@@ -9,8 +9,6 @@ class Character extends Creature {
   constructor(id, x, y, playerId) {
     super(id, x, y);
     this.playerId = playerId;
-
-    this.class = Character;
   }
 
 
@@ -41,22 +39,26 @@ class Character extends Creature {
   calcVelocity(gameEngine) {
     let action = this.state.mainAction;
 
-    if (this.input && !action.type.getFreezeDirection()) {       // While we have input data and the action allows us to, override Direction received by the server // TODO Think about this for another second
+    if (this.input) {       // While we have input data, override input direction received by the server // TODO Think about this for another second
       var arr = [];
       for (let key of Object.keys(Direction.AXES)) {
         if (this.input[key]) {
           arr[arr.length] = Direction.AXES[key];
         }
       }
-      this.direction = Direction.getSum(arr);
+      this.inputDirection = Direction.getSum(arr);
     }
 
-    if (this.direction !== Direction.ZERO) {
+    if (this.inputDirection !== Direction.ZERO) {
       action.setType(Character.ActionTypes.Running);
     }
 
+    if (!action.type.getFreezeDirection()) {
+      this.facingDirection = this.inputDirection;
+    }
+
     if (action.type.getUseInputMovement()) {
-      let v = this.direction.vector.clone();
+      let v = this.facingDirection.vector.clone();
       v.multiplyScalar(this.getSpeed());
       v.multiplyScalar(action.type.getInputMovementSpeed());
       this.position.add(v);
