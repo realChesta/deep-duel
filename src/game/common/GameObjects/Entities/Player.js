@@ -16,11 +16,14 @@ class Player extends Character {
     delete this.sprite;
   }
 
-  onAnimationChange(newAction, newDirection) {
-    super.onAnimationChange(newAction, newDirection);
+
+  // TODO Consider calling this on every step where action has changed instead of all the time an action changes
+  // Currently, setting an action and setting it back in the same step will still set the sprite's animation
+  onAnimationChange(newAction, newFacingDirection) {
+    super.onAnimationChange(newAction, newFacingDirection);
 
     if (this.sprite !== undefined) {
-      this.sprite.update(newAction, newDirection);
+      this.sprite.update(newAction, newFacingDirection);
     }
   }
 

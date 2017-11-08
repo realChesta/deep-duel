@@ -14,27 +14,29 @@ class Creature extends Entity {
     }).bind(this));
     // TODO Consider moving direction to CreatureState
     // Actually pretty certain we gotta do that. Fits CreatureState much better
-    this.direction = Direction.ZERO;
+    this.inputDirection = Direction.ZERO;
+    this.facingDirection = this.inputDirection;
   }
 
   static get netScheme() {
     return Object.assign({
-      directionVector: {type: Serializer.TYPES.CLASSINSTANCE},
+      inputDirectionVector: {type: Serializer.TYPES.CLASSINSTANCE},
       state: {type: Serializer.TYPES.CLASSINSTANCE}
     }, super.netScheme);
   }
 
   syncTo(other) {
     super.syncTo(other);
-    this.direction = other.direction;
+    this.inputDirection = other.inputDirection;
+    this.state.syncTo(other.state);
   }
 
-  get directionVector() {
-    return this.direction.vector;
+  get inputDirectionVector() {
+    return this.inputDirection.vector;
   }
 
-  set directionVector(val) {
-    this.direction = Direction.getClosest(val);
+  set inputDirectionVector(val) {
+    this.inputDirection = Direction.getClosest(val);
   }
 
   get state() {
@@ -48,19 +50,29 @@ class Creature extends Entity {
   }
 
 
-  get direction() {
-    return this._direction;
+  get inputDirection() {
+    return this._inputDirection;
   }
 
-  set direction(val) {
-    if (val === this.direction)
+  set inputDirection(val) {
+    this._inputDirection = val;
+  }
+
+  get facingDirection() {
+    return this._facingDirection || Direction.DOWN;
+  }
+
+  set facingDirection(val) {
+    if (val === Direction.ZERO)
+      val = null;
+    if (val === this.facingDirection)
       return;
-    this.onAnimationChange(undefined, val.name);
-    this._direction = val;
+    this.onAnimationChange(undefined, (val || Direction.DOWN).name);
+    this._facingDirection = val;
   }
 
 
-  onAnimationChange(newAction, newDirection) {}
+  onAnimationChange(newAction, newFacingDirection) {}
 
 
   onAddToWorld(gameEngine) {
