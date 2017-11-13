@@ -53,7 +53,7 @@ class CreatureAction extends Serializable {
   }
 
   forceSetType(val) {
-    if (this.animationChangeCallback !== undefined && this.type !== undefined && this.type.getAnimationName() !== val.getAnimationName()) {
+    if (this.animationChangeCallback !== undefined && (this.type === undefined || this.type.getAnimationName() !== val.getAnimationName())) {
       this.animationChangeCallback(val.getAnimationName());
     }
     this._type = val;
@@ -86,7 +86,7 @@ CreatureAction.registeredTypes = {};
 class Type {
   constructor(creatureClass, name, id) {
     this.name = name;
-    this.fullName = creatureClass.class + "." + name;
+    this.fullName = creatureClass.name + "." + name;
     this.setLockDuration(0);
     this.setNextAction(CreatureAction.Type.Idle);
     this.setActionLength(2);      // TODO re-consider; maybe use post-step to tick? If so, also do it in the input handling?

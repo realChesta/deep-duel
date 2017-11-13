@@ -67,8 +67,6 @@ typings/
 # IntelliJ
 .idea/
 
-package-lock.json
-
 # OS generated files
 .DS_Store
 .DS_Store?

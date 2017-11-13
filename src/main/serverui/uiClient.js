@@ -44,10 +44,6 @@ async function onReady() {
     location.reload(true);
   });
 
-  $(document).on('visibilitychange', function() {
-    console.log("New visibility state: " + document.visibilityState);
-  });
-
   $('#loading').remove();
   $('#content').show();
 }
