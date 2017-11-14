@@ -9,6 +9,9 @@ const Entity = require('./GameObjects/Entities/Entity');
 const Creature = require('./GameObjects/Entities/Creature');
 const Character = require('./GameObjects/Entities/Character');
 const Player = require('./GameObjects/Entities/Player');
+const Scarecrow = require('./GameObjects/Entities/Scarecrow');
+const DDCollisionDetection = require('./Physics/Collision/DDCollisionDetection');
+const Hitbox = require('./Physics/Collision/Hitbox');
 
 
 
@@ -31,14 +34,24 @@ class DDGameEngine extends GameEngine {
       width: 256,
       height: 256
     };
+
+    this.physicsEngine.collisionDetection = new DDCollisionDetection();
+
   }
 
   start() {
     super.start();
+    this.addObjectToWorld(new Scarecrow(++this.world.idCount, 70, 70));
   }
 
   initGame() {
     // Quite dusty here...
+  }
+
+
+
+  filterObjects(objectFilter) {
+    return Object.values(this.world.objects).filter(objectFilter);
   }
 
 

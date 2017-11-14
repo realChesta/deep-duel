@@ -4,6 +4,7 @@ const Entity = require('./Entity');
 const Direction = require('../../Utils/Direction');
 const Serializer = require('lance-gg').serialize.Serializer;
 const CreatureState = require('./CreatureState');
+const Hitbox = require('../../Physics/Collision/Hitbox');
 
 class Creature extends Entity {
   constructor(id, x, y) {
@@ -67,8 +68,9 @@ class Creature extends Entity {
       val = null;
     if (val === this.facingDirection)
       return;
-    this.onAnimationChange(undefined, (val || Direction.DOWN).name);
-    this._facingDirection = val;
+    let niu = val || this.facingDirection;
+    this.onAnimationChange(undefined, niu.name);
+    this._facingDirection = niu;
   }
 
 

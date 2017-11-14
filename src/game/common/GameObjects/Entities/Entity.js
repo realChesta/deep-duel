@@ -12,6 +12,7 @@ class Entity extends RenderedObject {
     super(id);
     this.position.set(x, y);
     this.class = Entity;
+    this.hitbox = null;
   }
 
   onAddToWorld(gameEngine) {
@@ -20,6 +21,10 @@ class Entity extends RenderedObject {
 
   getSpeed() {
     return 2;
+  }
+
+  takeDamage(amount) {
+    console.log("Damage was taken!", amount, this);
   }
 
 }
