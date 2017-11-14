@@ -10,9 +10,7 @@ class Creature extends Entity {
   constructor(id, x, y) {
     super(id, x, y);
 
-    this.state = new CreatureState(((newActionName) => {
-      this.onAnimationChange(newActionName, undefined);
-    }).bind(this));
+    this.state = new CreatureState(this);
     // TODO Consider moving direction to CreatureState
     // Actually pretty certain we gotta do that. Fits CreatureState much better
     this.inputDirection = Direction.ZERO;

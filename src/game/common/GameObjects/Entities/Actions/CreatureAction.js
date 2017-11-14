@@ -10,22 +10,27 @@ class CreatureAction extends Serializable {
     return Object.assign({
       typeId: {type: Serializer.TYPES.INT32},
       lockedFor: {type: Serializer.TYPES.INT32},
-      switchIn: {type: Serializer.TYPES.INT32}
+      switchIn: {type: Serializer.TYPES.INT32},
+      hasNext: {type: Serializer.TYPES.INT8}
     }, super.netScheme);
   }
 
   syncTo(other) {
     super.syncTo(other);
-    // TODO remove console.log("a", this.type, other.type)
+
     this.forceSetType(other.type);
     this.lockedFor = other.lockedFor;
     this.switchIn = other.switchIn;
   }
 
-  constructor(animationChangeCallback) {
+  constructor(gameObject) {
     super();
-    this.animationChangeCallback = animationChangeCallback;
-    this.setType(CreatureAction.Type.Idle);
+
+    this.gameObject = gameObject;
+    this.animationChangeCallback = gameObject ? (actionName) => gameObject.onAnimationChange(actionName, undefined) : undefined;
+    // HACK Maybe fix this - will need some ground-breaking lance-gg changes (right now, we need to not set type if gameObject is undefined because then it is called as part of a sync step)
+    if (gameObject !== undefined)
+      this.setType(CreatureAction.Type.Idle);
   }
 
 
@@ -43,20 +48,31 @@ class CreatureAction extends Serializable {
   }
 
   setType(val) {
-    if (this.lockedFor > 0)
-      return false;
+    if (this.type !== undefined) {
+      if (this.prepareEnd()) {
+        return false;
+      }
+      this.end();
+    }
 
-    this.lockedFor = val.getLockDuration();
-    this.switchIn = val.getActionLength();
     this.forceSetType(val);
+    this.lockedFor = this.getLockDuration();
+    this.switchIn = this.getActionLength();
+    this.hasNext = this.getHasNextAction();
+    this.start();
     return true;
   }
 
   forceSetType(val) {
-    if (this.animationChangeCallback !== undefined && (this.type === undefined || this.type.getAnimationName() !== val.getAnimationName())) {
-      this.animationChangeCallback(val.getAnimationName());
-    }
+    let oldan = this.getAnimationName();
     this._type = val;
+    let newan = this.getAnimationName();
+    if (this.oldan)
+      console.log(this.animationChangeCallback, newan, oldan);
+    // TODO Consider moving this to some kind of "visual change" event that can also be called by the type on occasion. Also there are like 34987645968943769843576 hypothetical bugs this way
+    if (this.animationChangeCallback !== undefined && newan !== oldan) {
+      this.animationChangeCallback(newan);
+    }
   }
 
 
@@ -65,12 +81,16 @@ class CreatureAction extends Serializable {
   // TODO Stop repeatedly decrementing these and start storing step count instead
   tick() {
     this.lockedFor--;
-    this.switchIn--;
 
-    if (this.switchIn <= 0) {
-      let switchTo = this.type.getNextAction();
-      if (switchTo)
-        this.setType(switchTo);
+    if (this.hasNext) {
+      console.log("has next", this.lockedFor, this.switchIn);
+      this.switchIn--;
+      if (this.switchIn <= 0) {
+        console.log("k", this);
+        let switchTo = this.getNextAction();
+        if (switchTo)
+          this.setType(switchTo);
+      }
     }
   }
 
@@ -80,20 +100,21 @@ CreatureAction.registeredTypes = {};
 
 
 
+function upperd(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 
-// TODO Use some JS tricks to auto-generate all of the ugly getters/setters
+
 class Type {
   constructor(creatureClass, name, id) {
     this.name = name;
     this.fullName = creatureClass.name + "." + name;
-    this.setLockDuration(0);
-    this.setNextAction(CreatureAction.Type.Idle);
-    this.setActionLength(2);      // TODO re-consider; maybe use post-step to tick? If so, also do it in the input handling?
+    this.properties = Object.assign({}, Type.defaultProperties);
     this.setAnimationName(name);
-    this.setUseInputMovement(false);
-    this.setInputMovementSpeed(0.0);
-    this.setFreezeDirection(true);
+    this.events = {};
+    Object.keys(Type.defaultEvents).forEach((key) => this.events[key] = Type.defaultEvents[key].slice());
+
 
     if (id === undefined)
       id = Utils.hashStr(this.fullName);
@@ -104,75 +125,76 @@ class Type {
     }
     CreatureAction.registeredTypes[id] = this;
   }
-
-  // no getter/setter because we might want to pass arguments one day
-  getLockDuration() {
-    return this.lockDuration;
-  }
-  setLockDuration(val) {
-    this.lockDuration = val;
-    return this;
-  }
-
-  getActionLength() {
-    return this.actionLength;
-  }
-  setActionLength(val) {
-    this.actionLength = val;
-    return this;
-  }
-
-  getNextAction() {
-    return this.nextAction;
-  }
-  setNextAction(val) {
-    this.nextAction = val;
-    return this;
-  }
-
-
-  getAnimationName() {
-    return this.animationName;
-  }
-  setAnimationName(val) {
-    this.animationName = val;
-    return this;
-  }
-
-  getUseInputMovement() {
-    return this.useInputMovement;
-  }
-  setUseInputMovement(val) {
-    this.useInputMovement = val;
-    return this;
-  }
-
-  getInputMovementSpeed() {
-    return this.inputMovementSpeed;
-  }
-  setInputMovementSpeed(val) {
-    this.inputMovementSpeed = val;
-    return this;
-  }
-
-  getFreezeDirection() {
-    return this.freezeDirection;
-  }
-  setFreezeDirection(val) {
-    this.freezeDirection = val;
-    return this;
-  }
-
 }
 
-CreatureAction.Type = Type;
 
-CreatureAction.Type.Idle = new CreatureAction.Type(Creature, 'idle').setUseInputMovement(true)
+Type.defaultProperties = {
+  lockDuration: 0,
+  hasNextAction: function() {return Boolean(this.getNextAction.call(this, arguments));},
+  nextAction: null,
+  actionLength: 2,
+  animationName: null,
+  useInputMovement: false,
+  inputMovementSpeed: 0,
+  freezeDirection: true
+};
+
+// Events that return a value that evaluates to true are cancelled. Not all events can be cancelled
+Type.defaultEvents = {
+  start: [],
+  prepareEnd: [function() {return this.lockedFor > 0}],
+  end: []
+};
+
+
+// TODO Check if the methods we're registering for events and properties aren't already set
+for (let property of Object.keys(Type.defaultProperties)) {
+  let ud = upperd(property);
+
+  CreatureAction.prototype['get' + ud] = function() {
+    if (!this.type) return undefined;
+    let val = this.type.properties[property];
+    if (typeof val === 'function')
+      return val.call(this);
+    return val;
+  };
+
+  Type.prototype['set' + ud] = function(val) {
+    this.properties[property] = val;
+    return this;
+  };
+}
+
+
+for (let event of Object.keys(Type.defaultEvents)) {
+  let ud = upperd(event);
+
+  CreatureAction.prototype[event] = function() {
+    let cancelled = false;
+    this.type.events[event].forEach((func) => {
+      if (func.apply(this, arguments))
+        cancelled = true;
+      console.log(event, cancelled);
+    });
+    return cancelled;
+  };
+
+  Type.prototype['on' + ud] = function(handler) {
+    this.events[event].push(handler);
+    return this;
+  };
+}
+
+Type.Idle = new Type(Creature, 'idle').setUseInputMovement(true)
     .setNextAction(null)
     .setFreezeDirection(false);
-CreatureAction.Type.Running = new CreatureAction.Type(Creature, 'running').setUseInputMovement(true)
+    Type.defaultProperties.nextAction = Type.Idle;
+Type.Running = new Type(Creature, 'running').setUseInputMovement(true)
     .setInputMovementSpeed(1.0)
     .setFreezeDirection(false);
+
+
+CreatureAction.Type = Type;
 
 
 

@@ -16,9 +16,10 @@ class CreatureState extends Serializable {
     this.mainAction.syncTo(other.mainAction);
   }
 
-  constructor(animationChangeCallback) {
+  constructor(gameObject) {
     super();
-    this.mainAction = new CreatureAction(animationChangeCallback);
+    this.gameObject = gameObject;
+    this.mainAction = new CreatureAction(gameObject);
   }
 
   tick() {

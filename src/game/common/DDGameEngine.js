@@ -58,7 +58,7 @@ class DDGameEngine extends GameEngine {
   processInput(inputData, playerId) {
     super.processInput(inputData, playerId);
 
-    this.characters[playerId].processInput(this, inputData);
+    this.characters[playerId].processInput(inputData);
   }
 
   onPlayerJoined(event) {
