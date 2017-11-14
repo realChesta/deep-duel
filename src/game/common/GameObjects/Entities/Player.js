@@ -19,6 +19,9 @@ class Player extends Character {
 
   // TODO Consider calling this on every step where action has changed instead of all the time an action changes
   // Currently, setting an action and setting it back in the same step will still set the sprite's animation
+  // TODO Currently, this method takes action/direction names - change that
+  // TODO Give a new name - this triggers when state changes, not necessarily animation (it's not even a given each Creature has an animation)
+  // TODO Make it reset certain animations when you trigger it multiple times (eg. attacking and animation canceling)
   onAnimationChange(newAction, newFacingDirection) {
     super.onAnimationChange(newAction, newFacingDirection);
 
