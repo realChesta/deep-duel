@@ -11,6 +11,11 @@ class DDRenderer extends Renderer {
     super(gameEngine, clientEngine);
     this.debugMode = debugMode || (clientEngine && clientEngine.options.debugMode === 'true');
 
+    // TODO When the renderer gets uninitialised/removed (especially on server UI), remove these handlers
+    this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
+    this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
+
+
 
     // Set-up renderer and layers
     this.entirety = new PIXI.Container();
@@ -31,6 +36,7 @@ class DDRenderer extends Renderer {
 
 
 
+    this.renderedObjects = {};    // TODO rename to renderedObjectContainers
 
     if (!this.clientEngine) {
       let trenderer = this;
@@ -40,21 +46,6 @@ class DDRenderer extends Renderer {
       }).bind(true);
       this.init().then(() => window.requestAnimationFrame(renderLoop));
     }
-
-
-    this.renderedObjects = {};    // TODO rename to renderedObjectContainers
-
-    // TODO When the renderer gets uninitialised/removed (especially on server UI), remove these handlers
-    this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
-    this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
-
-    if (this.gameEngine.world) {
-      for (let object of Object.values(this.gameEngine.world.objects)) {
-        this.onObjectAdded(object);
-      }
-    }
-
-
   }
 
 
@@ -63,7 +54,6 @@ class DDRenderer extends Renderer {
   }
 
 
-  // TODO More versatile debug mode where each object can do things independently
   draw() {
     if (this.clientEngine)
       super.draw();
@@ -94,11 +84,8 @@ class DDRenderer extends Renderer {
 
     if (this.debugMode) {
       this.debugLayer.lineStyle(1, 0x88FF88, 0.5);
+      this.debugLayer.fillColor = 0;
       this.debugLayer.drawCircle(object.position.x, object.position.y, 2);
-      if (object.hitbox) {
-        let corner = object.hitbox.getUpperLeft(object.position);
-        this.debugLayer.drawRect(corner.x, corner.y, object.hitbox.w, object.hitbox.h);
-      }
     }
   }
 
