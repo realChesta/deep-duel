@@ -21,10 +21,6 @@ class Entity extends RenderedObject {
     this.gameEngine = gameEngine;
   }
 
-  getSpeed() {
-    return 2;
-  }
-
   takeDamage(amount) {
 
   }

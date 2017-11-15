@@ -151,7 +151,13 @@ class Character extends Creature {
   }
 
   calcVelocity(gameEngine) {
-    let action = this.state.mainAction;
+    // TODO Fix a bug where the client ticks too slowly
+    /*if (gameEngine.world.stepCount % 100 == 0) {
+      console.log(gameEngine.world.stepCount, new Date().getTime() - this.ls)
+      this.ls = new Date().getTime();
+    }
+
+    */let action = this.state.mainAction;
 
     if (this.input) {       // While we have input data, override input direction received by the server // TODO Think about this for another second
       var arr = [];
@@ -178,6 +184,10 @@ class Character extends Creature {
       this.position.add(v);
       this.velocity.set(0, 0);      // TODO Add actual friction physics instead of this shullbit
     }
+  }
+
+  getSpeed() {
+    return 2;
   }
 
   tickInputs(gameEngine) {

@@ -67,8 +67,6 @@ class CreatureAction extends Serializable {
     let oldan = this.getAnimationName();
     this._type = val;
     let newan = this.getAnimationName();
-    if (this.oldan)
-      console.log(this.animationChangeCallback, newan, oldan);
     // TODO Consider moving this to some kind of "visual change" event that can also be called by the type on occasion. Also there are like 34987645968943769843576 hypothetical bugs this way
     if (this.animationChangeCallback !== undefined && newan !== oldan) {
       this.animationChangeCallback(newan);
@@ -83,10 +81,8 @@ class CreatureAction extends Serializable {
     this.lockedFor--;
 
     if (this.hasNext) {
-      console.log("has next", this.lockedFor, this.switchIn);
       this.switchIn--;
       if (this.switchIn <= 0) {
-        console.log("k", this);
         let switchTo = this.getNextAction();
         if (switchTo)
           this.setType(switchTo);
@@ -174,7 +170,6 @@ for (let event of Object.keys(Type.defaultEvents)) {
     this.type.events[event].forEach((func) => {
       if (func.apply(this, arguments))
         cancelled = true;
-      console.log(event, cancelled);
     });
     return cancelled;
   };
@@ -185,7 +180,7 @@ for (let event of Object.keys(Type.defaultEvents)) {
   };
 }
 
-Type.Idle = new Type(Creature, 'idle').setUseInputMovement(true)
+Type.Idle = new Type(Creature, 'idle').setUseInputMovement(false)
     .setNextAction(null)
     .setFreezeDirection(false);
     Type.defaultProperties.nextAction = Type.Idle;
