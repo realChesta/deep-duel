@@ -58,7 +58,7 @@ class Character extends Creature {
     const sgn = (p1, p2, p3) => {
       return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
     }
-    const isInTriangle = (point, triangle) => {
+    const isInTriangle = (point, triangle) => {console.log(point, triangle);
       let b1 = sgn(point, triangle[0], triangle[1]) < 0;
       let b2 = sgn(point, triangle[1], triangle[2]) < 0;
       let b3 = sgn(point, triangle[2], triangle[0]) < 0;
@@ -78,7 +78,6 @@ class Character extends Creature {
     const dida = toAngle(dir);
     const dirm = fromAngle(dida - attackAngle);
     const dirp = fromAngle(dida + attackAngle);
-
     // Processing sketch visualizing collision detection: https://pastebin.com/T8mjGLux
     // TODO Use less resources per check 'n stuff
     let hits = this.gameEngine.filterObjects(((obj) => {
@@ -99,17 +98,17 @@ class Character extends Creature {
         const absm = m.clone();
             absm.x = Math.abs(absm.x);
             absm.y = Math.abs(absm.y);
-        const corner = rect2.clone();
-            corner.x *= m.x < 0 ? -1 : 1;
-            corner.y *= m.y < 0 ? -1 : 1;
-        const difToCorner = m.clone().subtract(corner);
+        const subrad = crad / sqrt2;
+        const subm = m.clone().add(dir.clone().multiplyScalar(subrad));
+        const corner = rect2.clone();   // TODO we might need to think about this again. Is this really correct? Should we base the corner on subm? Or do we need to check both subm or m corners? It doesn't matter with axis-aligned rects like this, but when it's do or die we might just as well do it right, eh?
+            corner.x *= subm.x < 0 ? -1 : 1;
+            corner.y *= subm.y < 0 ? -1 : 1;
+        const difToCorner = subm.clone().subtract(corner);
         const triangleCorners = [
             m.clone(),
             m.clone().add(dirm.clone().multiplyScalar(sqrt2 * crad)),
             m.clone().add(dirp.clone().multiplyScalar(sqrt2 * crad))
         ];
-        const subrad = crad / sqrt2;
-        const subm = m.clone().add(dir.clone().multiplyScalar(subrad));
         const bounding = mtz(m,
             m.clone().add(dir.clone().multiplyScalar(crad)),
             m.clone().add(dirm.clone().multiplyScalar(crad)),
@@ -118,7 +117,6 @@ class Character extends Creature {
         const absbounding = bounding.clone();
             absbounding.x = Math.abs(absbounding.x);
             absbounding.y = Math.abs(absbounding.y);
-
 
         // Easy case: Bounding does not touch the rectangle
         if (absbounding.x > rect2.x) return false;
@@ -134,7 +132,7 @@ class Character extends Creature {
         // Small circle
         if (sq(Math.abs(subm.x) - rect2.x) + sq(Math.abs(subm.y) - rect2.y) > sq(subrad)) return false;
         // Triangle
-        if (!isInTriangle(m.clone().subtract(difToCorner), triangleCorners)) return false;
+        if (!isInTriangle(corner, triangleCorners)) return false;
 
         return true;
 
@@ -217,6 +215,10 @@ class Character extends Creature {
 
   fire() {
     // TODO Add projectiles
+  }
+
+  takeDamage(damage) {
+    console.log("Character " + this.playerId + " took " + damage + " damage!");
   }
 
 
