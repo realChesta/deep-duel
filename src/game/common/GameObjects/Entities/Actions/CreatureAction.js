@@ -136,6 +136,7 @@ Type.defaultProperties = {
 };
 
 // Events that return a value that evaluates to true are cancelled. Not all events can be cancelled
+// TODO Weak sets instead of arrays?
 Type.defaultEvents = {
   start: [],
   prepareEnd: [function() {return this.lockedFor > 0}],
