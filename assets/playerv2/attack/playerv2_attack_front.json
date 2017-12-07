@@ -1,0 +1,92 @@
+{ "frames": [
+   {
+    "filename": "playerv2_attack_front2 0.ase",
+    "frame": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   },
+   {
+    "filename": "playerv2_attack_front2 1.ase",
+    "frame": { "x": 59, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   },
+   {
+    "filename": "playerv2_attack_front2 2.ase",
+    "frame": { "x": 118, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   },
+   {
+    "filename": "playerv2_attack_front2 3.ase",
+    "frame": { "x": 177, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   },
+   {
+    "filename": "playerv2_attack_front2 4.ase",
+    "frame": { "x": 236, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   },
+   {
+    "filename": "playerv2_attack_front2 5.ase",
+    "frame": { "x": 295, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   },
+   {
+    "filename": "playerv2_attack_front2 6.ase",
+    "frame": { "x": 354, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   },
+   {
+    "filename": "playerv2_attack_front2 7.ase",
+    "frame": { "x": 413, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   },
+   {
+    "filename": "playerv2_attack_front2 8.ase",
+    "frame": { "x": 472, "y": 0, "w": 59, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 59, "h": 70 },
+    "sourceSize": { "w": 59, "h": 70 },
+    "duration": 80
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.1.8-dev",
+  "image": "playerv2_attack_front.png",
+  "format": "RGBA8888",
+  "size": { "w": 531, "h": 70 },
+  "scale": "1"
+ }
+}
