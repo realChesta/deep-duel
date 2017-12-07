@@ -3,6 +3,7 @@
 const {serialize: {Serializable, Serializer}} = require('lance-gg');
 const CreatureAction = require('./Actions/CreatureAction');
 
+// TODO Consider moving some parts of Action into a new class Effect, which can be applied to a player outside of Action?
 class CreatureState extends Serializable {
 
   static get netScheme() {
@@ -16,9 +17,10 @@ class CreatureState extends Serializable {
     this.mainAction.syncTo(other.mainAction);
   }
 
-  constructor(animationChangeCallback) {
+  constructor(gameObject) {
     super();
-    this.mainAction = new CreatureAction(animationChangeCallback);
+    this.gameObject = gameObject;
+    this.mainAction = new CreatureAction(gameObject);
   }
 
   tick() {

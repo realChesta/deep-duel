@@ -63,7 +63,6 @@ class DDRenderer extends Renderer {
   }
 
 
-  // TODO More versatile debug mode where each object can do things independently
   draw() {
     if (this.clientEngine)
       super.draw();
@@ -90,16 +89,7 @@ class DDRenderer extends Renderer {
     var container = this.renderedObjects[object.id];
     container.x = object.position.x;
     container.y = object.position.y;
-    object.drawSprite(container);
-
-    if (this.debugMode) {
-      this.debugLayer.lineStyle(1, 0x88FF88, 0.5);
-      this.debugLayer.drawCircle(object.position.x, object.position.y, 2);
-      if (object.hitbox) {
-        let corner = object.hitbox.getUpperLeft(object.position);
-        this.debugLayer.drawRect(corner.x, corner.y, object.hitbox.w, object.hitbox.h);
-      }
-    }
+    object.drawSprite(container, this.debugMode ? this.debugLayer : undefined);
   }
 
   onObjectAdded(object) {

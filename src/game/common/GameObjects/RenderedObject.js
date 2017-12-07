@@ -4,7 +4,8 @@ const {serialize: {DynamicObject}} = require('lance-gg');
 
 /**
  * An abstract class for rendered dynamic objects. Implement the methods
- * initRenderContainer(container) and drawSprite(container) for functionality.
+ * initRenderContainer(container) and drawSprite(container, debugLayer) for
+ * functionality. debugLayer may be undefined.
  *
  * For additional clean-up just before the render container is removed,
  * implement onRenderContainerDestroy(container). initRenderContainer(...) will
@@ -21,7 +22,7 @@ class RenderedObject extends DynamicObject {
     this.class = RenderedObject;
   }
 
-  drawSprite(container) {}
+  drawSprite(container, debugLayer) {}
   initRenderContainer(container) {}
   onRenderContainerDestroy(container) {}
 }

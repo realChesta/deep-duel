@@ -17,14 +17,26 @@ class Entity extends RenderedObject {
 
   onAddToWorld(gameEngine) {
     super.onAddToWorld(gameEngine);
-  }
-
-  getSpeed() {
-    return 2;
+    // TODO Rethink; used in Character.doAttack()
+    this.gameEngine = gameEngine;
   }
 
   takeDamage(amount) {
-    console.log("Damage was taken!", amount, this);
+
+  }
+
+
+  drawSprite(container, debugLayer) {
+    super.drawSprite(container, debugLayer);
+
+    if (debugLayer) {
+      debugLayer.lineStyle(1, 0x88FF88, 0.5);
+      debugLayer.drawCircle(this.position.x, this.position.y, 2);
+      if (this.hitbox) {
+        let corner = this.hitbox.getUpperLeft(this.position);
+        debugLayer.drawRect(corner.x, corner.y, this.hitbox.w, this.hitbox.h);
+      }
+    }
   }
 
 }

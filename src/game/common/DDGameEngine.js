@@ -58,20 +58,16 @@ class DDGameEngine extends GameEngine {
   processInput(inputData, playerId) {
     super.processInput(inputData, playerId);
 
-    this.characters[playerId].processInput(this, inputData);
+    this.characters[playerId].processInput(inputData);
   }
 
   onPlayerJoined(event) {
     let character = new Player(++this.world.idCount, 128, 128, event.playerId);
-    this.characters[this.world.idCount] = character;
     this.addObjectToWorld(character);
   }
 
   onPlayerDisconnected(event) {
-    var playerId = event.playerId;
-    if (!this.characters[playerId])
-      return;
-    this.removeObjectFromWorld(this.characters[playerId].id);
+    this.removeObjectFromWorld(this.characters[event.playerId].id);
   }
 
   keepAlive(event) {

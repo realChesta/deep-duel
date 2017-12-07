@@ -50,6 +50,7 @@ class SpriteLoader {
     // Initialize Pixi's loader to use custom middleware functions (if it wasn't already)
     if (!SpriteLoader.inittedLoader) {
       PIXI.loader.use(SpriteLoader.useLoadedAssetCollection);     // runs after a resource was loaded, but before the .resourceLoaded callback
+      PIXI.loader.onProgress.add((loader, resource) => this.progress(loader.progress, 100));
       SpriteLoader.inittedLoader = true;
     }
 
@@ -112,6 +113,17 @@ class SpriteLoader {
     return {textures, fps, offset};
   }
 
+  static onProgress(func) {
+    // TODO Weak sets?
+    SpriteLoader.progressHandlers.push(func);
+    return SpriteLoader;
+  }
+
+  // TODO Resources (from Pixi's loader) have a smoother onProgress function for each resource individually, use that on-top
+  static progress(value, max) {
+    SpriteLoader.progressHandlers.forEach((f) => f(value, max));
+  }
+
   static useLoadedAssetCollection(resource, next) {
     // We only want to process asset collection files, not anything else that's loaded in the loader
     if (resource.extension !== 'json' || resource.data.type !== 'asset') {
@@ -159,5 +171,6 @@ SpriteLoader.loadedAssets = {};
 SpriteLoader.loadedSpritesheets = {};
 SpriteLoader.inittedLoader = false;
 SpriteLoader.resourceDirectory = '';
+SpriteLoader.progressHandlers = [];
 
 module.exports = SpriteLoader;
