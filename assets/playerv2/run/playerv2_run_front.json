@@ -87,7 +87,7 @@
   "format": "RGBA8888",
   "size": { "w": 220, "h": 33 },
   "scale": "1",
-   "fps": "25",
+   "ticksPerFrame": "2.5",
    "offset": { "x": -11, "y": -24.5}
  }
 }

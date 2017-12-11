@@ -87,6 +87,8 @@
   "image": "playerv2_attack_front.png",
   "format": "RGBA8888",
   "size": { "w": 531, "h": 70 },
-  "scale": "1"
+  "scale": "1",
+   "ticksPerFrame": "5",
+   "offset": { "x": -29.5, "y": -35 }
  }
 }

@@ -24,11 +24,15 @@ class CreatureState extends Serializable {
   }
 
   tick() {
-    this.mainAction.tick();
+    this.mainAction.doTick();
   }
 
   getActionAnimationName() {
     return this.mainAction.type.animationName;
+  }
+
+  getMainActionType() {
+    return this.mainAction.getType();
   }
 
   setMainActionType(type) {

@@ -40,9 +40,49 @@ class Character extends Creature {
     this.state.setMainActionType(Character.ActionTypes.Attack);
   }
 
-  // TODO Organize collision detection; create an ArcCollider or something alike
-  // TODO Create broad and narrow phases for collision detection (don't check everything with everything)
   doAttack() {
+    const attackDashDistance = 4; // TODO move this to a better place
+    this.velocity.add(this.facingDirection.vector.clone().multiplyScalar(attackDashDistance));
+  }
+
+  onAttackTick(ticksPassed) {
+    // TODO Combine with detectAttackCollision's utility constants
+    const sq = (x) => x*x;
+    const fromAngle = (angle) => new TwoVector(Math.cos(angle), Math.sin(angle));
+    const toAngle = (vector) => Math.atan2(vector.y, vector.x);
+
+    // TODO move the constants to a better place
+    const attackBreadth = 4;
+    const checkAttackEveryTicks = 1;
+    const attackStart = 4;
+    const attackDuration = 14;
+    const totalAttackAngle = Math.PI/4;
+
+    let tpos = ticksPassed - attackStart;
+    if (tpos < 0 || tpos > attackDuration || tpos % checkAttackEveryTicks != 0)
+      return;
+
+    tpos /= attackDuration;
+
+    // 0.5 + ln(e^(kx) + e^(-kx))/k with x in [-0.5, 0.5]
+    let x = (tpos - 0.5) * attackBreadth;
+    let expx = Math.exp(x);
+    let breadth = - Math.log(expx + 1/expx) / attackBreadth + 0.5;   // TODO Maybe create a look-up table? Maybe switch functions? https://math.stackexchange.com/questions/30843/is-there-an-analytic-approximation-to-the-minimum-function
+
+
+    let angF = toAngle(this.facingDirection.vector) + totalAttackAngle;
+    let direction = fromAngle(angF - 2 * totalAttackAngle * tpos);
+    let attackAngle = breadth * 2 * totalAttackAngle;
+
+    this.debugMakeThisCoolerDirection = direction;     // TODO Find a cooler way to pass this to the debug mode renderer
+    this.debugMakeThisCoolerAttackAngle = attackAngle;
+
+    this.detectAttackCollision(direction, attackAngle);
+  }
+
+  detectAttackCollision(direction, attackAngle) {
+    // TODO Organize collision detection; create an ArcCollider or something alike
+    // TODO Create broad and narrow phases for collision detection (don't check everything with everything)
     const sq = (x) => x*x;
     const fromAngle = (angle) => new TwoVector(Math.cos(angle), Math.sin(angle));
     const toAngle = (vector) => Math.atan2(vector.y, vector.x);
@@ -58,7 +98,7 @@ class Character extends Creature {
     const sgn = (p1, p2, p3) => {
       return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
     }
-    const isInTriangle = (point, triangle) => {console.log(point, triangle);
+    const isInTriangle = (point, triangle) => {
       let b1 = sgn(point, triangle[0], triangle[1]) < 0;
       let b2 = sgn(point, triangle[1], triangle[2]) < 0;
       let b3 = sgn(point, triangle[2], triangle[0]) < 0;
@@ -68,13 +108,12 @@ class Character extends Creature {
 
     // TODO Move the constants
     const attackRange = 25;
-    const attackAngle = Math.PI/4;
     const xoff = 0;
     const yoff = 0;
 
     const sqrt2 = Math.sqrt(2);
 
-    const dir = this.facingDirection.vector.clone().normalize();
+    const dir = direction.clone().normalize();
     const dida = toAngle(dir);
     const dirm = fromAngle(dida - attackAngle);
     const dirp = fromAngle(dida + attackAngle);
@@ -149,13 +188,7 @@ class Character extends Creature {
   }
 
   calcVelocity(gameEngine) {
-    // TODO Fix a bug where the client ticks too slowly
-    /*if (gameEngine.world.stepCount % 100 == 0) {
-      console.log(gameEngine.world.stepCount, new Date().getTime() - this.ls)
-      this.ls = new Date().getTime();
-    }
-
-    */let action = this.state.mainAction;
+    let action = this.state.mainAction;
 
     if (this.input) {       // While we have input data, override input direction received by the server // TODO Think about this for another second
       var arr = [];
@@ -175,12 +208,21 @@ class Character extends Creature {
       this.facingDirection = this.inputDirection;
     }
 
+    let targetV;
     if (action.getUseInputMovement()) {
-      let v = this.facingDirection.vector.clone();
-      v.multiplyScalar(this.getSpeed());
-      v.multiplyScalar(action.getInputMovementSpeed());
-      this.position.add(v);
-      this.velocity.set(0, 0);      // TODO Add actual friction physics instead of this shullbit
+      targetV = this.facingDirection.vector.clone();
+      targetV.multiplyScalar(this.getSpeed());
+      targetV.multiplyScalar(action.getInputMovementSpeed());
+    } else {
+      targetV = new TwoVector(0, 0);
+    }
+
+    const frictionForce = 0.35;    // TODO move this out
+    let dif = this.velocity.clone().subtract(targetV);
+    if (dif.length() <= frictionForce) {
+      this.velocity = targetV;
+    } else {
+      this.velocity.add(dif.normalize().multiplyScalar(-frictionForce));
     }
   }
 
@@ -226,23 +268,26 @@ class Character extends Creature {
     super.drawSprite(container, debugLayer);
 
     if (debugLayer) {
-      // TODO Merge constants with attack()'s constant (move them out)
-      const fromAngle = (angle) => new TwoVector(Math.cos(angle), Math.sin(angle));
-      const toAngle = (vector) => Math.atan2(vector.y, vector.x);
-      const attackAngle = Math.PI/4;
-      const attackRange = 25;
+      if (this.debugMakeThisCoolerDirection && this.state.mainAction.type == Character.ActionTypes.Attack) {
+        // TODO Merge constants with attack()'s constant (move them out)
+        const fromAngle = (angle) => new TwoVector(Math.cos(angle), Math.sin(angle));
+        const toAngle = (vector) => Math.atan2(vector.y, vector.x);
+        const attackAngle = Math.abs(this.debugMakeThisCoolerAttackAngle);
+        const attackRange = 25;
 
-      const dida = toAngle(this.facingDirection.vector);
-      const dirm = fromAngle(dida - attackAngle);
-      const dirp = fromAngle(dida + attackAngle);
+        const dir = this.debugMakeThisCoolerDirection;
+        const dida = toAngle(dir);
+        const dirm = fromAngle(dida - attackAngle);
+        const dirp = fromAngle(dida + attackAngle);
 
-      debugLayer.lineStyle(1, 0x88FF88, 0.5);
-      debugLayer.arc(this.position.x, this.position.y, attackRange, dida - attackAngle, dida + attackAngle);
-      debugLayer.moveTo(this.position.x, this.position.y);
-      debugLayer.lineTo(this.position.x + dirm.x * attackRange, this.position.y + dirm.y * attackRange);
-      debugLayer.moveTo(this.position.x, this.position.y);
-      debugLayer.lineTo(this.position.x + dirp.x * attackRange, this.position.y + dirp.y * attackRange);
-      debugLayer.moveTo(0, 0);
+        debugLayer.lineStyle(1, 0x88FF88, 0.5);
+        debugLayer.arc(this.position.x, this.position.y, attackRange, dida - attackAngle, dida + attackAngle);
+        debugLayer.moveTo(this.position.x, this.position.y);
+        debugLayer.lineTo(this.position.x + dirm.x * attackRange, this.position.y + dirm.y * attackRange);
+        debugLayer.moveTo(this.position.x, this.position.y);
+        debugLayer.lineTo(this.position.x + dirp.x * attackRange, this.position.y + dirp.y * attackRange);
+        debugLayer.moveTo(0, 0);
+      }
     }
   }
 
@@ -252,9 +297,10 @@ Character.ActionTypes = {
   Idle: CreatureAction.Type.Idle,
   Running: CreatureAction.Type.Running,
   Attack: new CreatureAction.Type(Character, 'attack')
-      .setLockDuration(30)
-      .setActionLength(60)
+      .setLockDuration(40)      // TODO Move this to somewhere else
+      .setActionLength(45)
       .onStart(function() {this.gameObject.doAttack()})
+      .onTick(function(ticksPassed) {this.gameObject.onAttackTick(ticksPassed)})
 };
 
 Character.keyGravity = 60;

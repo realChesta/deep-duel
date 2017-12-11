@@ -92,7 +92,7 @@ class SpriteLoader {
       return;
     let textures = resource.textures; // All textures in an array.
     let meta = resource.data.meta; // resource.data is the JSON data
-    let fps = meta.fps;
+    let ticksPerFrame = meta.ticksPerFrame;
     let offset = {};
     if (meta.offset === 'center' && size instanceof TwoVector) {
       offset = size.clone().multiplyScalar(-0.5);
@@ -103,14 +103,14 @@ class SpriteLoader {
 
 
     // Not all Pixi spritesheet JSONs necessarily have all these properties (especially fps and offset, which are not standard), so we're gonna warn the user if they're not found
-    let check = {'fps': fps, 'offset.x': offset.x, 'offset.y': offset.y};
+    let check = {'ticksPerFrame': ticksPerFrame, 'offset.x': offset.x, 'offset.y': offset.y};
     for (let key of Object.keys(check)) {
       if (check[key] === undefined) {
         console.warn(key + " of resource " + resource.name + " is undefined! (from URL " + resource.url + ")");
       }
     }
 
-    return {textures, fps, offset};
+    return {textures, ticksPerFrame, offset};
   }
 
   static onProgress(func) {

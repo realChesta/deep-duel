@@ -63,7 +63,7 @@
   "format": "RGBA8888",
   "size": { "w": 112, "h": 49 },
   "scale": "1",
-   "fps": "5",
+   "ticksPerFrame": "12",
    "offset": { "x": -8, "y": -24.5}
  }
 }

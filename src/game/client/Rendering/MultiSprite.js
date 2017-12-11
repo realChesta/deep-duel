@@ -16,7 +16,7 @@ class MultiSprite extends PIXI.Container {
       for (let direction of Object.keys(actions[action])) {
         let spritesheet = actions[action][direction];
         let anim = new PIXI.extras.AnimatedSprite(Object.values(spritesheet.textures));
-        anim.animationSpeed = spritesheet.fps / 60; // TODO Switch from PIXI animator/timer to custom one that can be sync'd
+        anim.animationSpeed = 1 / spritesheet.ticksPerFrame; // TODO Switch from PIXI animator/timer to custom one that can be sync'd
         anim.x = spritesheet.offset.x;
         anim.y = spritesheet.offset.y;
         dir[direction] = anim;
@@ -68,7 +68,7 @@ class MultiSprite extends PIXI.Container {
 
     anim = this.getCurrentAnimatedSprite();
     if (anim !== undefined) {
-      anim.play();
+      anim.gotoAndPlay(0);      // TODO Don't always start at 0 - start where the Action is at rn
       this.addChild(anim);
     } else {
       console.warn("No animation defined for " + this.action + " " + this.direction + "!");

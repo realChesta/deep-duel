@@ -11,6 +11,7 @@ class CreatureAction extends Serializable {
       typeId: {type: Serializer.TYPES.INT32},
       lockedFor: {type: Serializer.TYPES.INT32},
       switchIn: {type: Serializer.TYPES.INT32},
+      ticksPassed: {type: Serializer.TYPES.INT32},
       hasNext: {type: Serializer.TYPES.INT8}
     }, super.netScheme);
   }
@@ -21,6 +22,9 @@ class CreatureAction extends Serializable {
     this.forceSetType(other.type);
     this.lockedFor = other.lockedFor;
     this.switchIn = other.switchIn;
+    this.ticksPassed = other.ticksPassed;
+    this.hasNext = other.hasNext;
+    // TODO Think a second; do we need to do .start()?
   }
 
   constructor(gameObject) {
@@ -58,9 +62,15 @@ class CreatureAction extends Serializable {
     this.forceSetType(val);
     this.lockedFor = this.getLockDuration();
     this.switchIn = this.getActionLength();
+    this.ticksPassed = 0;
     this.hasNext = this.getHasNextAction();
     this.start();
     return true;
+  }
+
+  getType() {
+    // Convenience alias - put any logic into get type()
+    return this.type;
   }
 
   forceSetType(val) {
@@ -76,13 +86,12 @@ class CreatureAction extends Serializable {
 
 
 
-  // TODO Stop repeatedly decrementing these and start storing step count instead
-  tick() {
-    this.lockedFor--;
+  // TODO Stop repeatedly incrementing ticksPassed and start storing step count instead
+  doTick() {
+    this.tick(++this.ticksPassed);
 
-    if (this.hasNext) {
-      this.switchIn--;
-      if (this.switchIn <= 0) {
+    if (this.hasNext) {         // TODO Move into its own event handler that can be attached/detached separately
+      if (this.ticksPassed >= this.switchIn) {
         let switchTo = this.getNextAction();
         if (switchTo)
           this.setType(switchTo);
@@ -125,21 +134,23 @@ class Type {
 
 
 Type.defaultProperties = {
-  lockDuration: 0,
+  lockDuration: 0,      // TODO Does it make sense for lock durations to be slightly longer on clients to combat lag?
   hasNextAction: function() {return Boolean(this.getNextAction.call(this, arguments));},
   nextAction: null,
   actionLength: 2,
   animationName: null,
   useInputMovement: false,
   inputMovementSpeed: 0,
-  freezeDirection: true
+  freezeDirection: true,
+  frictionMultiplier: 1
 };
 
 // Events that return a value that evaluates to true are cancelled. Not all events can be cancelled
 // TODO Weak sets instead of arrays?
 Type.defaultEvents = {
   start: [],
-  prepareEnd: [function() {return this.lockedFor > 0}],
+  tick: [],
+  prepareEnd: [function() {return this.ticksPassed < this.lockedFor;}],
   end: []
 };
 
