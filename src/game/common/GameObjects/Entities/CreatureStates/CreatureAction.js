@@ -11,7 +11,7 @@ class CreatureAction extends Serializable {
       typeId: {type: Serializer.TYPES.INT32},
       lockedFor: {type: Serializer.TYPES.INT32},
       switchIn: {type: Serializer.TYPES.INT32},
-      ticksPassed: {type: Serializer.TYPES.INT32},
+      startedAt: {type: Serializer.TYPES.INT32},
       hasNext: {type: Serializer.TYPES.INT8}
     }, super.netScheme);
   }
@@ -20,21 +20,23 @@ class CreatureAction extends Serializable {
     super.syncTo(other);
 
     this.forceSetType(other.type);
-    this.lockedFor = other.lockedFor;
+    this.lockedFor = other.lockedFor;   // TODO remove lockedFor and switchIn, call them every time from the type
     this.switchIn = other.switchIn;
-    this.ticksPassed = other.ticksPassed;
+    this.startedAt = other.startedAt;
     this.hasNext = other.hasNext;
     // TODO Think a second; do we need to do .start()?
   }
 
-  constructor(gameObject) {
+  constructor(gameObject, gameEngine) {
     super();
 
     this.gameObject = gameObject;
-    this.animationChangeCallback = gameObject ? (actionName) => gameObject.onAnimationChange(actionName, undefined) : undefined;
-    // HACK Maybe fix this - will need some ground-breaking lance-gg changes (right now, we need to not set type if gameObject is undefined because then it is called as part of a sync step)
-    if (gameObject !== undefined)
+    this.gameEngine = gameEngine;
+    // TODO HACK Maybe fix this - will need some ground-breaking lance-gg changes (right now, we need to not set type if gameObject is undefined because then it is called as part of a sync step)
+    if (gameObject !== undefined) {
+      this.animationChangeCallback = (actionName) => gameObject.onAnimationChange(actionName, undefined);
       this.setType(CreatureAction.Type.Idle);
+    }
   }
 
 
@@ -62,7 +64,7 @@ class CreatureAction extends Serializable {
     this.forceSetType(val);
     this.lockedFor = this.getLockDuration();
     this.switchIn = this.getActionLength();
-    this.ticksPassed = 0;
+    this.startedAt = this.gameEngine.world.stepCount;
     this.hasNext = this.getHasNextAction();
     this.start();
     return true;
@@ -83,15 +85,18 @@ class CreatureAction extends Serializable {
     }
   }
 
-
+  get ticksPassed() {
+    return this.gameEngine.world.stepCount - this.startedAt;
+  }
 
 
   // TODO Stop repeatedly incrementing ticksPassed and start storing step count instead
   doTick() {
-    this.tick(++this.ticksPassed);
+    let ticksPassed = this.ticksPassed;
+    this.tick(ticksPassed);
 
     if (this.hasNext) {         // TODO Move into its own event handler that can be attached/detached separately
-      if (this.ticksPassed >= this.switchIn) {
+      if (ticksPassed >= this.switchIn) {
         let switchTo = this.getNextAction();
         if (switchTo)
           this.setType(switchTo);
@@ -114,7 +119,7 @@ function upperd(s) {
 class Type {
   constructor(creatureClass, name, id) {
     this.name = name;
-    this.fullName = creatureClass.name + "." + name;
+    this.fullName = creatureClass.name + "." + name;    // TODO this is always undefined.name
     this.properties = Object.assign({}, Type.defaultProperties);
     this.setAnimationName(name);
     this.events = {};

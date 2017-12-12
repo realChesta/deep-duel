@@ -66,7 +66,7 @@ class DDRenderer extends Renderer {
 
   preStep() {
     for (let key of Object.keys(this.renderedObjects)) {
-      this.gameEngine.world.objects[key].tickSprite();
+      this.gameEngine.world.objects[key].tickSprite(this.gameEngine);
     }
   }
 
@@ -75,17 +75,25 @@ class DDRenderer extends Renderer {
       super.draw();
 
     if (this.debugMode)
-      this.debugLayer.clear();
-    this.uiLayer.clear();
+      DDRenderer.pixiClear(this.debugLayer);
+    DDRenderer.pixiClear(this.uiLayer);
 
     for (let key of Object.keys(this.renderedObjects)) {
       this.drawObject.call(this, this.gameEngine.world.objects[key]);
     }
 
 
-
     this.renderer.render(this.entirety);
   }
+
+
+  static pixiClear(pixiW) {
+    for (var i = pixiW.children.length - 1; i >= 0; i--) {
+      pixiW.removeChild(pixiW.children[i]);
+    };
+    pixiW.clear();
+  }
+
 
   runClientStep() {
     if (this.clientEngine)

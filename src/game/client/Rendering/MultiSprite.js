@@ -27,10 +27,16 @@ class MultiSprite extends PIXI.Container {
     this.update(assetCollection.defaultAction, assetCollection.defaultDirection);
   }
 
-  tick() {
+  tick(stepCount) {
+    if (stepCount <= this.lastStepCount)
+      return;
+
+    let delta = stepCount - this.lastStepCount;
     let anim = this.getCurrentAnimatedSprite();
     if (anim !== undefined)
-      anim.update(1);
+      anim.update(delta);
+
+    this.lastStepCount = stepCount;
   }
 
   setAction(val) {
@@ -56,7 +62,7 @@ class MultiSprite extends PIXI.Container {
     return this.getAnimatedSprite(this.action, this.direction);
   }
 
-  update(newActionName, newDirectionName) {
+  update(newActionName, newDirectionName, gameEngine) {
     let anim = this.getCurrentAnimatedSprite();
 
     if (anim !== undefined) {
@@ -74,7 +80,9 @@ class MultiSprite extends PIXI.Container {
 
     anim = this.getCurrentAnimatedSprite();
     if (anim !== undefined) {
-      anim.gotoAndPlay(0);      // TODO Don't always start at 0 - start where the Action is at rn
+      this.lastStepCount = 0;
+      anim.gotoAndPlay(0);
+      //this.tick(action.ticksPassed); // TODO insert how much already passed of the tick
       this.addChild(anim);
     } else {
       console.warn("No animation defined for " + this.action + " " + this.direction + "!");

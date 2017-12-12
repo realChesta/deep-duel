@@ -1,6 +1,7 @@
 'use strict';
 
 const {serialize: {DynamicObject}} = require('lance-gg');
+const DDGameObject = require('./DDGameObject');
 
 /**
  * An abstract class for rendered dynamic objects. Implement the methods
@@ -15,17 +16,17 @@ const {serialize: {DynamicObject}} = require('lance-gg');
  * rendering libraries, be sure to require these inside of the rendering or
  * another client-only function, as else they will also be loaded server-sided.
  */
-class RenderedObject extends DynamicObject {
+class RenderedObject extends DDGameObject {
 
   constructor(id) {
     super(id);
-    this.class = RenderedObject;
   }
 
-  tickSprite() {}     // TODO do we wanna pass game engine? step count?
+  tickSprite() {}
   drawSprite(container, debugLayer) {}
   initRenderContainer(container) {}
   onRenderContainerDestroy(container) {}
 }
 
+// TODO do we need class loader here?
 module.exports = RenderedObject;

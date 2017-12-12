@@ -27,6 +27,7 @@ class DDGameEngine extends GameEngine {
     this.on('playerJoined', this.onPlayerJoined.bind(this));
     this.on('playerDisconnected', this.onPlayerDisconnected.bind(this));
     this.on('keepAlive', this.keepAlive.bind(this));
+    this.on('server__init', this.initGame.bind(this));
 
     this.characters = {};
 
@@ -41,11 +42,10 @@ class DDGameEngine extends GameEngine {
 
   start() {
     super.start();
-    this.addObjectToWorld(new Scarecrow(++this.world.idCount, 70, 70));
   }
 
   initGame() {
-    // Quite dusty here...
+    this.addObjectToWorld(new Scarecrow(++this.world.idCount, 70, 70));
   }
 
 

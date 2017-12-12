@@ -1,7 +1,7 @@
 Todos may be found shattered around in code
 
-// BUG Syncing is kinda buggy. To reproduce, open the game in two windows, then pause one's script while moving in the other. Full syncs only happen when a player joins, but they should regularly happen
 // TODO Consider splitting common and client parts of some classes even further - eg. split Player into PlayerRenderer (client-only) and Player, whereas the former is returned by the latter
 // TODO Adjust player sprite offsets
 // TODO Multiplayer on slow connections is still hella laggy. Extrapolating needs another thought, especially how player movement is extrapolated. In addition to that, the server maybe shouldn't always have the authority - in some cases, the client should be able to teleport small steps (consider?). Maybe some delayInputCount depending on the current ping? Or simply tuning down extrapolation
-// TODO Create an own sprite for the blue thingy when attacking
+// TODO Create an own sprite for the blue thingy in the attack animation
+// TODO For some reason, when connecting as a new client, the state (in the test base health) isn't sync'd properly until that one updates itself (eg. action changes). Find out why

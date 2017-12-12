@@ -12,6 +12,11 @@ class Scarecrow extends Creature {
   }
 
 
+  getDefaultMaxHealth() {
+    return 5;
+  }
+
+
   initRenderContainer(container) {
     const PIXI = require('pixi.js');
     this.graphics = new PIXI.Graphics();
@@ -24,17 +29,17 @@ class Scarecrow extends Creature {
     delete this.graphics;
   }
 
-  // TODO change this with Player.onAnimationChange()
-  onAnimationChange(newAction, newFacingDirection) {
+  drawSprite(container, debugLayer) {
+    super.drawSprite(container, debugLayer);
     if (this.graphics != null) {
-      let color = 0xFFFF00;
+      let color = 0x010100;
 
-      if (newAction === 'idle') {
-        color = 0x0000FF;
-      } else if (newAction === 'hurt') {
-        color = 0xFF0000;
+      if (this.state.getMainActionType() == Scarecrow.ActionTypes.Idle) {
+        color = 0x000001;
+      } else if (this.state.getMainActionType() == Scarecrow.ActionTypes.Hurt) {
+        color = 0x010000;
       }
-
+      color *= Math.round(255 * this.health / this.maxHealth);
 
       this.graphics.clear();
 
@@ -45,10 +50,9 @@ class Scarecrow extends Creature {
     }
   }
 
-  takeDamage() {
-    if (this.state.setMainActionType(Scarecrow.ActionTypes.Hurt)) {
-      super.takeDamage();
-    }
+  takeDamage(damage) {
+    super.takeDamage(damage);
+    this.state.setMainActionType(Scarecrow.ActionTypes.Hurt);
   }
 
 }

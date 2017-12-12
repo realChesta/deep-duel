@@ -42,6 +42,7 @@ class Character extends Creature {
 
   doAttack() {
     const attackDashDistance = 4; // TODO move this to a better place
+    this.lastAttackHitChangeThis = [];  // TODO Move this somewhere else, probably in some kind of Action metadata or something
     this.velocity.add(this.facingDirection.vector.clone().multiplyScalar(attackDashDistance));
   }
 
@@ -123,6 +124,8 @@ class Character extends Creature {
 
         if (obj === this)
           return false;
+        if (this.lastAttackHitChangeThis[obj.id])
+          return false;
 
         const hb = obj.hitbox;
         if (!hb)
@@ -184,6 +187,7 @@ class Character extends Creature {
     for (let hit of hits) {
       if (typeof hit.takeDamage === 'function')
         hit.takeDamage(1);
+      this.lastAttackHitChangeThis[hit.id] = true;
     }
   }
 
@@ -226,8 +230,14 @@ class Character extends Creature {
     }
   }
 
+  // TODO move this to a cooler place, wherever we've moved the other stats
   getSpeed() {
     return 2;
+  }
+
+  // TODO move this to a cooler place, wherever we've moved the other stats
+  getDefaultMaxHealth() {
+    return 12;
   }
 
   tickInputs(gameEngine) {
@@ -256,7 +266,7 @@ class Character extends Creature {
   }
 
   takeDamage(damage) {
-    console.log("Character " + this.playerId + " took " + damage + " damage!");
+    super.takeDamage(damage);
   }
 
 

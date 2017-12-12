@@ -17,9 +17,9 @@ class Player extends Character {
     delete this.sprite;
   }
 
-  tickSprite() {
+  tickSprite(gameEngine) {
     if (this.sprite) {
-      this.sprite.tick();
+      this.sprite.tick(this.state.mainAction.ticksPassed);
     }
   }
 
@@ -32,7 +32,7 @@ class Player extends Character {
     super.onAnimationChange(newAction, newFacingDirection);
 
     if (this.sprite !== undefined) {
-      this.sprite.update(newAction, newFacingDirection);
+      this.sprite.update(newAction, newFacingDirection, this.gameEngine);
     }
   }
 
