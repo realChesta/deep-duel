@@ -146,7 +146,7 @@ Type.defaultProperties = {
 };
 
 // Events that return a value that evaluates to true are cancelled. Not all events can be cancelled
-// TODO Weak sets instead of arrays?
+// TODO Weak sets instead of an object?
 Type.defaultEvents = {
   start: [],
   tick: [],
@@ -155,41 +155,48 @@ Type.defaultEvents = {
 };
 
 
-// TODO Check if the methods we're registering for events and properties aren't already set
 for (let property of Object.keys(Type.defaultProperties)) {
   let ud = upperd(property);
 
-  CreatureAction.prototype['get' + ud] = function() {
+  setFunction(CreatureAction, 'get' + ud, function() {
     if (!this.type) return undefined;
     let val = this.type.properties[property];
     if (typeof val === 'function')
       return val.call(this);
     return val;
-  };
+  });
 
-  Type.prototype['set' + ud] = function(val) {
+  setFunction(Type, 'set' + ud, function(val) {
     this.properties[property] = val;
     return this;
-  };
+  });
 }
 
 
 for (let event of Object.keys(Type.defaultEvents)) {
   let ud = upperd(event);
 
-  CreatureAction.prototype[event] = function() {
+  setFunction(CreatureAction, event, function() {
     let cancelled = false;
     this.type.events[event].forEach((func) => {
       if (func.apply(this, arguments))
         cancelled = true;
     });
     return cancelled;
-  };
+  });
 
-  Type.prototype['on' + ud] = function(handler) {
+  setFunction(Type, 'on' + ud, function(handler) {
     this.events[event].push(handler);
     return this;
-  };
+  });
+}
+
+
+function setFunction(cl, name, func) {
+  if (cl.prototype[name] !== undefined) {
+    console.warn("Overriding " + name + " of a class with a custom function!", cl);
+  }
+  cl.prototype[name] = func;
 }
 
 Type.Idle = new Type(Creature, 'idle').setUseInputMovement(false)
