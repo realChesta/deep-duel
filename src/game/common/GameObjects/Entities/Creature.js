@@ -3,7 +3,7 @@
 const Entity = require('./Entity');
 const Direction = require('../../Utils/Direction');
 const Serializer = require('lance-gg').serialize.Serializer;
-const CreatureState = require('./CreatureState');
+const CreatureState = require('./CreatureStates/CreatureState');
 const Hitbox = require('../../Physics/Collision/Hitbox');
 
 class Creature extends Entity {

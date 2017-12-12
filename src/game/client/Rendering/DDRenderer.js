@@ -47,6 +47,7 @@ class DDRenderer extends Renderer {
     // TODO When the renderer gets uninitialised/removed (especially on server UI), remove these handlers
     this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
     this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
+    this.gameEngine.on('preStep', this.preStep.bind(this));
 
     if (this.gameEngine.world) {
       for (let object of Object.values(this.gameEngine.world.objects)) {
@@ -62,6 +63,12 @@ class DDRenderer extends Renderer {
     return this.renderer.view;
   }
 
+
+  preStep() {
+    for (let key of Object.keys(this.renderedObjects)) {
+      this.gameEngine.world.objects[key].tickSprite();
+    }
+  }
 
   draw() {
     if (this.clientEngine)

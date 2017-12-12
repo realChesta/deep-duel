@@ -94,7 +94,7 @@ class DDClientEngine extends ClientEngine {
     if (this.gameEngine.world.stepCount % 20 == 0) {
       // send keep alive packet
       this.broadcastEvent('keepAlive');
-      // TODO Check if client input and server Direction match, if not, fix that
+      // TODO Check if client input and server inputDirection match, if not, fix that
     }
   }
 

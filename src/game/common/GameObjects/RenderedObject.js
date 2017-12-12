@@ -22,6 +22,7 @@ class RenderedObject extends DynamicObject {
     this.class = RenderedObject;
   }
 
+  tickSprite() {}     // TODO do we wanna pass game engine? step count?
   drawSprite(container, debugLayer) {}
   initRenderContainer(container) {}
   onRenderContainerDestroy(container) {}

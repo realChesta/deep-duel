@@ -15,8 +15,8 @@ class MultiSprite extends PIXI.Container {
       let dir = {};
       for (let direction of Object.keys(actions[action])) {
         let spritesheet = actions[action][direction];
-        let anim = new PIXI.extras.AnimatedSprite(Object.values(spritesheet.textures));
-        anim.animationSpeed = 1 / spritesheet.ticksPerFrame; // TODO Switch from PIXI animator/timer to custom one that can be sync'd
+        let anim = new PIXI.extras.AnimatedSprite(Object.values(spritesheet.textures), false);
+        anim.animationSpeed = 1 / spritesheet.ticksPerFrame;
         anim.x = spritesheet.offset.x;
         anim.y = spritesheet.offset.y;
         dir[direction] = anim;
@@ -25,6 +25,12 @@ class MultiSprite extends PIXI.Container {
     }
 
     this.update(assetCollection.defaultAction, assetCollection.defaultDirection);
+  }
+
+  tick() {
+    let anim = this.getCurrentAnimatedSprite();
+    if (anim !== undefined)
+      anim.update(1);
   }
 
   setAction(val) {

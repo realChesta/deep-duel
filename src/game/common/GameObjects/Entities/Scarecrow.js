@@ -1,7 +1,7 @@
 'use strict';
 
 const Creature = require('./Creature');
-const CreatureAction = require('./Actions/CreatureAction');
+const CreatureAction = require('./CreatureStates/CreatureAction');
 const Hitbox = require('../../Physics/Collision/Hitbox');
 
 class Scarecrow extends Creature {

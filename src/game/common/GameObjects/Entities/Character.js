@@ -1,7 +1,7 @@
 'use strict';
 
 const Creature = require('./Creature');
-const CreatureAction = require('./Actions/CreatureAction');
+const CreatureAction = require('./CreatureStates/CreatureAction');
 const Direction = require('../../Utils/Direction');
 const Hitbox = require('../../Physics/Collision/Hitbox');
 const {serialize: {TwoVector}} = require('lance-gg');
@@ -67,7 +67,7 @@ class Character extends Creature {
     // 0.5 + ln(e^(kx) + e^(-kx))/k with x in [-0.5, 0.5]
     let x = (tpos - 0.5) * attackBreadth;
     let expx = Math.exp(x);
-    let breadth = - Math.log(expx + 1/expx) / attackBreadth + 0.5;   // TODO Maybe create a look-up table? Maybe switch functions? https://math.stackexchange.com/questions/30843/is-there-an-analytic-approximation-to-the-minimum-function
+    let breadth = - Math.log(expx + 1/expx) / attackBreadth + 0.5;   // TODO Maybe create a look-up table? Maybe switch the function? See https://math.stackexchange.com/questions/30843/is-there-an-analytic-approximation-to-the-minimum-function
 
 
     let angF = toAngle(this.facingDirection.vector) + totalAttackAngle;
@@ -253,10 +253,6 @@ class Character extends Creature {
         this.input[key] = gameEngine.world.stepCount;
       }
     }
-  }
-
-  fire() {
-    // TODO Add projectiles
   }
 
   takeDamage(damage) {

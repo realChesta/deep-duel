@@ -5,6 +5,7 @@ const SpriteLoader = require('../../Utils/SpriteLoader');
 
 class Player extends Character {
 
+  // TODO Move rendering stuff to another class
   initRenderContainer(container) {
     const MultiSprite = require('../../../client/Rendering/MultiSprite');
     this.sprite = new MultiSprite(playerAssetsId);
@@ -16,12 +17,17 @@ class Player extends Character {
     delete this.sprite;
   }
 
+  tickSprite() {
+    if (this.sprite) {
+      this.sprite.tick();
+    }
+  }
 
-  // TODO Consider calling this on every step where action has changed instead of all the time an action changes
+
+  // TODO Consider calling this on every step where action has changed instead of whenever an action changes
   // Currently, setting an action and setting it back in the same step will still set the sprite's animation
   // TODO Currently, this method takes action/direction names - change that
   // TODO Give a new name - this triggers when state changes, not necessarily animation (it's not even a given each Creature has an animation)
-  // TODO Make it reset certain animations when you trigger it multiple times (eg. attacking and animation canceling)
   onAnimationChange(newAction, newFacingDirection) {
     super.onAnimationChange(newAction, newFacingDirection);
 

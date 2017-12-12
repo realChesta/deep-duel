@@ -1,7 +1,7 @@
 'use strict';
 
 const {serialize: {Serializable, Serializer}} = require('lance-gg');
-const CreatureAction = require('./Actions/CreatureAction');
+const CreatureAction = require('./CreatureAction');
 
 // TODO Consider moving some parts of Action into a new class Effect, which can be applied to a player outside of Action?
 class CreatureState extends Serializable {
@@ -32,7 +32,7 @@ class CreatureState extends Serializable {
   }
 
   getMainActionType() {
-    return this.mainAction.getType();
+    return this.mainAction.type;
   }
 
   setMainActionType(type) {
@@ -42,5 +42,5 @@ class CreatureState extends Serializable {
 }
 
 
-require('../../Utils/ClassLoader').registerClass(CreatureState);
+require('../../../Utils/ClassLoader').registerClass(CreatureState);
 module.exports = CreatureState;
