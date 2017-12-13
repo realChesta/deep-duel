@@ -98,6 +98,11 @@ class DDClientEngine extends ClientEngine {
     }
   }
 
+
+  get character() {
+    return this.gameEngine.characters[this.playerId];
+  }
+
   /**
    * Broadcasts a message with some data to the server and the game engine.
    * Other clients won't receive it by default

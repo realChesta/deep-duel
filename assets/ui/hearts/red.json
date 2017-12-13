@@ -1,0 +1,43 @@
+{ "frames": {
+   "red 0.ase": {
+    "frame": { "x": 0, "y": 0, "w": 13, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 13, "h": 12 },
+    "sourceSize": { "w": 13, "h": 12 },
+    "duration": 500
+   },
+   "red 1.ase": {
+    "frame": { "x": 13, "y": 0, "w": 13, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 13, "h": 12 },
+    "sourceSize": { "w": 13, "h": 12 },
+    "duration": 500
+   },
+   "red 2.ase": {
+    "frame": { "x": 26, "y": 0, "w": 13, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 13, "h": 12 },
+    "sourceSize": { "w": 13, "h": 12 },
+    "duration": 500
+   },
+   "red 3.ase": {
+    "frame": { "x": 39, "y": 0, "w": 13, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 13, "h": 12 },
+    "sourceSize": { "w": 13, "h": 12 },
+    "duration": 500
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.1.8-dev",
+  "image": "red.png",
+  "format": "RGBA8888",
+  "size": { "w": 52, "h": 12 },
+  "scale": "1"
+ }
+}

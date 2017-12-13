@@ -16,9 +16,12 @@ class MultiSprite extends PIXI.Container {
       for (let direction of Object.keys(actions[action])) {
         let spritesheet = actions[action][direction];
         let anim = new PIXI.extras.AnimatedSprite(Object.values(spritesheet.textures), false);
-        anim.animationSpeed = 1 / spritesheet.ticksPerFrame;
+        anim.animationSpeed = 1 / (spritesheet.ticksPerFrame || Infinity);
         anim.x = spritesheet.offset.x;
         anim.y = spritesheet.offset.y;
+        if (!(spritesheet.offset && spritesheet.offset.x && spritesheet.offset.y)) {
+          throw new Error("Sprite offset data is invalid or undefined: " + spritesheet);
+        }
         dir[direction] = anim;
       }
       this.sprites[action] = dir;
@@ -71,7 +74,7 @@ class MultiSprite extends PIXI.Container {
     }
 
     this.action = newActionName || this.action;
-    if (newDirectionName !== 'zero')
+    if (newDirectionName !== 'zero')       // TODO We have input and facing direction now, make use of that
       this.direction = newDirectionName || this.direction;
 
     if (this.action === undefined || this.direction === undefined) {
@@ -82,7 +85,7 @@ class MultiSprite extends PIXI.Container {
     if (anim !== undefined) {
       this.lastStepCount = 0;
       anim.gotoAndPlay(0);
-      //this.tick(action.ticksPassed); // TODO insert how much already passed of the tick
+      //this.tick(action.ticksPassed); // TODO insert how much already passed of the action
       this.addChild(anim);
     } else {
       console.warn("No animation defined for " + this.action + " " + this.direction + "!");

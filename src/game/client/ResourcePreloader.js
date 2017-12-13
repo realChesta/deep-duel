@@ -8,6 +8,7 @@ class ResourcePreloader {
   // Example: Player needs to do some calls to SpriteLoader in order to set up, so we already load the Player class early.
   static async preload() {
     require('../common/GameObjects/Entities/Player');
+    require('./Rendering/DDRenderer');
 
     await require('../common/Utils/SpriteLoader').loadAll();
   }

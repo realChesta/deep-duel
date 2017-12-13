@@ -14,7 +14,8 @@
     "socket.io": "^1.4.8",
     "pixi.js": "^4.5.0",
     "jquery": "^3.2.1",
-    "electron": "~1.7.8"
+    "electron": "~1.7.8",
+    "split": "~1.0.1"
   },
   "devDependencies": {
     "babelify": "^7.3.0",

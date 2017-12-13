@@ -1,3 +1,5 @@
+'use strict';
+
 const DDClientEngine = require('../../game/client/DDClientEngine');
 const DDGameEngine = require('../../game/common/DDGameEngine');
 const SpriteLoader = require('../../game/common/Utils/SpriteLoader');
@@ -5,7 +7,6 @@ const {physics: {SimplePhysicsEngine}} = require('lance-gg');
 const $ = require('jquery');
 
 const qsOptions = require('query-string').parse(location.search);
-let clientEngine = new DDClientEngine(qsOptions);
 
 // Dummy resources for testing the loading screen. Cross-origin requests must be allowed in browser
 //require("pixi.js").loader.add('https://www.hq.nasa.gov/alsj/a17/A17_FlightPlan.pdf');
@@ -21,11 +22,11 @@ async function onReady() {
   isReady = true;
   await spriteLoaderPromise;
 
-  var view = clientEngine.renderer.getView();
-  var loadingBar = $('.loadingBar');
+  let clientEngine = new DDClientEngine(qsOptions);
+  let view = clientEngine.renderer.getView();
+  let loadingBar = $('.loadingBar');
   loadingBar.fadeOut(750);
-  console.log(loadingBar);
-  var gameRenderer = $('#gameRenderer');
+  let gameRenderer = $('#gameRenderer');
   $(view).hide();
   gameRenderer.prepend(view);
   $(view).fadeIn(250);

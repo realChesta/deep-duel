@@ -3,6 +3,7 @@
 const {render: {Renderer}} = require('lance-gg');
 const PIXI = require('pixi.js');
 const RenderedObject = require('../../common/GameObjects/RenderedObject');
+const SpriteLoader = require('../../common/Utils/SpriteLoader');
 
 class DDRenderer extends Renderer {
 
@@ -28,6 +29,9 @@ class DDRenderer extends Renderer {
     this.renderer = PIXI.autoDetectRenderer(this.entirety.scale.x * this.gameEngine.settings.width, this.entirety.scale.y * this.gameEngine.settings.height);
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
+
+    if (!DDRenderer.sprites)
+      DDRenderer.sprites = {hearts: SpriteLoader.getSpritesheet(heartsSpritesId)};
 
 
 
@@ -75,13 +79,33 @@ class DDRenderer extends Renderer {
       super.draw();
 
     if (this.debugMode)
-      DDRenderer.pixiClear(this.debugLayer);
+      DDRenderer.pixiClear(this.debugLayer);      // TODO Maybe we shouldn't clear all children here
     DDRenderer.pixiClear(this.uiLayer);
 
     for (let key of Object.keys(this.renderedObjects)) {
       this.drawObject.call(this, this.gameEngine.world.objects[key]);
     }
 
+    // TODO r console.log(this.clientEngine.character, DDRenderer.sprites);
+    if (this.clientEngine && this.clientEngine.character && DDRenderer.sprites.hearts) {
+      let character = this.clientEngine.character;
+      let maxHealth = character.maxHealth;
+      let health = character.health;
+      let heartsSprites = DDRenderer.sprites.hearts;
+      let healthBar = new PIXI.Container();
+      let texturesArr = Object.values(heartsSprites.textures);
+      let sc = texturesArr.length;
+      healthBar.position.x = this.gameEngine.settings.width - Math.ceil(maxHealth / sc) * texturesArr[0].width;   // TODO Instead of checking the first texture, make this dynamic
+      healthBar.position.y = 0;
+      for (let i = 0; i < Math.ceil(health / sc); i++) {
+        let txt = texturesArr[sc - Math.min(health - i * sc, sc)];
+        let heart = new PIXI.Sprite(txt);
+        heart.position.x = i * txt.width + heartsSprites.offset.x;
+        heart.position.y = heartsSprites.offset.y;
+        healthBar.addChild(heart);
+      }
+      this.uiLayer.addChild(healthBar);
+    }
 
     this.renderer.render(this.entirety);
   }
@@ -140,6 +164,9 @@ class DDRenderer extends Renderer {
   }
 
 }
+
+
+const heartsSpritesId = SpriteLoader.add('assets/ui/hearts/red.json');
 
 
 module.exports = DDRenderer;

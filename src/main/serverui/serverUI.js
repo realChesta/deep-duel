@@ -4,11 +4,17 @@ const electron = require('electron');
 const {app, BrowserWindow, powerSaveBlocker} = electron;
 const url = require('url');
 const path = require('path');
+const NodePatches = require('../server/NodePatches');
 
 let mainWindow;
 
 app.commandLine.appendSwitch("disable-background-timer-throttling");
 powerSaveBlocker.start('prevent-display-sleep');
+
+NodePatches.initInteractiveServerConsole((js, callback) => {
+  if (mainWindow)
+    mainWindow.webContents.executeJavaScript(js, false, callback);
+});
 
 function createWindow () {
   mainWindow = new BrowserWindow({

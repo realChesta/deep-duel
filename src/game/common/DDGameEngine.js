@@ -3,6 +3,7 @@
 // Apply band-aid patch to lance-gg
 require('./Utils/buggy-gg');
 
+const DeepDuel = require('./DeepDuel');
 const ClassLoader = require('./Utils/ClassLoader');
 const {GameEngine} = require('lance-gg');
 const Entity = require('./GameObjects/Entities/Entity');
@@ -13,6 +14,7 @@ const Scarecrow = require('./GameObjects/Entities/Scarecrow');
 const DDCollisionDetection = require('./Physics/Collision/DDCollisionDetection');
 const Hitbox = require('./Physics/Collision/Hitbox');
 
+DeepDuel.gameEngines = [];
 
 
 // TODO Rename playerId everywhere
@@ -38,6 +40,8 @@ class DDGameEngine extends GameEngine {
 
     this.physicsEngine.collisionDetection = new DDCollisionDetection();
 
+
+    DeepDuel.gameEngines.push(this);
   }
 
   start() {

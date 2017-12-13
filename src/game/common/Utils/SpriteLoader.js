@@ -42,7 +42,6 @@ class SpriteLoader {
 
     // Add all the sprites to the PIXI loader
     let toL = Object.keys(SpriteLoader.toLoad);
-    if (toL)
     for (let name of toL) {
       PIXI.loader.add(name, SpriteLoader.resourceDirectory + SpriteLoader.toLoad[name], SpriteLoader.onResourceLoaded);
     }
@@ -73,9 +72,9 @@ class SpriteLoader {
 
 
   static onResourceLoaded(resource) {
-    if (resource.extension === 'json' && resource.data.type === 'asset')
+    if (resource.extension === 'json' && resource.data && resource.data.type === 'asset')
       SpriteLoader.loadedAssets[resource.name] = SpriteLoader.generateAssetCollection(resource);
-    else if (resource.extension === 'json' && resource.data.frames) // This is used by Pixi's spritesheet parser. There could be some false negatives (any JSON file with a frames property), but I did not get up with it
+    else if (resource.extension === 'json' && resource.data && resource.data.frames) // This is used by Pixi's spritesheet parser. There could be some false negatives (any JSON file with a frames property), but I did not get up with it
       SpriteLoader.loadedSpritesheets[resource.name] = SpriteLoader.generateSpritesheet(resource);
   }
 
@@ -93,22 +92,12 @@ class SpriteLoader {
     let textures = resource.textures; // All textures in an array.
     let meta = resource.data.meta; // resource.data is the JSON data
     let ticksPerFrame = meta.ticksPerFrame;
-    let offset = {};
-    if (meta.offset === 'center' && size instanceof TwoVector) {
-      offset = size.clone().multiplyScalar(-0.5);
-    }
-    else if (meta.offset !== undefined){
+    let offset;
+    if (meta.offset !== undefined)
       offset = new TwoVector(meta.offset.x, meta.offset.y);
-    }
+    else
+      offset = new TwoVector(0, 0);
 
-
-    // Not all Pixi spritesheet JSONs necessarily have all these properties (especially fps and offset, which are not standard), so we're gonna warn the user if they're not found
-    let check = {'ticksPerFrame': ticksPerFrame, 'offset.x': offset.x, 'offset.y': offset.y};
-    for (let key of Object.keys(check)) {
-      if (check[key] === undefined) {
-        console.warn(key + " of resource " + resource.name + " is undefined! (from URL " + resource.url + ")");
-      }
-    }
 
     return {textures, ticksPerFrame, offset};
   }
@@ -126,7 +115,7 @@ class SpriteLoader {
 
   static useLoadedAssetCollection(resource, next) {
     // We only want to process asset collection files, not anything else that's loaded in the loader
-    if (resource.extension !== 'json' || resource.data.type !== 'asset') {
+    if (resource.extension !== 'json' || !resource.data || resource.data.type !== 'asset') {
       next(); // We must explicitly tell the loader to progress to the next middleware function
       return;
     }

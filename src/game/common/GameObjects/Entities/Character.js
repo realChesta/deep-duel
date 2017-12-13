@@ -42,7 +42,7 @@ class Character extends Creature {
 
   doAttack() {
     const attackDashDistance = 4; // TODO move this to a better place
-    this.lastAttackHitChangeThis = [];  // TODO Move this somewhere else, probably in some kind of Action metadata or something
+    this.lastAttackHitChangeThis = [];  // TODO Move this somewhere else, probably in some kind of Action metadata or something // TODO Technically, we have to sync this (occasional bugs occur)
     this.velocity.add(this.facingDirection.vector.clone().multiplyScalar(attackDashDistance));
   }
 
@@ -265,7 +265,7 @@ class Character extends Creature {
     }
   }
 
-  takeDamage(damage) {
+  takeDamage(damage) {     // TODO Shouldn't taking damage/hurt be some kind of secondary action/effect?
     super.takeDamage(damage);
   }
 
