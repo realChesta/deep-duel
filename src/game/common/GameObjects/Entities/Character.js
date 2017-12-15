@@ -270,10 +270,32 @@ class Character extends Creature {
   }
 
 
-  drawSprite(container, debugLayer) {
-    super.drawSprite(container, debugLayer);
 
-    if (debugLayer) {
+  initRenderContainer(container, debugContainer) {
+    super.initRenderContainer(container, debugContainer);
+
+    if (debugContainer) {
+      this.hitboxDebugGraphics = new (require("pixi.js").Graphics)();
+      debugContainer.addChild(this.hitboxDebugGraphics);
+    }
+  }
+
+  onRenderContainerDestroy(container, debugContainer) {
+    super.onRenderContainerDestroy(container, debugContainer);
+
+    if (this.hitboxDebugGraphics) {
+      if (debugContainer)
+        debugContainer.removeChild(this.hitboxGraphics);    // We don't *need* to clean this up as it'll happen automatically, but it's still good practice to do
+      this.hitboxDebugGraphics = undefined;
+    }
+  }
+
+
+
+  drawSprite(container, debugContainer) {
+    super.drawSprite(container, debugContainer);
+
+    if (this.hitboxDebugGraphics) {
       if (this.debugMakeThisCoolerDirection && this.state.mainAction.type == Character.ActionTypes.Attack) {
         // TODO Merge constants with attack()'s constant (move them out)
         const fromAngle = (angle) => new TwoVector(Math.cos(angle), Math.sin(angle));
@@ -286,13 +308,14 @@ class Character extends Creature {
         const dirm = fromAngle(dida - attackAngle);
         const dirp = fromAngle(dida + attackAngle);
 
-        debugLayer.lineStyle(1, 0x88FF88, 0.5);
-        debugLayer.arc(this.position.x, this.position.y, attackRange, dida - attackAngle, dida + attackAngle);
-        debugLayer.moveTo(this.position.x, this.position.y);
-        debugLayer.lineTo(this.position.x + dirm.x * attackRange, this.position.y + dirm.y * attackRange);
-        debugLayer.moveTo(this.position.x, this.position.y);
-        debugLayer.lineTo(this.position.x + dirp.x * attackRange, this.position.y + dirp.y * attackRange);
-        debugLayer.moveTo(0, 0);
+        this.hitboxDebugGraphics.clear();
+        this.hitboxDebugGraphics.lineStyle(1, 0x88FF88, 0.5);
+        this.hitboxDebugGraphics.arc(this.position.x, this.position.y, attackRange, dida - attackAngle, dida + attackAngle);
+        this.hitboxDebugGraphics.moveTo(this.position.x, this.position.y);
+        this.hitboxDebugGraphics.lineTo(this.position.x + dirm.x * attackRange, this.position.y + dirm.y * attackRange);
+        this.hitboxDebugGraphics.moveTo(this.position.x, this.position.y);
+        this.hitboxDebugGraphics.lineTo(this.position.x + dirp.x * attackRange, this.position.y + dirp.y * attackRange);
+        this.hitboxDebugGraphics.moveTo(0, 0);
       }
     }
   }

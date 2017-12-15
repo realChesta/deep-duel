@@ -4,6 +4,7 @@ const {serialize: {Serializable, Serializer}} = require('lance-gg');
 const CreatureAction = require('./CreatureAction');
 const CreatureResource = require('./CreatureResource');
 const CreatureResourceHolder = require('./CreatureResourceHolder');
+const Direction = require('../../../Utils/Direction');
 
 // TODO Consider moving some parts of Action into a new class Effect, which can be applied to a player outside of Action?
 class CreatureState extends Serializable {
@@ -12,6 +13,8 @@ class CreatureState extends Serializable {
     return Object.assign({
       mainAction: {type: Serializer.TYPES.CLASSINSTANCE},
       baseHealth: {type: Serializer.TYPES.CLASSINSTANCE},
+      inputDirectionVector: {type: Serializer.TYPES.CLASSINSTANCE},
+      facingDirectionVector: {type: Serializer.TYPES.CLASSINSTANCE},
     }, super.netScheme);
   }
 
@@ -19,6 +22,8 @@ class CreatureState extends Serializable {
     super.syncTo(other);
     this.mainAction.syncTo(other.mainAction);
     this.baseHealth.syncTo(other.baseHealth);
+    this.inputDirection = other.inputDirection;
+    this.facingDirection = other.facingDirection;
   }
 
   constructor(gameObject, gameEngine, maxHealth) {
@@ -28,7 +33,11 @@ class CreatureState extends Serializable {
     this.gameEngine = gameEngine;
     this.mainAction = new CreatureAction(gameObject, gameEngine);
     this.baseHealth = new CreatureResource(maxHealth);
+
+    this.inputDirection = Direction.ZERO;
+    this.facingDirection = this.inputDirection;
   }
+
 
 
 
@@ -47,12 +56,53 @@ class CreatureState extends Serializable {
 
 
 
-  tick(gameEngine) {
-    this.mainAction.doTick(gameEngine);
+
+
+
+  get inputDirectionVector() {
+    return this.inputDirection.vector;
   }
 
-  getActionAnimationName() {
-    return this.mainAction.type.animationName;
+  set inputDirectionVector(val) {
+    this.inputDirection = Direction.getClosest(val);
+  }
+
+  get facingDirectionVector() {
+    return this.facingDirection.vector;
+  }
+
+  set facingDirectionVector(val) {
+    this.facingDirection = Direction.getClosest(val);
+  }
+
+  get inputDirection() {
+    return this._inputDirection;
+  }
+
+  set inputDirection(val) {
+    this._inputDirection = val;
+  }
+
+  get facingDirection() {
+    return this._facingDirection || Direction.DOWN;
+  }
+
+  set facingDirection(val) {
+    if (val === Direction.ZERO)
+      val = null;
+    if (val === this.facingDirection)
+      return;
+    let niu = val || this.facingDirection;
+    this._facingDirection = niu;
+  }
+
+
+
+
+
+
+  tick(gameEngine) {
+    this.mainAction.doTick(gameEngine);
   }
 
   getMainActionType() {

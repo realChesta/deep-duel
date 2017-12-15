@@ -24,7 +24,6 @@ class CreatureAction extends Serializable {
     this.switchIn = other.switchIn;
     this.startedAt = other.startedAt;
     this.hasNext = other.hasNext;
-    // TODO Think a second; do we need to do .start()?
   }
 
   constructor(gameObject, gameEngine) {
@@ -34,7 +33,6 @@ class CreatureAction extends Serializable {
     this.gameEngine = gameEngine;
     // TODO HACK Maybe fix this - will need some ground-breaking lance-gg changes (right now, we need to not set type if gameObject is undefined because then it is called as part of a sync step)
     if (gameObject !== undefined) {
-      this.animationChangeCallback = (actionName) => gameObject.onAnimationChange(actionName, undefined);
       this.setType(CreatureAction.Type.Idle);
     }
   }
@@ -76,13 +74,7 @@ class CreatureAction extends Serializable {
   }
 
   forceSetType(val) {
-    let oldan = this.getAnimationName();
     this._type = val;
-    let newan = this.getAnimationName();
-    // TODO Consider moving this to some kind of "visual change" event that can also be called by the type on occasion. Also there are like 34987645968943769843576 hypothetical bugs this way
-    if (this.animationChangeCallback !== undefined && newan !== oldan) {
-      this.animationChangeCallback(newan);
-    }
   }
 
   get ticksPassed() {

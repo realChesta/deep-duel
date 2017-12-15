@@ -3,7 +3,7 @@
 const {render: {Renderer}} = require('lance-gg');
 const PIXI = require('pixi.js');
 const RenderedObject = require('../../common/GameObjects/RenderedObject');
-const SpriteLoader = require('../../common/Utils/SpriteLoader');
+const HealthBar = require('./HealthBar');
 
 class DDRenderer extends Renderer {
 
@@ -13,35 +13,45 @@ class DDRenderer extends Renderer {
     this.debugMode = debugMode || (clientEngine && clientEngine.options.debugMode === 'true');
 
 
-    // Set-up renderer and layers
-    this.entirety = new PIXI.Container();
-    this.entirety.scale.set(2, 2);
+    const settings = this.gameEngine.settings;
 
+    this.entirety = new PIXI.Container();
     this.stage = new PIXI.Container();
     this.entirety.addChild(this.stage);
-
     this.debugLayer = new PIXI.Graphics();
     this.entirety.addChild(this.debugLayer);
-
     this.uiLayer = new PIXI.Graphics();
     this.entirety.addChild(this.uiLayer);
 
-    this.renderer = PIXI.autoDetectRenderer(this.entirety.scale.x * this.gameEngine.settings.width, this.entirety.scale.y * this.gameEngine.settings.height);
-    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
+    // Entirety (everything)
+    this.entirety.scale.set(1, 1);
+    initSuperLayer(this.entirety, this.stage);
+
+    // Stage (the game)
+    this.stage.scale.set(2, 2);
+    initFixedLayer(this.stage, settings.width, settings.height);
+
+    // Debug UI layer // TODO Now that non-UI debug stuff has moved to the stage, do we want to remove this too?
+    this.debugLayer.scale.set(1, 1);
+    initSubLayer(this.debugLayer, this.entirety);
+
+    // UI
+    this.uiLayer.scale.set(1, 1);
+    initSubLayer(this.uiLayer, this.entirety);
 
 
-    if (!DDRenderer.sprites)
-      DDRenderer.sprites = {hearts: SpriteLoader.getSpritesheet(heartsSpritesId)};
+
+    this.renderer = PIXI.autoDetectRenderer(this.entirety.scale.x * this.entirety.renderWidth, this.entirety.scale.y * this.entirety.renderHeight);
 
 
 
 
     if (!this.clientEngine) {
-      let trenderer = this;
       let renderLoop = (function() {
-        trenderer.draw();
+        this.draw();
         window.requestAnimationFrame(renderLoop);
-      }).bind(true);
+      }).bind(this);
       this.init().then(() => window.requestAnimationFrame(renderLoop));
     }
 
@@ -51,7 +61,7 @@ class DDRenderer extends Renderer {
     // TODO When the renderer gets uninitialised/removed (especially on server UI), remove these handlers
     this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
     this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
-    this.gameEngine.on('preStep', this.preStep.bind(this));
+    this.gameEngine.on('postStep', this.postStep.bind(this));
 
     if (this.gameEngine.world) {
       for (let object of Object.values(this.gameEngine.world.objects)) {
@@ -59,16 +69,14 @@ class DDRenderer extends Renderer {
       }
     }
 
-
   }
-
 
   getView() {
     return this.renderer.view;
   }
 
 
-  preStep() {
+  postStep() {
     for (let key of Object.keys(this.renderedObjects)) {
       this.gameEngine.world.objects[key].tickSprite(this.gameEngine);
     }
@@ -86,28 +94,19 @@ class DDRenderer extends Renderer {
       this.drawObject.call(this, this.gameEngine.world.objects[key]);
     }
 
-    // TODO r console.log(this.clientEngine.character, DDRenderer.sprites);
-    if (this.clientEngine && this.clientEngine.character && DDRenderer.sprites.hearts) {
-      let character = this.clientEngine.character;
-      let maxHealth = character.maxHealth;
-      let health = character.health;
-      let heartsSprites = DDRenderer.sprites.hearts;
-      let healthBar = new PIXI.Container();
-      let texturesArr = Object.values(heartsSprites.textures);
-      let sc = texturesArr.length;
-      healthBar.position.x = this.gameEngine.settings.width - Math.ceil(maxHealth / sc) * texturesArr[0].width;   // TODO Instead of checking the first texture, make this dynamic
-      healthBar.position.y = 0;
-      for (let i = 0; i < Math.ceil(health / sc); i++) {
-        let txt = texturesArr[sc - Math.min(health - i * sc, sc)];
-        let heart = new PIXI.Sprite(txt);
-        heart.position.x = i * txt.width + heartsSprites.offset.x;
-        heart.position.y = heartsSprites.offset.y;
-        healthBar.addChild(heart);
-      }
-      this.uiLayer.addChild(healthBar);
-    }
+    this.drawUI();
 
     this.renderer.render(this.entirety);
+  }
+
+
+  drawUI() {
+      if (this.clientEngine && this.clientEngine.character) {
+        let healthBar = new HealthBar(this.clientEngine.character);
+        healthBar.position.x = this.uiLayer.renderWidth - healthBar.totalWidth;
+        healthBar.position.y = 0;
+        this.uiLayer.addChild(healthBar);
+      }
   }
 
 
@@ -126,9 +125,9 @@ class DDRenderer extends Renderer {
 
   drawObject(object) {
     var container = this.renderedObjects[object.id];
-    container.x = object.position.x;
-    container.y = object.position.y;
-    object.drawSprite(container, this.debugMode ? this.debugLayer : undefined);
+    container.parent.x = object.position.x;
+    container.parent.y = object.position.y;
+    object.drawSprite(container.normal, container.debug);
   }
 
   onObjectAdded(object) {
@@ -146,27 +145,58 @@ class DDRenderer extends Renderer {
       this.removeRenderedObject(object);
     }
 
-    var container = new PIXI.Container();
+    const container = new PIXI.Container();
+    const normal = new PIXI.Container();
+    container.addChild(normal);
+    let debug = undefined;
+    if (this.debugMode) {
+      debug = new PIXI.Container();
+      container.addChild(normal);
+    }
     this.stage.addChild(container);
-    object.initRenderContainer(container);
-    this.renderedObjects[object.id] = container;
+    object.initRenderContainer(normal, debug);
+    this.renderedObjects[object.id] = {parent: container, normal: normal, debug: debug};
   }
 
   removeRenderedObject(object) {
-    var container = this.renderedObjects[object.id];
+    const container = this.renderedObjects[object.id];
     if (!container) {
       console.error("Tried to remove a RenderedObject that isn't in the pool!");
       return;
     }
     delete this.renderedObjects[object.id];
-    object.onRenderContainerDestroy(container);
-    this.stage.removeChild(container);
+    object.onRenderContainerDestroy(container.normal, container.debug);
+    this.stage.removeChild(container.parent);
   }
 
 }
 
 
-const heartsSpritesId = SpriteLoader.add('assets/ui/hearts/red.json');
+
+function initFixedLayer(layer, renderWidth, renderHeight) {
+  layer.renderWidth = renderWidth;
+  layer.renderHeight = renderHeight;
+}
+
+function initSuperLayer(layer, child) {
+  Object.defineProperty(layer, 'renderWidth', { get: function() {
+      return child.renderWidth * child.scale.x;
+    }});
+
+  Object.defineProperty(layer, 'renderHeight', { get: function() {
+      return child.renderHeight * child.scale.y;
+    }});
+}
+
+function initSubLayer(layer, parent) {
+  Object.defineProperty(layer, 'renderWidth', { get: function() {
+      return parent.renderWidth / this.scale.x;
+    }});
+
+  Object.defineProperty(layer, 'renderHeight', { get: function() {
+      return parent.renderHeight / this.scale.y;
+    }});
+}
 
 
 module.exports = DDRenderer;

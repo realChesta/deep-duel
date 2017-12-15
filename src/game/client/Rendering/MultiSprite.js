@@ -16,7 +16,7 @@ class MultiSprite extends PIXI.Container {
       for (let direction of Object.keys(actions[action])) {
         let spritesheet = actions[action][direction];
         let anim = new PIXI.extras.AnimatedSprite(Object.values(spritesheet.textures), false);
-        anim.animationSpeed = 1 / (spritesheet.ticksPerFrame || Infinity);
+        anim.animationSpeed = spritesheet.ticksPerFrame === undefined ? 0 : 1 / spritesheet.ticksPerFrame;
         anim.x = spritesheet.offset.x;
         anim.y = spritesheet.offset.y;
         if (!(spritesheet.offset && spritesheet.offset.x && spritesheet.offset.y)) {
@@ -26,8 +26,6 @@ class MultiSprite extends PIXI.Container {
       }
       this.sprites[action] = dir;
     }
-
-    this.update(assetCollection.defaultAction, assetCollection.defaultDirection);
   }
 
   tick(stepCount) {
@@ -42,17 +40,6 @@ class MultiSprite extends PIXI.Container {
     this.lastStepCount = stepCount;
   }
 
-  setAction(val) {
-    if (this.action !== val)
-      this.update(val, undefined);
-  }
-
-  setDirection(val) {
-    val = val.name;
-    if (this.direction !== val)
-      this.update(undefined, val);
-  }
-
 
   getAnimatedSprite(actionName, facingDirectionName) {
     if (actionName === undefined || facingDirectionName === undefined)
@@ -65,33 +52,38 @@ class MultiSprite extends PIXI.Container {
     return this.getAnimatedSprite(this.action, this.direction);
   }
 
-  update(newActionName, newDirectionName, gameEngine) {
-    let anim = this.getCurrentAnimatedSprite();
+  update(state) {
+    let lastAnim = this.getCurrentAnimatedSprite();
 
-    if (anim !== undefined) {
-      anim.stop();
-      this.removeChild(anim);
-    }
+    let newActionName = state.mainAction ? state.mainAction.getAnimationName() : undefined;
+    let newDirectionName = state.facingDirection.name;
 
     this.action = newActionName || this.action;
-    if (newDirectionName !== 'zero')       // TODO We have input and facing direction now, make use of that
-      this.direction = newDirectionName || this.direction;
+    this.direction = newDirectionName || this.direction;
 
     if (this.action === undefined || this.direction === undefined) {
       return;
     }
 
-    anim = this.getCurrentAnimatedSprite();
-    if (anim !== undefined) {
-      this.lastStepCount = 0;
-      anim.gotoAndPlay(0);
-      //this.tick(action.ticksPassed); // TODO insert how much already passed of the action
-      this.addChild(anim);
-    } else {
-      console.warn("No animation defined for " + this.action + " " + this.direction + "!");
+
+
+    let anim = this.getCurrentAnimatedSprite();
+
+    if (anim !== lastAnim) {
+      if (lastAnim !== undefined) {
+        lastAnim.stop();
+        this.removeChild(lastAnim);
+      }
+
+      if (anim !== undefined) {
+        anim.gotoAndPlay(0);
+        this.lastStepCount = state.mainAction.startedAt;
+        this.addChild(anim);
+      } else {
+        console.warn("No animation defined for " + this.action + " " + this.direction + "!");
+      }
     }
   }
-
 }
 
 

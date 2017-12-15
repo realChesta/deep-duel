@@ -17,20 +17,23 @@ class Scarecrow extends Creature {
   }
 
 
-  initRenderContainer(container) {
+  initRenderContainer(container, debugContainer) {
+    super.initRenderContainer(container, debugContainer);
+
     const PIXI = require('pixi.js');
     this.graphics = new PIXI.Graphics();
     container.addChild(this.graphics);
-    this.onAnimationChange(this.state.mainAction.type.name, this.facingDirection.name);
   }
 
-  onRenderContainerDestroy(container) {
+  onRenderContainerDestroy(container, debugContainer) {
+    super.onRenderContainerDestroy(container, debugContainer);
+
     container.removeChild(this.graphics);
     delete this.graphics;
   }
 
-  drawSprite(container, debugLayer) {
-    super.drawSprite(container, debugLayer);
+  drawSprite(container, debugContainer) {
+    super.drawSprite(container, debugContainer);
     if (this.graphics != null) {
       let color = 0x010100;
 

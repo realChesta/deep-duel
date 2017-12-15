@@ -5,12 +5,14 @@ const DDGameObject = require('./DDGameObject');
 
 /**
  * An abstract class for rendered dynamic objects. Implement the methods
- * initRenderContainer(container) and drawSprite(container, debugLayer) for
- * functionality. debugLayer may be undefined.
+ * initRenderContainer(container, debugContainer) and
+ * drawSprite(container, debugContainer) for functionality. debugContainer may
+ * be undefined.
  *
  * For additional clean-up just before the render container is removed,
- * implement onRenderContainerDestroy(container). initRenderContainer(...) will
- * be called exactly once per onRenderContainerDestroy(...), and vice-versa.
+ * implement onRenderContainerDestroy(container, debugContainer).
+ * initRenderContainer(...) will be called exactly once per
+ * onRenderContainerDestroy(...), and vice-versa.
  *
  * Rendering functions will only be called client-side. When using client-side
  * rendering libraries, be sure to require these inside of the rendering or
@@ -22,10 +24,10 @@ class RenderedObject extends DDGameObject {
     super(id);
   }
 
-  tickSprite() {}
-  drawSprite(container, debugLayer) {}
-  initRenderContainer(container) {}
-  onRenderContainerDestroy(container) {}
+  tickSprite(gameEngine) {}
+  drawSprite(container, debugContainer) {}
+  initRenderContainer(container, debugContainer) {}
+  onRenderContainerDestroy(container, debugContainer) {}
 }
 
 // TODO do we need class loader here?

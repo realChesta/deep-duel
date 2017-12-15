@@ -76,6 +76,8 @@ class SpriteLoader {
       SpriteLoader.loadedAssets[resource.name] = SpriteLoader.generateAssetCollection(resource);
     else if (resource.extension === 'json' && resource.data && resource.data.frames) // This is used by Pixi's spritesheet parser. There could be some false negatives (any JSON file with a frames property), but I did not get up with it
       SpriteLoader.loadedSpritesheets[resource.name] = SpriteLoader.generateSpritesheet(resource);
+    else if (resource.data && resource.type === Resource.TYPE.IMAGE)
+      SpriteLoader.onTextureLoaded(resource);
   }
 
   static generateAssetCollection(resource) {
@@ -89,16 +91,20 @@ class SpriteLoader {
   static generateSpritesheet(resource) {
     if (resource.extension !== 'json' || !resource.data.frames)
       return;
-    let textures = resource.textures; // All textures in an array.
+    let textures = resource.textures; // All textures in an object
     let meta = resource.data.meta; // resource.data is the JSON data
     let ticksPerFrame = meta.ticksPerFrame;
+    let linearScale = meta.scaleMode === "0" || meta.scaleMode === 0 || meta.scaleMode === "LINEAR";
+    for (let texture of Object.values(textures)) {
+      texture.baseTexture.scaleMode = linearScale ? PIXI.SCALE_MODES.LINEAR : PIXI.SCALE_MODES.NEAREST;
+    }
     let offset;
     if (meta.offset !== undefined)
       offset = new TwoVector(meta.offset.x, meta.offset.y);
     else
       offset = new TwoVector(0, 0);
 
-
+      console.log(textures);
     return {textures, ticksPerFrame, offset};
   }
 

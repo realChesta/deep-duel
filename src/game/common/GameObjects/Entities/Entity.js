@@ -19,10 +19,12 @@ class Entity extends RenderedObject {
   }
 
 
-  drawSprite(container, debugLayer) {
-    super.drawSprite(container, debugLayer);
+  initRenderContainer(container, debugContainer) {
+    super.initRenderContainer(container, debugContainer);
 
-    if (debugLayer) {
+    if (debugContainer) {
+      const debugLayer = new (require("pixi.js").Graphics)();
+      debugContainer.addChild(debugLayer);
       debugLayer.lineStyle(1, 0x88FF88, 0.5);
       debugLayer.drawCircle(this.position.x, this.position.y, 2);
       let idText = new PIXI.Text(this.id, {fontSize: 10, fill : 0xffffff});
