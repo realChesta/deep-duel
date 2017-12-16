@@ -72,12 +72,10 @@ class SpriteLoader {
 
 
   static onResourceLoaded(resource) {
-    if (resource.extension === 'json' && resource.data && resource.data.type === 'asset')
+    if (resource.extension === 'json' && resource.data && (resource.data.type === 'asset' || resource.data.ddtype === 'charasset'))
       SpriteLoader.loadedAssets[resource.name] = SpriteLoader.generateAssetCollection(resource);
-    else if (resource.extension === 'json' && resource.data && resource.data.frames) // This is used by Pixi's spritesheet parser. There could be some false negatives (any JSON file with a frames property), but I did not get up with it
+    else if (resource.extension === 'json' && resource.data && (resource.data.frames || resource.data.ddtype === 'spritesheet'))
       SpriteLoader.loadedSpritesheets[resource.name] = SpriteLoader.generateSpritesheet(resource);
-    else if (resource.data && resource.type === Resource.TYPE.IMAGE)
-      SpriteLoader.onTextureLoaded(resource);
   }
 
   static generateAssetCollection(resource) {
@@ -128,20 +126,25 @@ class SpriteLoader {
 
     // Next, we load all spritesheets into the asset collection
     resource.actions = {};
-    let promises = [];
-    let options = {
+    const promises = [];
+    const options = {
       loadType: require('resource-loader').Resource.LOAD_TYPE.JSON,
       parentResource: resource
     };
     for (let action of Object.keys(resource.data.actions)) {
       resource.actions[action] = [];    // note the difference between resource.data.actions and resource.actions
       for (let direction of Object.keys(resource.data.actions[action])) {
-        let path = url.resolve(resource.url, resource.data.actions[action][direction]);
-        let promise = SpriteLoader.addAsyncToCustom(this, path, path, options);
-        promise.then((sheetResource) => {
-          resource.actions[action][direction] = SpriteLoader.generateSpritesheet(sheetResource);
-        });
-        promises.push(promise);
+        const sheet = resource.data.actions[action][direction];
+        if (typeof sheet === 'string') {
+          let path = url.resolve(resource.url, sheet);
+          let promise = SpriteLoader.addAsyncToCustom(this, path, path, options);
+          promise.then((sheetResource) => {
+            resource.actions[action][direction] = SpriteLoader.generateSpritesheet(sheetResource);
+          });
+          promises.push(promise);
+        } else if (typeof sheet === 'object') {
+          resource.actions[action][direction] = SpriteLoader.generateSpritesheet(sheet);
+        }
       }
     }
 

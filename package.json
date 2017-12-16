@@ -27,6 +27,7 @@
     "cmd-p": "node src/main/server/launchServer.js",
     "cmd": "npm run-script browserify && npm run-script cmd-p",
     "ui": "electron src/main/serverui/serverUI.js",
+    "assetbuilder": "electron Utilities/AssetBuilder/AssetBuilder.js",
     "postinstall": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
     "build": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
     "browserify": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
