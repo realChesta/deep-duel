@@ -12,7 +12,8 @@ class CreatureAction extends Serializable {
       lockedFor: {type: Serializer.TYPES.INT32},
       switchIn: {type: Serializer.TYPES.INT32},
       startedAt: {type: Serializer.TYPES.INT32},
-      hasNext: {type: Serializer.TYPES.INT8}
+      hasNext: {type: Serializer.TYPES.INT8},
+      _actionId: {type: Serializer.TYPES.INT32}
     }, super.netScheme);
   }
 
@@ -24,6 +25,7 @@ class CreatureAction extends Serializable {
     this.switchIn = other.switchIn;
     this.startedAt = other.startedAt;
     this.hasNext = other.hasNext;
+    this._actionId = other._actionId;
   }
 
   constructor(gameObject, gameEngine) {
@@ -31,7 +33,8 @@ class CreatureAction extends Serializable {
 
     this.gameObject = gameObject;
     this.gameEngine = gameEngine;
-    // TODO HACK Maybe fix this - will need some ground-breaking lance-gg changes (right now, we need to not set type if gameObject is undefined because then it is called as part of a sync step)
+    this._actionId = 0;
+    // TODO HACK Maybe fix this - will need some ground-breaking lance-gg changes (right now, we need to not set type if gameObject is undefined because then this constructor is called as part of a sync step, and the object will be thrown away afterwards)
     if (gameObject !== undefined) {
       this.setType(CreatureAction.Type.Idle);
     }
@@ -64,6 +67,7 @@ class CreatureAction extends Serializable {
     this.switchIn = this.getActionLength();
     this.startedAt = this.gameEngine.world.stepCount;
     this.hasNext = this.getHasNextAction();
+    this._actionId++;
     this.start();
     return true;
   }
@@ -82,7 +86,22 @@ class CreatureAction extends Serializable {
   }
 
 
-  // TODO Stop repeatedly incrementing ticksPassed and start storing step count instead
+  /**
+   * IMPORTANT Action data may be completely different on client and server.
+   * Never assume it is valid on a client. Even with completely crippled action
+   * data, a client must still work properly, even if the client-side prediction
+   * may be off. Do never, ever, sync this or any data generated from this back
+   * to the server
+   */
+  get actionData() {
+    if (this._lastActionId === undefined || this._lastActionId < this._actionId) {
+      this._actionData = {};
+    }
+    this._lastActionId = this._actionId;
+    return this._actionData;
+  }
+
+
   doTick() {
     let ticksPassed = this.ticksPassed;
     this.tick(ticksPassed);

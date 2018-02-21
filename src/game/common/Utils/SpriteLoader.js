@@ -102,7 +102,6 @@ class SpriteLoader {
     else
       offset = new TwoVector(0, 0);
 
-      console.log(textures);
     return {textures, ticksPerFrame, offset};
   }
 

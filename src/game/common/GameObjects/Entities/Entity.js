@@ -24,7 +24,6 @@ class Entity extends RenderedObject {
 
     if (debugContainer) {
       const debugLayer = new (require("pixi.js").Graphics)();
-      debugContainer.addChild(debugLayer);
       debugLayer.lineStyle(1, 0x88FF88, 0.5);
       debugLayer.drawCircle(this.position.x, this.position.y, 2);
       let idText = new PIXI.Text(this.id, {fontSize: 10, fill : 0xffffff});
@@ -35,6 +34,7 @@ class Entity extends RenderedObject {
         let corner = this.hitbox.getUpperLeft(this.position);
         debugLayer.drawRect(corner.x, corner.y, this.hitbox.w, this.hitbox.h);
       }
+      debugContainer.addChild(debugLayer);
     }
   }
 

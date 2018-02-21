@@ -8,13 +8,13 @@
   "main": "src/main/server/nodeServer.js",
   "dependencies": {
     "browserify": "^13.0.1",
+    "electron": "^1.7.10",
     "express": "^4.14.0",
-    "lance-gg": "~1.0.10",
-    "query-string": "^4.2.3",
-    "socket.io": "^1.4.8",
-    "pixi.js": "^4.6.2",
     "jquery": "^3.2.1",
-    "electron": "~1.7.8"
+    "lance-gg": "~1.0.10",
+    "pixi.js": "^4.6.2",
+    "query-string": "^4.2.3",
+    "socket.io": "^1.4.8"
   },
   "devDependencies": {
     "babelify": "^7.3.0",

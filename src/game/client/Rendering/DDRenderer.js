@@ -37,7 +37,7 @@ class DDRenderer extends Renderer {
     initSubLayer(this.debugLayer, this.entirety);
 
     // UI
-    this.uiLayer.scale.set(1, 1);
+    this.uiLayer.scale.set(2, 2);
     initSubLayer(this.uiLayer, this.entirety);
 
 
@@ -151,7 +151,7 @@ class DDRenderer extends Renderer {
     let debug = undefined;
     if (this.debugMode) {
       debug = new PIXI.Container();
-      container.addChild(normal);
+      container.addChild(debug);
     }
     this.stage.addChild(container);
     object.initRenderContainer(normal, debug);

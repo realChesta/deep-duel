@@ -4,6 +4,7 @@ const Creature = require('./Creature');
 const CreatureAction = require('./CreatureStates/CreatureAction');
 const Direction = require('../../Utils/Direction');
 const Hitbox = require('../../Physics/Collision/Hitbox');
+const ArcCollider = require('../../Physics/Collision/ArcCollider');
 const {serialize: {TwoVector}} = require('lance-gg');
 
 class Character extends Creature {
@@ -25,13 +26,18 @@ class Character extends Creature {
         this.input[inputData.input] = this.gameEngine.world.stepCount;
       else
         delete this.input[inputData.input];
+    }
+    else {          // Push key
+      switch (inputData.input)
+      {
+        case 'attack':
+          this.attack();
+          break;
 
-
-    } else {          // Push key
-      if (inputData.input === 'attack') {
-        this.attack();
+        default:
+          console.warn('undefined input: ', inputData.input);
+          break;
       }
-
     }
   }
 
@@ -40,19 +46,22 @@ class Character extends Creature {
     this.state.setMainActionType(Character.ActionTypes.Attack);
   }
 
-  doAttack() {
+  doAttack(action) {
     const attackDashDistance = 4; // TODO move this to a better place
-    this.lastAttackHitChangeThis = [];  // TODO Move this somewhere else, probably in some kind of Action metadata or something // TODO Technically, we have to sync this (occasional bugs occur)
     this.velocity.add(this.facingDirection.vector.clone().multiplyScalar(attackDashDistance));
   }
 
-  onAttackTick(ticksPassed) {
+  onAttackTick(action, ticksPassed) {
+    if (!action.actionData.excludeHitTargets) {     // TODO Rethink this; shouldn't a target be immune to the attack source if hit twice instead of this?
+      action.actionData.excludeHitTargets = [];
+      action.actionData.excludeHitTargets[this.id] = true;
+    }
+
+
     // TODO Combine with detectAttackCollision's utility constants
-    const sq = (x) => x*x;
-    const fromAngle = (angle) => new TwoVector(Math.cos(angle), Math.sin(angle));
-    const toAngle = (vector) => Math.atan2(vector.y, vector.x);
 
     // TODO move the constants to a better place
+    // TODO allow for different values in each instance
     const attackBreadth = 4;
     const checkAttackEveryTicks = 1;
     const attackStart = 4;
@@ -70,124 +79,18 @@ class Character extends Creature {
     let expx = Math.exp(x);
     let breadth = - Math.log(expx + 1/expx) / attackBreadth + 0.5;   // TODO Maybe create a look-up table? Maybe switch the function? See https://math.stackexchange.com/questions/30843/is-there-an-analytic-approximation-to-the-minimum-function
 
-
-    let angF = toAngle(this.facingDirection.vector) + totalAttackAngle;
-    let direction = fromAngle(angF - 2 * totalAttackAngle * tpos);
+    let angF = ArcCollider.toAngle(this.facingDirection.vector) + totalAttackAngle;
+    let direction = ArcCollider.fromAngle(angF - 2 * totalAttackAngle * tpos);
     let attackAngle = breadth * 2 * totalAttackAngle;
 
     this.debugMakeThisCoolerDirection = direction;     // TODO Find a cooler way to pass this to the debug mode renderer
     this.debugMakeThisCoolerAttackAngle = attackAngle;
 
-    this.detectAttackCollision(direction, attackAngle);
-  }
-
-  detectAttackCollision(direction, attackAngle) {
-    // TODO Organize collision detection; create an ArcCollider or something alike
-    // TODO Create broad and narrow phases for collision detection (don't check everything with everything)
-    const sq = (x) => x*x;
-    const fromAngle = (angle) => new TwoVector(Math.cos(angle), Math.sin(angle));
-    const toAngle = (vector) => Math.atan2(vector.y, vector.x);
-    const mtzn = (f1, f2) => (f1 * f2 < 0) ? 0 : (Math.abs(f1) < Math.abs(f2) ? f1 : f2);
-    const mtzv = (v1, v2) => new TwoVector(mtzn(v1.x, v2.x), mtzn(v1.y, v2.y))
-    const mtz = function(vectors) {
-        let c = vectors;
-        for (let i = 1; i < arguments.length; i++) {
-          c = mtzv(c, arguments[i]);
-        }
-        return c;
-    }
-    const sgn = (p1, p2, p3) => {
-      return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
-    }
-    const isInTriangle = (point, triangle) => {
-      let b1 = sgn(point, triangle[0], triangle[1]) < 0;
-      let b2 = sgn(point, triangle[1], triangle[2]) < 0;
-      let b3 = sgn(point, triangle[2], triangle[0]) < 0;
-
-      return (b1 == b2) && (b2 == b3);
-    }
-
-    // TODO Move the constants
-    const attackRange = 25;
-    const xoff = 0;
-    const yoff = 0;
-
-    const sqrt2 = Math.sqrt(2);
-
-    const dir = direction.clone().normalize();
-    const dida = toAngle(dir);
-    const dirm = fromAngle(dida - attackAngle);
-    const dirp = fromAngle(dida + attackAngle);
-    // Processing sketch visualizing collision detection: https://pastebin.com/T8mjGLux
-    // TODO Use less resources per check 'n stuff
-    let hits = this.gameEngine.filterObjects(((obj) => {
-
-        if (obj === this)
-          return false;
-        if (this.lastAttackHitChangeThis[obj.id])
-          return false;
-
-        const hb = obj.hitbox;
-        if (!hb)
-          return false;
-
-        const crad = attackRange;
-        const rect = new TwoVector(hb.w, hb.h);
-        const rect2 = rect.clone().multiplyScalar(0.5);
-        const m = this.position.clone().subtract(obj.position);
-            m.x += xoff - hb.xoff;
-            m.y += yoff - hb.yoff;
-        const absm = m.clone();
-            absm.x = Math.abs(absm.x);
-            absm.y = Math.abs(absm.y);
-        const subrad = crad / sqrt2;
-        const subm = m.clone().add(dir.clone().multiplyScalar(subrad));
-        const corner = rect2.clone();   // TODO we might need to think about this again. Is this really correct? Should we base the corner on subm? Or do we need to check both subm or m corners? It doesn't matter with axis-aligned rects like this, but when it's do or die we might just as well do it right, eh?
-            corner.x *= subm.x < 0 ? -1 : 1;
-            corner.y *= subm.y < 0 ? -1 : 1;
-        const difToCorner = subm.clone().subtract(corner);
-        const triangleCorners = [
-            m.clone(),
-            m.clone().add(dirm.clone().multiplyScalar(sqrt2 * crad)),
-            m.clone().add(dirp.clone().multiplyScalar(sqrt2 * crad))
-        ];
-        const bounding = mtz(m,
-            m.clone().add(dir.clone().multiplyScalar(crad)),
-            m.clone().add(dirm.clone().multiplyScalar(crad)),
-            m.clone().add(dirp.clone().multiplyScalar(crad))
-        );
-        const absbounding = bounding.clone();
-            absbounding.x = Math.abs(absbounding.x);
-            absbounding.y = Math.abs(absbounding.y);
-
-        // Easy case: Bounding does not touch the rectangle
-        if (absbounding.x > rect2.x) return false;
-        if (absbounding.y > rect2.y) return false;
-
-        // Still easy case: The small circle touches an edge or is inside of rectangle
-        if (Math.abs(subm.x) < rect2.x) return true;
-        if (Math.abs(subm.y) < rect2.y) return true;
-
-        // Hard case: Corner area. Both circles and the triangle must contain the corner
-        // Big circle
-        if (sq(difToCorner.x) + sq(difToCorner.y) > sq(crad)) return false;
-        // Small circle
-        if (sq(Math.abs(subm.x) - rect2.x) + sq(Math.abs(subm.y) - rect2.y) > sq(subrad)) return false;
-        // Triangle
-        if (!isInTriangle(corner, triangleCorners)) return false;
-
-        return true;
-
-
-    }).bind(this));
-
-
-
-
+    const hits = ArcCollider.detectAttackCollision(this.gameEngine, this.position, direction, attackAngle, action.actionData.excludeHitTargets);
     for (let hit of hits) {
       if (typeof hit.takeDamage === 'function')
         hit.takeDamage(1);
-      this.lastAttackHitChangeThis[hit.id] = true;
+      action.actionData.excludeHitTargets[hit.id] = true;
     }
   }
 
@@ -326,10 +229,10 @@ Character.ActionTypes = {
   Idle: CreatureAction.Type.Idle,
   Running: CreatureAction.Type.Running,
   Attack: new CreatureAction.Type(Character, 'attack')
-      .setLockDuration(40)      // TODO Move this to somewhere else
+      .setLockDuration(40)
       .setActionLength(45)
-      .onStart(function() {this.gameObject.doAttack()})
-      .onTick(function(ticksPassed) {this.gameObject.onAttackTick(ticksPassed)})
+      .onStart(function() {this.gameObject.doAttack(this)})
+      .onTick(function(ticksPassed) {this.gameObject.onAttackTick(this, ticksPassed)})
 };
 
 Character.keyGravity = 60;

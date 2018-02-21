@@ -12,12 +12,12 @@ const Utils = require('lance-gg/src/lib/Utils');
 
 
 /**
- * There's a bug in lance-gg which makes strings getting pruned incorrectly
+ * There's a bug in lance-gg which makes strings get pruned incorrectly
  * (Serializable:130; it prunes all changed strings, instead of those not
  * changed.
  */
 
-// literal copypaste right here, just changed what needed to be changed
+// literal copypasta right here, just changed what needed to be changed
 Serializable.prototype.prunedStringsClone = function(serializer, prevObject) {
 
   if (!prevObject) return this;
