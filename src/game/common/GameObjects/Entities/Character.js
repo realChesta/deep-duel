@@ -1,16 +1,17 @@
 'use strict';
 
 const Creature = require('./Creature');
+const Projectile = require('./Projectile');
 const CreatureAction = require('./CreatureStates/CreatureAction');
 const Direction = require('../../Utils/Direction');
 const Hitbox = require('../../Physics/Collision/Hitbox');
 const ArcCollider = require('../../Physics/Collision/ArcCollider');
-const {serialize: {TwoVector}} = require('lance-gg');
+import TwoVector from 'lance/serialize/TwoVector';
 
 class Character extends Creature {
 
-  constructor(id, x, y, playerId) {
-    super(id, x, y);
+  constructor(gameEngine, x, y, playerId) {
+    super(gameEngine, x, y);
     this.playerId = playerId;
     this.hitbox = new Hitbox(26, 52);
   }
@@ -38,6 +39,18 @@ class Character extends Creature {
           console.warn('undefined input: ', inputData.input);
           break;
       }
+    }
+  }
+
+
+  fire() {
+    this.state.setMainActionType(Character.ActionTypes.Fire);
+  }
+
+  onFireTick(action, ticksPassed) {
+    // TODO This assumes ticksPassed is confirmed to be equal to a given number at most once; is it?
+    if (ticksPassed == 15) {
+
     }
   }
 
@@ -231,8 +244,12 @@ Character.ActionTypes = {
   Attack: new CreatureAction.Type(Character, 'attack')
       .setLockDuration(40)
       .setActionLength(45)
-      .onStart(function() {this.gameObject.doAttack(this)})
-      .onTick(function(ticksPassed) {this.gameObject.onAttackTick(this, ticksPassed)})
+      .onStart(function() {this.gameObject.doAttack(this);})
+      .onTick(function(ticksPassed) {this.gameObject.onAttackTick(this, ticksPassed);}),
+  Fire: new CreatureAction.Type(Character, 'fire')
+      .setLockDuration(30)
+      .setActionLength(60)
+      .onTick(function(ticksPassed) {this.gameObject.onFireTick(this, ticksPassed)})
 };
 
 Character.keyGravity = 60;

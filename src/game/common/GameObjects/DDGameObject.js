@@ -1,11 +1,11 @@
 'use strict';
 
-const {serialize: {DynamicObject}} = require('lance-gg');
+import DynamicObject from 'lance/serialize/DynamicObject';
 
 class DDGameObject extends DynamicObject {
 
-  constructor(id) {
-    super(id);
+  constructor(gameEngine) {
+    super(gameEngine);
   }
 
   onAddToWorld(gameEngine) {

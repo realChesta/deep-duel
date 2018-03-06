@@ -1,6 +1,7 @@
 'use strict';
 
-const {serialize: {Serializable, Serializer}} = require('lance-gg');
+import Serializer from 'lance/serialize/Serializer';
+import Serializable from 'lance/serialize/Serializable';
 const CreatureAction = require('./CreatureAction');
 const CreatureResource = require('./CreatureResource');
 const CreatureResourceHolder = require('./CreatureResourceHolder');

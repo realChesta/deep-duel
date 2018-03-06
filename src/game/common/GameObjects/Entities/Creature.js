@@ -1,24 +1,25 @@
 'use strict';
 
 const Entity = require('./Entity');
-const Serializer = require('lance-gg').serialize.Serializer;
+import Serializer from 'lance/serialize/Serializer';
 const CreatureState = require('./CreatureStates/CreatureState');
 const Hitbox = require('../../Physics/Collision/Hitbox');
 
 class Creature extends Entity {
 
-  constructor(id, x, y) {
-    super(id, x, y);
+  constructor(gameEngine, x, y) {
+    super(gameEngine, x, y);
   }
 
   onAddToWorld(gameEngine) {
     super.onAddToWorld(gameEngine);
     this.state = new CreatureState(this, gameEngine, this.getDefaultMaxHealth());
-
-    // TODO We need to remove this? Is it maybe better to not bind, and instead have tick() called by the game engine?
-    gameEngine.on('preStep', this.state.tick.bind(this.state, gameEngine));
-
   }
+
+  tick(gameEngine) {
+    this.state.tick(gameEngine);
+  }
+
 
   getDefaultMaxHealth() {
     return 12;

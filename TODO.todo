@@ -6,3 +6,4 @@ Todos may be found shattered around in code
 // TODO Create an own sprite for the blue thingy in the attack animation
 // TODO For some reason, when connecting as a new client, the state (in the test base health) isn't sync'd properly until that one updates itself (eg. action changes). Find out why
 // TODO Server-side reconciliation
+// TODO Switch to ES6 modules (+ Babel) instead of require

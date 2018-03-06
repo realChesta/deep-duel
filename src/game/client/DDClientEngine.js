@@ -1,6 +1,7 @@
 'use strict'
 
-const {ClientEngine, physics: {SimplePhysicsEngine}} = require('lance-gg');
+import ClientEngine from 'lance/ClientEngine';
+import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
 const DDRenderer = require('./Rendering/DDRenderer');
 const DDGameEngine = require('../common/DDGameEngine');
 
@@ -46,8 +47,8 @@ class DDClientEngine extends ClientEngine {
       }
     };
 
-    if (options.syncOptions.sync === 'extrapolate')
-      options.physicsEngine = new SimplePhysicsEngine();
+    /*if (options.syncOptions.sync === 'extrapolate')
+      options.physicsEngine = new SimplePhysicsEngine();*/
 
     return Object.assign(options, clientOptions);
   }

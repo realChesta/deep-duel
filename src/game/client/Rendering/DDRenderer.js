@@ -1,6 +1,6 @@
 'use strict';
 
-const {render: {Renderer}} = require('lance-gg');
+import Renderer from 'lance/render/Renderer';
 const PIXI = require('pixi.js');
 const RenderedObject = require('../../common/GameObjects/RenderedObject');
 const HealthBar = require('./HealthBar');

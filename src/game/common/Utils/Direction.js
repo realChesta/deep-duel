@@ -1,6 +1,6 @@
 'use strict';
 
-const {serialize: {TwoVector}} = require('lance-gg');
+import TwoVector from 'lance/serialize/TwoVector';
 const VectorUtils = require('./VectorUtils');
 
 

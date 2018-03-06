@@ -7,40 +7,39 @@
   "description": "People are STILL making fun of that?",
   "main": "src/main/server/nodeServer.js",
   "dependencies": {
-    "browserify": "^13.0.1",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-module-resolver": "^2.7.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "electron": "^1.7.10",
     "express": "^4.14.0",
-    "jquery": "^3.2.1",
-    "lance-gg": "~1.0.10",
-    "pixi.js": "^4.6.2",
+    "jquery": "^3.3.1",
+    "lance-gg": "~2.0.5",
+    "pixi.js": "^4.7.0",
     "query-string": "^4.2.3",
-    "socket.io": "^1.4.8"
+    "socket.io": "^1.4.8",
+    "webpack": "^3.8.1"
   },
   "devDependencies": {
-    "babelify": "^7.3.0",
+    "babel-cli": "^6.26.0",
     "eslint": "^3.16.1",
-    "eslint-config-google": "^0.7.1",
-    "watchify": "^3.7.0"
+    "eslint-config-google": "^0.7.1"
   },
   "scripts": {
-    "start": "node src/main/server/launchServer.js",
-    "cmd-p": "node src/main/server/launchServer.js",
-    "cmd": "npm run-script browserify && npm run-script cmd-p",
+    "start": "npm run-script cmd-p",
+    "cmd-p": "babel-node src/main/server/launchServer.js --presets env",
+    "cmd": "npm run-script build && npm run-script cmd-p",
     "ui": "electron src/main/serverui/serverUI.js",
     "assetbuilder": "electron Utilities/AssetBuilder/AssetBuilder.js",
-    "postinstall": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
-    "build": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
-    "browserify": "browserify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js ",
-    "watchify": "watchify src/main/client/client.js -i nodejs-physijs -o dist/bundle.js -v -d"
+    "postinstall": "webpack --display-error-details",
+    "webpack": "webpack",
+    "build": "webpack",
+    "stats": "webpack --env production --profile --json > stats.json"
   },
   "repository": {
     "type": "git",
     "url": ""
-  },
-  "browserify": {
-    "transform": [
-      "babelify"
-    ]
   },
   "keywords": [
     "game",

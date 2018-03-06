@@ -1,6 +1,7 @@
 'use strict';
 
-const {serialize: {Serializer}} = require('lance-gg');
+import Serializer from 'lance/serialize/Serializer';
+import Serializable from 'lance/serialize/Serializable';
 
 class ClassLoader {
     static registerClass(c, id) {

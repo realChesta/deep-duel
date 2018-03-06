@@ -6,8 +6,8 @@ const Hitbox = require('../../Physics/Collision/Hitbox');
 
 class Scarecrow extends Creature {
 
-  constructor(id, x, y) {
-    super(id, x, y);
+  constructor(gameEngine, x, y) {
+    super(gameEngine, x, y);
     this.hitbox = new Hitbox(26, 52);
   }
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const {serialize: {DynamicObject}} = require('lance-gg');
+import TwoVector from 'lance/serialize/DynamicObject';
 const DDGameObject = require('./DDGameObject');
 
 /**
@@ -20,8 +20,8 @@ const DDGameObject = require('./DDGameObject');
  */
 class RenderedObject extends DDGameObject {
 
-  constructor(id) {
-    super(id);
+  constructor(gameEngine) {
+    super(gameEngine);
   }
 
   tickSprite(gameEngine) {}

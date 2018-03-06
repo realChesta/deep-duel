@@ -5,7 +5,9 @@ require('./Utils/buggy-gg');
 
 const DeepDuel = require('./DeepDuel');
 const ClassLoader = require('./Utils/ClassLoader');
-const {GameEngine} = require('lance-gg');
+import GameEngine from 'lance/GameEngine';
+import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
+import Serializer from 'lance/serialize/Serializer'
 const Entity = require('./GameObjects/Entities/Entity');
 const Creature = require('./GameObjects/Entities/Creature');
 const Character = require('./GameObjects/Entities/Character');
@@ -22,6 +24,7 @@ class DDGameEngine extends GameEngine {
 
   constructor(options) {
     super(options);
+    this.physicsEngine = new SimplePhysicsEngine({gameEngine: this});
 
     this.on('preStep', this.preStep.bind(this));
     this.on('objectAdded', this.onObjectAdded.bind(this));
@@ -29,7 +32,6 @@ class DDGameEngine extends GameEngine {
     this.on('playerJoined', this.onPlayerJoined.bind(this));
     this.on('playerDisconnected', this.onPlayerDisconnected.bind(this));
     this.on('keepAlive', this.keepAlive.bind(this));
-    this.on('server__init', this.initGame.bind(this));
 
     this.characters = {};
 
@@ -46,10 +48,20 @@ class DDGameEngine extends GameEngine {
 
   start() {
     super.start();
+    this.initGame();
+  }
+
+  initWorld(){
+      super.initWorld({
+          worldWrap: true,
+          width: this.settings.width,
+          height: this.settings.height
+      });
+      console.log(this.world);
   }
 
   initGame() {
-    this.addObjectToWorld(new Scarecrow(++this.world.idCount, 70, 70));
+    this.addObjectToWorld(new Scarecrow(this, 70, 70));
   }
 
 
@@ -66,7 +78,7 @@ class DDGameEngine extends GameEngine {
   }
 
   onPlayerJoined(event) {
-    let character = new Player(++this.world.idCount, 128, 128, event.playerId);
+    let character = new Player(this, 128, 128, event.playerId);
     this.addObjectToWorld(character);
   }
 
@@ -110,7 +122,7 @@ class DDGameEngine extends GameEngine {
   registerClasses(serializer) {
     // All we do is hijack the serializer
     Object.assign(ClassLoader.classRegisterer, serializer.registeredClasses);
-    serializer.setClassRegisterer(ClassLoader.classRegisterer);
+    Serializer.setClassRegisterer(serializer, ClassLoader.classRegisterer);
   }
 
 }

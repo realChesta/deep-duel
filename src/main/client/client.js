@@ -3,7 +3,7 @@
 const DDClientEngine = require('../../game/client/DDClientEngine');
 const DDGameEngine = require('../../game/common/DDGameEngine');
 const SpriteLoader = require('../../game/common/Utils/SpriteLoader');
-const {physics: {SimplePhysicsEngine}} = require('lance-gg');
+import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
 const $ = require('jquery');
 
 const qsOptions = require('query-string').parse(location.search);

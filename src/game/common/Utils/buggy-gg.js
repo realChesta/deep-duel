@@ -1,7 +1,8 @@
 'use strict';
 
-const {serialize: {Serializer, Serializable}} = require('lance-gg');
-const Utils = require('lance-gg/src/lib/Utils');
+import Serializer from 'lance/serialize/Serializer';
+import Serializable from 'lance/serialize/Serializable';
+import Utils from 'lance/lib/Utils';
 
 
 /*
@@ -17,6 +18,7 @@ const Utils = require('lance-gg/src/lib/Utils');
  * changed.
  */
 
+ /*    // TODO Probably fixed now - check
 // literal copypasta right here, just changed what needed to be changed
 Serializable.prototype.prunedStringsClone = function(serializer, prevObject) {
 
@@ -38,6 +40,9 @@ Serializable.prototype.prunedStringsClone = function(serializer, prevObject) {
   return prunedCopy;
 }
 
+*/
+
+
 
 
 
@@ -46,10 +51,14 @@ Serializable.prototype.prunedStringsClone = function(serializer, prevObject) {
  * manually add a way to set registeredClasses to a reference
  */
 
-Serializer.prototype.setClassRegisterer = function(registeredClasses) {
- this.registeredClasses = registeredClasses;
- this.registeredClasses.prototype = ClassRegisterer;
+// TODO Check if lance changed this with version 2.0
+
+function setClassRegisterer(serializer, registeredClasses) {
+ serializer.registeredClasses = registeredClasses;
+ serializer.registeredClasses.prototype = ClassRegisterer;
 }
+
+Serializer.setClassRegisterer = setClassRegisterer;
 
 class ClassRegisterer {
   constructor(from) {

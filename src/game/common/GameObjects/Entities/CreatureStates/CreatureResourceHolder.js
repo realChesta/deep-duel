@@ -1,6 +1,7 @@
 'use strict';
 
-const {serialize: {Serializable, Serializer}} = require('lance-gg');
+import Serializer from 'lance/serialize/Serializer';
+import Serializable from 'lance/serialize/Serializable';
 
 class CreatureResourceHolder extends Serializable {
 

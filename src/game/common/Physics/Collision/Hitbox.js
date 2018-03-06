@@ -1,7 +1,8 @@
 'use strict';
 
-const {serialize: {TwoVector}} = require('lance-gg');
+import TwoVector from 'lance/serialize/TwoVector';
 
+// TODO Create computed properties instead of getters
 class Hitbox {
 
   constructor(w, h, xoff, yoff) {

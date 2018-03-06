@@ -10,6 +10,12 @@
 //   DeepDuel.gameEngines[0].characters[0].takeDamage(1);
 //   (obviously, this example requires that there's a character with id 0)
 
-DeepDuel = {};
+
+// TODO Babel (preset-env to be precise) automatically adds strict mode so this doesn't work for now. Change that
+//DeepDuel = {};
+
+// This is the hack so that the code will at least compile, but it's useless
+let DeepDuel = {};
+
 
 module.exports = DeepDuel;

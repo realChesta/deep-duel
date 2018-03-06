@@ -1,7 +1,7 @@
 'use strict';
 
 const url = require('url');
-const {serialize: {TwoVector}} = require('lance-gg');
+import TwoVector from 'lance/serialize/TwoVector';
 
 // The SpriteLoader exists on both client and server, but only actually loads something on some implementations of the former.
 class SpriteLoader {

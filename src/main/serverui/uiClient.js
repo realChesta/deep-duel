@@ -54,8 +54,8 @@ async function onReady() {
 
 
 async function buildServer() {
-  const name = "browserify (npm)";
-  let process = spawn('npm', ['run-script', 'browserify'], {shell: true, windowsHide: true});
+  const name = "webpack (npm)";
+  let process = spawn('npm', ['run-script', 'webpack'], {shell: true, windowsHide: true});
 
   process.stdout.on('data', (data) => {
     console.log(name + ": " + data);
