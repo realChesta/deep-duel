@@ -1,5 +1,6 @@
 'use strict';
 
+require('./buggy-gg');
 import Serializer from 'lance/serialize/Serializer';
 import Serializable from 'lance/serialize/Serializable';
 

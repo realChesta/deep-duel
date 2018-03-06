@@ -32,6 +32,12 @@ class CreatureAction extends Serializable {
   constructor(gameObject, gameEngine) {
     super();
 
+    // TODO HACK Check if lance-gg created this as part of a sync step. If so, set params to undefined
+    if (gameObject === null) {
+      gameObject = undefined;
+      gameEngine = undefined;
+    }
+
     this.gameObject = gameObject;
     this.gameEngine = gameEngine;
     this._actionId = 0;
@@ -66,11 +72,15 @@ class CreatureAction extends Serializable {
     this.forceSetType(val);
     this.lockedFor = this.getLockDuration();
     this.switchIn = this.getActionLength();
-    this.startedAt = this.gameEngine.world.stepCount;
+    this.startedAt = this.stepCount();
     this.hasNext = this.getHasNextAction();
     this._actionId++;
     this.start();
     return true;
+  }
+
+  stepCount() {
+    return this.gameEngine.world.stepCount;
   }
 
   getType() {
@@ -83,7 +93,7 @@ class CreatureAction extends Serializable {
   }
 
   get ticksPassed() {
-    return this.gameEngine.world.stepCount - this.startedAt;
+    return this.stepCount() - this.startedAt;
   }
 
 

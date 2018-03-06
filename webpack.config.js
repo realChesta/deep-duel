@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 module.exports = {
-    entry: ['babel-polyfill', './src/main/client/client.js'],
+    entry: ['babel-polyfill', './src/game/common/Utils/buggy-gg', './src/main/client/client.js'],
     output: {
         path: path.join(__dirname, 'dist'),
         filename: 'bundle.js'

@@ -1,6 +1,8 @@
 'use strict';
 
+// Serializer needs to be imported at the very beginning to work around a circular dependency issue with lance-gg
 import Serializer from 'lance/serialize/Serializer';
+
 import Serializable from 'lance/serialize/Serializable';
 import Utils from 'lance/lib/Utils';
 

@@ -2,12 +2,18 @@
 <head>
   <title>Deep Duel Server UI</title>
   <meta http-equiv="Cache-control" content="no-cache">
-
-  <script src="uiClient.js" type="text/javascript"></script>
   <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
 </head>
 <body>
+  <script>
+    require('babel-register')({
+      "presets": ["env"]
+    });
+    require('babel-polyfill');
+    require('../../game/common/Utils/buggy-gg');
+    require('./uiClient.js');
+  </script>
 
   <div id="loading">
     <p class="loadingLabel">

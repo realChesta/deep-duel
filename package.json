@@ -12,6 +12,7 @@
     "babel-plugin-module-resolver": "^2.7.1",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
     "electron": "^1.7.10",
     "express": "^4.14.0",
     "jquery": "^3.3.1",
@@ -30,12 +31,12 @@
     "start": "npm run-script cmd-p",
     "cmd-p": "babel-node src/main/server/launchServer.js --presets env",
     "cmd": "npm run-script build && npm run-script cmd-p",
-    "ui": "electron src/main/serverui/serverUI.js",
+    "ui": "electron -r babel-register src/main/serverui/serverUI.js",
     "assetbuilder": "electron Utilities/AssetBuilder/AssetBuilder.js",
-    "postinstall": "webpack --display-error-details",
-    "webpack": "webpack",
-    "build": "webpack",
-    "stats": "webpack --env production --profile --json > stats.json"
+    "postinstall": "webpack src\/main\/client\/client.js --display-error-details",
+    "webpack": "webpack src\/main\/client\/client.js",
+    "build": "webpack src\/main\/client\/client.js",
+    "stats": "webpack src\/main\/client\/client.js --env production --profile --json > stats.json"
   },
   "repository": {
     "type": "git",

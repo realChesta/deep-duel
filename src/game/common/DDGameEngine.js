@@ -57,7 +57,6 @@ class DDGameEngine extends GameEngine {
           width: this.settings.width,
           height: this.settings.height
       });
-      console.log(this.world);
   }
 
   initGame() {

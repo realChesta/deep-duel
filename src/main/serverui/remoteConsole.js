@@ -1,10 +1,10 @@
-// no strict mode! We're doing hacky stuff here
+'use strict';
 
 const nodeConsole = require('console');
 
 let originalConsole = window.console;
 
-newConsole = {};
+let newConsole = {};
 for (let prop of Object.getOwnPropertyNames(originalConsole)) {
   newConsole[prop] = function() {
     originalConsole[prop].apply(originalConsole, arguments);

@@ -2,7 +2,7 @@
 
 require('./remoteConsole');
 
-const DDRenderer = require('../../game/client/Rendering/DDRenderer');
+import DDRenderer from '../../game/client/Rendering/DDRenderer';
 const $ = require('jquery');
 const {spawn} = require('child_process');
 const NodeServer = require('../server/nodeServer.js');
