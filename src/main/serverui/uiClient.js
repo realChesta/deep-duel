@@ -52,7 +52,7 @@ async function onReady() {
 
 
 
-
+// TODO In the future, create a build UI server without this stuff
 async function buildServer() {
   const name = "webpack (npm)";
   let process = spawn('npm', ['run-script', 'webpack'], {shell: true, windowsHide: true});

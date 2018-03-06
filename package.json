@@ -7,12 +7,6 @@
   "description": "People are STILL making fun of that?",
   "main": "src/main/server/nodeServer.js",
   "dependencies": {
-    "babel-core": "^6.25.0",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-module-resolver": "^2.7.1",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-register": "^6.26.0",
     "electron": "^1.7.10",
     "express": "^4.14.0",
     "jquery": "^3.3.1",
@@ -23,6 +17,12 @@
     "webpack": "^3.8.1"
   },
   "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-module-resolver": "^2.7.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
     "babel-cli": "^6.26.0",
     "eslint": "^3.16.1",
     "eslint-config-google": "^0.7.1"
@@ -33,10 +33,10 @@
     "cmd": "npm run-script build && npm run-script cmd-p",
     "ui": "electron -r babel-register src/main/serverui/serverUI.js",
     "assetbuilder": "electron Utilities/AssetBuilder/AssetBuilder.js",
-    "postinstall": "webpack src\/main\/client\/client.js --display-error-details",
-    "webpack": "webpack src\/main\/client\/client.js",
-    "build": "webpack src\/main\/client\/client.js",
-    "stats": "webpack src\/main\/client\/client.js --env production --profile --json > stats.json"
+    "postinstall": "webpack src/main/client/client.js --display-error-details",
+    "webpack": "webpack src/main/client/client.js",
+    "build": "webpack src/main/client/client.js",
+    "stats": "webpack src/main/client/client.js --env production --profile --json > stats.json"
   },
   "repository": {
     "type": "git",
