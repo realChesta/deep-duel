@@ -102,7 +102,7 @@ class DDClientEngine extends ClientEngine {
 
 
   get character() {
-    return this.gameEngine.characters[this.playerId];
+    return this.gameEngine.characters[this.gameEngine.playerId];
   }
 
   /**

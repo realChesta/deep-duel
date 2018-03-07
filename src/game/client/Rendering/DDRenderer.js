@@ -101,12 +101,12 @@ class DDRenderer extends Renderer {
 
 
   drawUI() {
-      if (this.clientEngine && this.clientEngine.character) {
-        let healthBar = new HealthBar(this.clientEngine.character);
-        healthBar.position.x = this.uiLayer.renderWidth - healthBar.totalWidth;
-        healthBar.position.y = 0;
-        this.uiLayer.addChild(healthBar);
-      }
+    if (this.clientEngine && this.clientEngine.character) {
+      let healthBar = new HealthBar(this.clientEngine.character);
+      healthBar.position.x = this.uiLayer.renderWidth - healthBar.totalWidth;
+      healthBar.position.y = 0;
+      this.uiLayer.addChild(healthBar);
+    }
   }
 
 

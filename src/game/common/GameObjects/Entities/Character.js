@@ -236,11 +236,11 @@ class Character extends Creature {
 
         this.hitboxDebugGraphics.clear();
         this.hitboxDebugGraphics.lineStyle(1, 0x88FF88, 0.5);
-        this.hitboxDebugGraphics.arc(this.position.x, this.position.y, attackRange, dida - attackAngle, dida + attackAngle);
-        this.hitboxDebugGraphics.moveTo(this.position.x, this.position.y);
-        this.hitboxDebugGraphics.lineTo(this.position.x + dirm.x * attackRange, this.position.y + dirm.y * attackRange);
-        this.hitboxDebugGraphics.moveTo(this.position.x, this.position.y);
-        this.hitboxDebugGraphics.lineTo(this.position.x + dirp.x * attackRange, this.position.y + dirp.y * attackRange);
+        this.hitboxDebugGraphics.arc(0, 0, attackRange, dida - attackAngle, dida + attackAngle);
+        this.hitboxDebugGraphics.moveTo(0, 0);
+        this.hitboxDebugGraphics.lineTo(dirm.x * attackRange, dirm.y * attackRange);
+        this.hitboxDebugGraphics.moveTo(0, 0);
+        this.hitboxDebugGraphics.lineTo(dirp.x * attackRange, dirp.y * attackRange);
         this.hitboxDebugGraphics.moveTo(0, 0);
       }
     }

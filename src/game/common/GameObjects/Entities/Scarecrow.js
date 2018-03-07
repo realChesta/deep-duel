@@ -64,9 +64,12 @@ class Scarecrow extends Creature {
 }
 
 Scarecrow.ActionTypes = {
+  Idle: new CreatureAction.Type(Scarecrow, 'idle')
+      .setLockDuration(0)
+      .setActionLength(360),
   Regenerating: new CreatureAction.Type(Scarecrow, 'regenerating')
       .setLockDuration(0)
-      .setActionLength(600)
+      .setActionLength(90)
       .onStart(function() { this.gameObject.state.healthResources.increase(1); }),
   // TODO Might wanna move Hurt to Creature. Also might wanna make it a non-main action instead
   Hurt: new CreatureAction.Type(Scarecrow, 'hurt')
@@ -75,8 +78,9 @@ Scarecrow.ActionTypes = {
 
 };
 
+Scarecrow.ActionTypes.Idle.setNextAction(Scarecrow.ActionTypes.Regenerating);
 Scarecrow.ActionTypes.Regenerating.setNextAction(Scarecrow.ActionTypes.Regenerating);
-Scarecrow.ActionTypes.Hurt.setNextAction(Scarecrow.ActionTypes.Regenerating);
+Scarecrow.ActionTypes.Hurt.setNextAction(Scarecrow.ActionTypes.Idle);
 
 require('../../Utils/ClassLoader').registerClass(Scarecrow);
 module.exports = Scarecrow;
