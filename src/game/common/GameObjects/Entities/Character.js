@@ -268,11 +268,11 @@ Character.ActionTypes = {
       .setActionLength(45)
       .onStart(function() {this.gameObject.doAttack(this);})
       .onTick(function(ticksPassed) {this.gameObject.onAttackTick(this, ticksPassed);}),
-  Dash: new CreatureAction.Type(Character, 'dash')
+  Dash: new CreatureAction.Type(Character, 'attack-dash') // TODO 'attack dash' until animations are here, then remove attack
       .setLockDuration(40)
       .setActionLength(45)
       .onStart(function() {this.gameObject.doDash(this);}),
-  Fire: new CreatureAction.Type(Character, 'fire')
+  Fire: new CreatureAction.Type(Character, 'attack-fire') // TODO 'attack fire' until animations are here, then remove attack
       .setLockDuration(30)
       .setActionLength(60)
       .onTick(function(ticksPassed) {this.gameObject.onFireTick(this, ticksPassed)})

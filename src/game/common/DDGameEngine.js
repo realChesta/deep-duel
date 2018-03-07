@@ -53,7 +53,6 @@ class DDGameEngine extends GameEngine {
 
   initWorld() {
       super.initWorld({
-          worldWrap: true,
           width: this.settings.width,
           height: this.settings.height
       });

@@ -69,17 +69,24 @@ export default class Projectile extends Entity {
   }
 
   detectCollision(gameEngine) {
-    // TODO Move collision detection to its own class
+    // TODO Move collision detection to its own class and make this a circle collider
 
     const abs = Math.abs;
     const sq = (x) => x*x;
-    const x = this.x, y = this.y;
+    const x = this.x, y = this.y, radius = this.radius;
 
+    // For now, this is a rectangular collider (instead of circle). Fix later
     let hits = gameEngine.filterObjects((obj) => {
-      if (obj == this.shooter || obj == this) return false;
-      if (abs(obj.x - x) > this.radius || abs(obj.y - y) > this.radius) return false;
-      if (sq(obj.x - x) + sq(obj.y - y) > sq(this.radius)) return false;
-      return true;
+      if (obj == this.shooter || obj == this || !obj.hitbox) return false;
+
+      let hb = obj.hitbox;
+      let left = hb.getLeft(obj.position);
+      let right = hb.getRight(obj.position);
+      let upper = hb.getUpper(obj.position);
+      let lower = hb.getLower(obj.position);
+
+      return (x + radius >= left && x - radius <= right &&
+                y + radius >= upper && y - radius <= lower);
     });
 
     if (hits.length <= 0) return;
