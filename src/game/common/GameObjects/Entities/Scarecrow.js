@@ -66,7 +66,7 @@ class Scarecrow extends Creature {
 Scarecrow.ActionTypes = {
   Idle: new CreatureAction.Type(Scarecrow, 'idle')
       .setLockDuration(0)
-      .setActionLength(360),
+      .setActionLength(300),
   Regenerating: new CreatureAction.Type(Scarecrow, 'regenerating')
       .setLockDuration(0)
       .setActionLength(90)

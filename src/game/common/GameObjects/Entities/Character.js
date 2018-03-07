@@ -37,6 +37,9 @@ class Character extends Creature {
         case 'fire':
           this.fire();
           break;
+        case 'dash':
+          this.dash();
+          break;
         default:
           console.warn('undefined input: ', inputData.input);
           break;
@@ -62,6 +65,15 @@ class Character extends Creature {
       let projectile = new Projectile(this.gameEngine, pos.x, pos.y, velocity, this, 5, 1);
       this.gameEngine.addObjectToWorld(projectile);
     }
+  }
+
+  dash() {
+    this.state.setMainActionType(Character.ActionTypes.Dash);
+  }
+
+  doDash(action) {
+    const attackDashDistance = 8; // TODO move this to a better place
+    this.velocity.add(this.facingDirection.vector.clone().multiplyScalar(attackDashDistance));
   }
 
 
@@ -256,6 +268,10 @@ Character.ActionTypes = {
       .setActionLength(45)
       .onStart(function() {this.gameObject.doAttack(this);})
       .onTick(function(ticksPassed) {this.gameObject.onAttackTick(this, ticksPassed);}),
+  Dash: new CreatureAction.Type(Character, 'dash')
+      .setLockDuration(40)
+      .setActionLength(45)
+      .onStart(function() {this.gameObject.doDash(this);}),
   Fire: new CreatureAction.Type(Character, 'fire')
       .setLockDuration(30)
       .setActionLength(60)
