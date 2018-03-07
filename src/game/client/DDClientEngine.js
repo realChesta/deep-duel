@@ -13,7 +13,8 @@ const toggleKeys = {
 };
 
 const pushKeys = {
-  'attack': [32]
+  'attack': [32],
+  'fire': [16]
 }
 
 const reversedToggleKeys = parseKeysObject(toggleKeys);

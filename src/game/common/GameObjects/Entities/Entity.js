@@ -14,21 +14,21 @@ class Entity extends RenderedObject {
     this.hitbox = null;
   }
 
-  takeDamage(amount) {
-
-  }
+  takeDamage(amount) { }
 
 
 
   onAddToWorld(gameEngine) {
     super.onAddToWorld(gameEngine);
     // TODO Is it maybe better to not add an event handler for every object, and instead have tick() called by the game engine? (spoiler: yes it is but I'm too lazy to do it rn)
-    gameEngine.on('preStep', this.tick.bind(this, gameEngine));
+    this.ddhandler_tickhandler = this.tick.bind(this, gameEngine);
+    gameEngine.on('preStep', this.ddhandler_tickhandler);
   }
 
   onRemoveFromWorld(gameEngine) {
     super.onRemoveFromWorld(gameEngine);
-    gameEngine.removeListener('preStep', this.tick.bind(this, gameEngine));
+    gameEngine.removeListener('preStep', this.ddhandler_tickhandler);
+    this.ddhandler_tickhandler = undefined;
   }
 
   tick(gameEngine) { }

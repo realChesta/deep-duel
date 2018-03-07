@@ -1,19 +1,17 @@
 'use strict';
 
-const Entity = require('./Entity');
+import Entity from './Entity';
 import Serializer from 'lance/serialize/Serializer';
-const CreatureState = require('./CreatureStates/CreatureState');
-const Hitbox = require('../../Physics/Collision/Hitbox');
+import CreatureState from './CreatureStates/CreatureState';
+import Hitbox from '../../Physics/Collision/Hitbox';
 
 class Creature extends Entity {
 
   constructor(gameEngine, x, y) {
     super(gameEngine, x, y);
-  }
-
-  onAddToWorld(gameEngine) {
-    super.onAddToWorld(gameEngine);
-    this.state = new CreatureState(this, gameEngine, this.getDefaultMaxHealth());
+    
+    if (gameEngine !== null)
+      this.state = new CreatureState(this, gameEngine, this.getDefaultMaxHealth());
   }
 
   tick(gameEngine) {

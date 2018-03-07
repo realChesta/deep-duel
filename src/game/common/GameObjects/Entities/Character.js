@@ -1,11 +1,11 @@
 'use strict';
 
-const Creature = require('./Creature');
-const Projectile = require('./Projectile');
-const CreatureAction = require('./CreatureStates/CreatureAction');
-const Direction = require('../../Utils/Direction');
-const Hitbox = require('../../Physics/Collision/Hitbox');
-const ArcCollider = require('../../Physics/Collision/ArcCollider');
+import Creature from './Creature';
+import Projectile from './Projectile';
+import CreatureAction from './CreatureStates/CreatureAction';
+import Direction from '../../Utils/Direction';
+import Hitbox from '../../Physics/Collision/Hitbox';
+import ArcCollider from '../../Physics/Collision/ArcCollider';
 import TwoVector from 'lance/serialize/TwoVector';
 
 class Character extends Creature {
@@ -34,7 +34,9 @@ class Character extends Creature {
         case 'attack':
           this.attack();
           break;
-
+        case 'fire':
+          this.fire();
+          break;
         default:
           console.warn('undefined input: ', inputData.input);
           break;
@@ -49,8 +51,16 @@ class Character extends Creature {
 
   onFireTick(action, ticksPassed) {
     // TODO This assumes ticksPassed is confirmed to be equal to a given number at most once; is it?
-    if (ticksPassed == 15) {
-
+    // TODO Move variables like radius, damage etc.
+    if (ticksPassed === 15) {
+      let pos = this.position.clone();
+      let padd = this.facingDirection.vector.clone();
+      padd.multiplyScalar(5);
+      pos.add(padd);
+      let velocity = this.facingDirection.vector.clone();
+      velocity.multiplyScalar(1);
+      let projectile = new Projectile(this.gameEngine, pos.x, pos.y, velocity, this, 5, 1);
+      this.gameEngine.addObjectToWorld(projectile);
     }
   }
 
@@ -182,7 +192,7 @@ class Character extends Creature {
   }
 
   takeDamage(damage) {     // TODO Shouldn't taking damage/hurt be some kind of secondary action/effect?
-    super.takeDamage(damage);
+    return super.takeDamage(damage);
   }
 
 

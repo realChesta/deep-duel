@@ -14,6 +14,20 @@ class Direction {
     this.name = name;
   }
 
+  get x() {
+    return this.vector.x;
+  }
+  set x(value) {
+    this.vector.x = value;
+  }
+
+  get y() {
+    return this.vector.y;
+  }
+  set y(value) {
+    this.vector.y = value;
+  }
+
   copy(other) {
     this.name = other.name;
     this.vector.copy(other.vector);
