@@ -77,7 +77,7 @@ export default class Projectile extends Entity {
 
     // For now, this is a rectangular collider (instead of circle). Fix later
     let hits = gameEngine.filterObjects((obj) => {
-      if (obj == this.shooter || obj == this || !obj.hitbox) return false;
+      if (obj == this.shooter || obj == this || !obj.hitbox || !obj.isDamageable()) return false;
 
       let hb = obj.hitbox;
       let left = hb.getLeft(obj.position);

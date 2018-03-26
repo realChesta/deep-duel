@@ -1,5 +1,6 @@
 'use strict';
 
+import Serializer from 'lance/serialize/Serializer';
 import Creature from './Creature';
 import Projectile from './Projectile';
 import CreatureAction from './CreatureStates/CreatureAction';
@@ -10,10 +11,32 @@ import TwoVector from 'lance/serialize/TwoVector';
 
 class Character extends Creature {
 
+  static get netScheme() {
+    return Object.assign({
+      score: {type: Serializer.TYPES.INT32},
+    }, super.netScheme);
+  }
+
+  syncTo(other) {
+    super.syncTo(other);
+    this.score = other.score;
+  }
+
+  get actionTypes() {
+    return Character.ActionTypes;
+  }
+
   constructor(gameEngine, x, y, playerId) {
     super(gameEngine, x, y);
     this.playerId = playerId;
     this.hitbox = new Hitbox(26, 52);
+    this.score = 0;
+  }
+
+
+
+  get actionTypes() {
+    return Character.ActionTypes;
   }
 
 
@@ -69,6 +92,7 @@ class Character extends Creature {
 
   dash() {
     this.state.setMainActionType(Character.ActionTypes.Dash);
+    this.takeDamage(1);   // TODO Remove. This was only added for debug purposes
   }
 
   doDash(action) {
@@ -261,22 +285,31 @@ class Character extends Creature {
 }
 
 Character.ActionTypes = {
-  Idle: CreatureAction.Type.Idle,
-  Running: CreatureAction.Type.Running,
+  Idle: CreatureAction.Type.Idle.clone(Character, 'Character'),
+  Running: CreatureAction.Type.Running.clone(Character, 'Character'),
   Attack: new CreatureAction.Type(Character, 'attack')
       .setLockDuration(40)
       .setActionLength(45)
-      .onStart(function() {this.gameObject.doAttack(this);})
+      .onStart(function() { this.gameObject.doAttack(this); })
       .onTick(function(ticksPassed) {this.gameObject.onAttackTick(this, ticksPassed);}),
-  Dash: new CreatureAction.Type(Character, 'attack-dash') // TODO 'attack dash' until animations are here, then remove attack
+  Dash: new CreatureAction.Type(Character, 'attack-dash') // TODO 'attack-dash' until animations are here, then remove attack
       .setLockDuration(40)
       .setActionLength(45)
-      .onStart(function() {this.gameObject.doDash(this);}),
-  Fire: new CreatureAction.Type(Character, 'attack-fire') // TODO 'attack fire' until animations are here, then remove attack
+      .onStart(function() { this.gameObject.doDash(this); }),
+  Fire: new CreatureAction.Type(Character, 'attack-fire') // TODO 'attack-fire' until animations are here, then remove attack
       .setLockDuration(30)
       .setActionLength(60)
-      .onTick(function(ticksPassed) {this.gameObject.onFireTick(this, ticksPassed)})
+      .onTick(function(ticksPassed) { this.gameObject.onFireTick(this, ticksPassed); }),
+  Dead: CreatureAction.Type.Dead.clone(Character, 'Character')
+      .setLockDuration(180)
+      .setActionLength(180)
+      .onStart(function() { this.gameObject.score--; })
+      .onPrepareEnd(function(nextActionType) { return nextActionType !== Character.ActionTypes.Respawn; }),
+  Spawn: CreatureAction.Type.Spawn.clone(Character, 'Character'),
+  Respawn: new CreatureAction.Type(Character, 'respawn')
+      .onStart(function() { this.gameObject.respawn(); })
 };
+Character.ActionTypes.Dead.setNextAction(Character.ActionTypes.Respawn);
 
 Character.keyGravity = 60;
 

@@ -102,10 +102,18 @@ class DDRenderer extends Renderer {
 
   drawUI() {
     if (this.clientEngine && this.clientEngine.character) {
-      let healthBar = new HealthBar(this.clientEngine.character);
+      let character = this.clientEngine.character;
+
+      let healthBar = new HealthBar(character);
       healthBar.position.x = this.uiLayer.renderWidth - healthBar.totalWidth;
       healthBar.position.y = 0;
       this.uiLayer.addChild(healthBar);
+
+      let scoreText = new PIXI.Text("Score: " + character.score, {fontSize: 10, fill : 0xffffff});
+      scoreText.position.x = 3;
+      scoreText.position.y = 0;
+      this.uiLayer.addChild(scoreText);
+
     }
   }
 

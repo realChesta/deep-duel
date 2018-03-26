@@ -6,12 +6,13 @@ const Hitbox = require('../../Physics/Collision/Hitbox');
 
 class Scarecrow extends Creature {
 
+  get actionTypes() {
+    return Scarecrow.ActionTypes;
+  }
+
   constructor(gameEngine, x, y) {
     super(gameEngine, x, y);
     this.hitbox = new Hitbox(26, 52);
-
-    if (gameEngine !== null)
-      this.state.setMainActionType(Scarecrow.ActionTypes.Regenerating);
   }
 
 
@@ -75,7 +76,6 @@ Scarecrow.ActionTypes = {
   Hurt: new CreatureAction.Type(Scarecrow, 'hurt')
       .setLockDuration(10)
       .setActionLength(80)
-
 };
 
 Scarecrow.ActionTypes.Idle.setNextAction(Scarecrow.ActionTypes.Regenerating);

@@ -26,7 +26,9 @@ Object.keys(files).forEach(
 );
 
 server.use('/assets', function(req, res, next) {
+  console.log("Responding to request from " + req.ip);
   res.sendFile(path.join(__dirname, '../../../assets' + req.path));
+  // TODO Do we need next? If so, uncomment this: next();
 });
 
 

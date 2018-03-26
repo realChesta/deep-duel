@@ -3,19 +3,37 @@
 import Entity from './Entity';
 import Serializer from 'lance/serialize/Serializer';
 import CreatureState from './CreatureStates/CreatureState';
+import CreatureAction from './CreatureStates/CreatureAction';
 import Hitbox from '../../Physics/Collision/Hitbox';
 
 class Creature extends Entity {
 
   constructor(gameEngine, x, y) {
     super(gameEngine, x, y);
-    
-    if (gameEngine !== null)
-      this.state = new CreatureState(this, gameEngine, this.getDefaultMaxHealth());
+    this.spawnX = x;
+    this.spawnY = y;
+  }
+
+  onAddToWorld(gameEngine) {
+    super.onAddToWorld(gameEngine);
+    this.respawn();
+  }
+
+  // TODO Consider removing respawn logic; when a player/whatever needs to respawn, spawn a new gameobject
+  respawn() {
+    this.state = new CreatureState(this, this.gameEngine, this.getDefaultMaxHealth());
+    this.position.x = this.spawnX;
+    this.position.y = this.spawnY;
+    this.velocity.x = 0;
+    this.velocity.y = 0;
   }
 
   tick(gameEngine) {
     this.state.tick(gameEngine);
+  }
+
+  get actionTypes() {
+    return Creature.ActionTypes;
   }
 
 
@@ -71,12 +89,23 @@ class Creature extends Entity {
   }
 
 
+  isDamageable() {
+    return this.state.mainAction.getIsDamageable();
+  }
+
   takeDamage(damage) {
     super.takeDamage(damage);
-    return this.state.healthResources.decrease(damage);
+    let r = this.state.healthResources.decrease(damage);
+    if (this.state.health <= 0) {
+      let deadAction = this.actionTypes.Dead;
+      if (deadAction) this.state.setMainActionType(deadAction);
+    }
+    return r;
   }
 
 }
+
+Creature.ActionTypes = CreatureAction.Type;
 
 require('../../Utils/ClassLoader').registerClass(Creature);
 module.exports = Creature;

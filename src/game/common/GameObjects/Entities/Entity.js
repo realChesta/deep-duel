@@ -14,6 +14,7 @@ class Entity extends RenderedObject {
     this.hitbox = null;
   }
 
+  isDamageable() { return false; }
   takeDamage(amount) { }
 
 

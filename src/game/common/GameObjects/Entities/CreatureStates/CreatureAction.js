@@ -43,7 +43,7 @@ class CreatureAction extends Serializable {
     this._actionId = 0;
     // TODO HACK Maybe fix this - will need some ground-breaking lance-gg changes (right now, we need to not set type if gameObject is undefined because then this constructor is called as part of a sync step, and the object will be thrown away afterwards)
     if (gameObject !== undefined) {
-      this.setType(CreatureAction.Type.Idle);
+      this.setType(gameObject.actionTypes.Spawn || gameObject.actionTypes.Idle);
     }
   }
 
@@ -63,7 +63,7 @@ class CreatureAction extends Serializable {
 
   setType(val) {
     if (this.type !== undefined) {
-      if (this.prepareEnd()) {
+      if (this.prepareEnd(val)) {
         return false;
       }
       this.end();
@@ -118,8 +118,9 @@ class CreatureAction extends Serializable {
     this.tick(ticksPassed);
 
     if (this.hasNext) {         // TODO Move into its own event handler that can be attached/detached separately
-      if (ticksPassed >= this.switchIn) {
+      while (ticksPassed >= this.switchIn) {
         let switchTo = this.getNextAction();
+        if (!switchTo || this.type === switchTo) break;
         if (switchTo)
           this.setType(switchTo);
       }
@@ -141,7 +142,8 @@ function upperd(s) {
 class Type {
   constructor(creatureClass, name, id) {
     this.name = name;
-    this.fullName = creatureClass.name + "." + name;    // TODO this is always undefined.name
+    this.fullName = creatureClass.name + "." + name;    // TODO this is always undefined.name right now
+    this.creatureClass = creatureClass;
     this.properties = Object.assign({}, Type.defaultProperties);
     this.setAnimationName(name);
     this.events = {};
@@ -154,8 +156,23 @@ class Type {
 
     if (CreatureAction.registeredTypes[id]) {
         console.error("Type constructor: accidental override of type id " + id + " when registering type", this.fullName);
+    } else {
+      CreatureAction.registeredTypes[id] = this;
     }
-    CreatureAction.registeredTypes[id] = this;
+  }
+
+  clone(creatureClass, newId) {
+    if (newId === undefined) throw new Error("ID of cloned object is undefined; please set to either string or number");
+
+    if (typeof newId !== 'number') {
+      newId = Utils.hashStr(this.fullName + "_k_" + newId);
+    }
+
+
+    let obj = new Type(creatureClass, this.name, newId);
+    obj.properties = Object.assign({}, this.properties);
+    obj.events = Object.assign({}, this.events);
+    return obj;
   }
 }
 
@@ -163,13 +180,15 @@ class Type {
 Type.defaultProperties = {
   lockDuration: 0,      // TODO Does it make sense for lock durations to be slightly longer on clients to combat lag?
   hasNextAction: function() {return Boolean(this.getNextAction.call(this, arguments));},
-  nextAction: null,
+  nextAction: function() {return this.gameObject.actionTypes.Idle;},
   actionLength: 2,
   animationName: null,
   useInputMovement: false,
   inputMovementSpeed: 0,
   freezeDirection: true,
-  frictionMultiplier: 1
+  frictionMultiplier: 1,
+  isDamageable: true,
+  forceTypeChange: false
 };
 
 // Events that return a value that evaluates to true are cancelled. Not all events can be cancelled
@@ -177,7 +196,7 @@ Type.defaultProperties = {
 Type.defaultEvents = {
   start: [],
   tick: [],
-  prepareEnd: [function() {return this.ticksPassed < this.lockedFor;}],
+  prepareEnd: [function(nextActionType) {return !nextActionType.getForceTypeChange(this) && this.ticksPassed < this.lockedFor;}],
   end: []
 };
 
@@ -187,9 +206,13 @@ for (let property of Object.keys(Type.defaultProperties)) {
 
   setFunction(CreatureAction, 'get' + ud, function() {
     if (!this.type) return undefined;
-    let val = this.type.properties[property];
+    return this.type['get' + ud].call(this.type, this);
+  });
+
+  setFunction(Type, 'get' + ud, function(action) {
+    let val = this.properties[property];
     if (typeof val === 'function')
-      return val.call(this);
+      return val.call(action);
     return val;
   });
 
@@ -226,14 +249,22 @@ function setFunction(cl, name, func) {
   cl.prototype[name] = func;
 }
 
-Type.Idle = new Type(Creature, 'idle').setUseInputMovement(false)
+Type.Idle = new Type(Creature, 'idle')
+    .setUseInputMovement(false)
     .setNextAction(null)
     .setFreezeDirection(false);
-    Type.defaultProperties.nextAction = Type.Idle;
-Type.Running = new Type(Creature, 'running').setUseInputMovement(true)
+Type.Running = new Type(Creature, 'running')
+    .setUseInputMovement(true)
     .setInputMovementSpeed(1.0)
     .setFreezeDirection(false);
-
+Type.Dead = new Type(Creature, 'dead')
+    .setIsDamageable(false)
+    .setForceTypeChange(true)
+    .setNextAction(function() { return this.gameObject.actionTypes.Dead; });
+Type.Spawn = new Type(Creature, 'spawn')
+    .setActionLength(0)
+    .setLockDuration(0)
+    .setNextAction(function() { return this.gameObject.actionTypes.Idle; })
 
 CreatureAction.Type = Type;
 
