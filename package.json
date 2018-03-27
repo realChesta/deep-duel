@@ -8,7 +8,7 @@
   "main": "src/main/server/nodeServer.js",
   "dependencies": {
     "electron": "^1.7.10",
-    "express": "^4.14.0",
+    "express": "^4.16.3",
     "jquery": "^3.3.1",
     "lance-gg": "~2.0.5",
     "pixi.js": "^4.7.0",

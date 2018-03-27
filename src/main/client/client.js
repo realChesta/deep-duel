@@ -1,8 +1,8 @@
 'use strict';
 
-const DDClientEngine = require('../../game/client/DDClientEngine');
-const DDGameEngine = require('../../game/common/DDGameEngine');
-const SpriteLoader = require('../../game/common/Utils/SpriteLoader');
+const DDClientEngine = require('game/client/DDClientEngine');
+const DDGameEngine = require('game/common/DDGameEngine');
+const SpriteLoader = require('game/common/Utils/SpriteLoader');
 import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
 const $ = require('jquery');
 
@@ -11,7 +11,7 @@ const qsOptions = require('query-string').parse(location.search);
 // Dummy resources for testing the loading screen. Cross-origin requests must be allowed in browser
 //require("pixi.js").loader.add('https://www.hq.nasa.gov/alsj/a17/A17_FlightPlan.pdf');
 //require("pixi.js").loader.add('http://www.flam3.com/flame.pdf');
-let spriteLoaderPromise = require('../../game/client/ResourcePreloader').preload();
+let spriteLoaderPromise = require('game/client/ResourcePreloader').preload();
 SpriteLoader.onProgress(onSpriteLoadProgress);
 
 

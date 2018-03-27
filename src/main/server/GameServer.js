@@ -1,7 +1,7 @@
 'use strict';
 
-const DeepDuel = require('../../game/common/DeepDuel');
-const DDServerEngine = require('../../game/server/DDServerEngine');
+const DeepDuel = require('game/common/DeepDuel');
+const DDServerEngine = require('game/server/DDServerEngine');
 
 DeepDuel.gameServers = [];
 

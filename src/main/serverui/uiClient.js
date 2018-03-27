@@ -2,15 +2,15 @@
 
 require('./remoteConsole');
 
-import DDRenderer from '../../game/client/Rendering/DDRenderer';
+import DDRenderer from 'game/client/Rendering/DDRenderer';
 const $ = require('jquery');
 const {spawn} = require('child_process');
 const NodeServer = require('../server/nodeServer.js');
 
 
-require('../../game/common/Utils/SpriteLoader').setResourceDirectory('../../../');
+require('game/common/Utils/SpriteLoader').setResourceDirectory('../../../');
 
-let spriteLoaderPromise = require('../../game/client/ResourcePreloader').preload();
+let spriteLoaderPromise = require('game/client/ResourcePreloader').preload();
 let buildServerPromise = buildServer();
 
 onReady();
