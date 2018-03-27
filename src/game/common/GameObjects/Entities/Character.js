@@ -1,8 +1,8 @@
 'use strict';
 
 import Serializer from 'lance/serialize/Serializer';
-import Creature from './Creature';
-import Projectile from './Projectile';
+import Creature from 'game/common/GameObjects/Entities/Creature';
+import Projectile from 'game/common/GameObjects/Entities/Projectile';
 import CreatureAction from './CreatureStates/CreatureAction';
 import Direction from '../../Utils/Direction';
 import Hitbox from '../../Physics/Collision/Hitbox';

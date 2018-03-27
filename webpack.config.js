@@ -29,6 +29,10 @@ module.exports = {
         ]
     },
     resolve: {
-        alias: { 'lance': path.resolve(__dirname, 'node_modules/lance-gg/src/') }
+        alias: {
+          'lance': path.resolve(__dirname, 'node_modules/lance-gg/src/'),
+          'game': path.resolve(__dirname, 'src/game'),
+          'main': path.resolve(__dirname, 'src/main')
+        }
     }
 };

@@ -5,7 +5,7 @@
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
-const GameServer = require('./GameServer');
+const GameServer = require('main/server/GameServer');
 
 const DEFAULT_PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, '../client/index.html');
