@@ -260,7 +260,6 @@ Type.Running = new Type(Creature, 'running')
 Type.Dead = new Type(Creature, 'dead')
     .setIsDamageable(false)
     .setForceTypeChange(true)
-    .setNextAction(function() { return this.gameObject.actionTypes.Dead; });
 Type.Spawn = new Type(Creature, 'spawn')
     .setActionLength(0)
     .setLockDuration(0)

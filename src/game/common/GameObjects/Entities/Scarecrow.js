@@ -76,6 +76,7 @@ Scarecrow.ActionTypes = {
   Hurt: new CreatureAction.Type(Scarecrow, 'hurt')
       .setLockDuration(10)
       .setActionLength(80)
+      .setForceTypeChange(true),
 };
 
 Scarecrow.ActionTypes.Idle.setNextAction(Scarecrow.ActionTypes.Regenerating);
