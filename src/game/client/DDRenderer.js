@@ -82,4 +82,12 @@ class DDRenderer extends Renderer {
 }
 
 
+DDRenderer.DummyRenderer = class extends DDRenderer {
+  constructor(gameEngine, clientEngine, debugMode) {
+    super(gameEngine, clientEngine, debugMode);
+    this.initialize();
+  }
+}
+
+
 module.exports = DDRenderer;

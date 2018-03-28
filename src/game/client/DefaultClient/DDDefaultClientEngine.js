@@ -21,7 +21,7 @@ const reversedPushKeys = parseKeysObject(pushKeys);
 
 
 
-class DDDefaultClient extends DDClientEngine {
+class DDDefaultClientEngine extends DDClientEngine {
 
   constructor(clientOptions) {
     super(clientOptions, DDDefaultRenderer);
@@ -89,4 +89,4 @@ function parseKeysObject(keys) {
 
 
 
-module.exports = DDDefaultClient;
+module.exports = DDDefaultClientEngine;

@@ -1,6 +1,6 @@
 'use strict';
 
-const DDDefaultClient = require('game/client/DefaultClient/DDDefaultClient');
+const DDDefaultClientEngine = require('game/client/DefaultClient/DDDefaultClientEngine');
 const DDGameEngine = require('game/common/DDGameEngine');
 const SpriteLoader = require('game/common/Utils/SpriteLoader');
 import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
@@ -22,7 +22,7 @@ async function onReady() {
   isReady = true;
   await spriteLoaderPromise;
 
-  let clientEngine = new DDDefaultClient(qsOptions);
+  let clientEngine = new DDDefaultClientEngine(qsOptions);
   let view = clientEngine.renderer.getView();
   let loadingBar = $('.loadingBar');
   loadingBar.fadeOut(750);

@@ -49,6 +49,7 @@ class DDGameEngine extends GameEngine {
   start() {
     super.start();
     this.initGame();
+    this.hasStarted = true;
   }
 
   initWorld() {

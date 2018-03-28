@@ -30,6 +30,7 @@
   "scripts": {
     "start": "npm run-script cmd-p",
     "cmd-p": "babel-node src/main/server/launchServer.js --presets env",
+    "ai": "babel-node src/main/ai/aiMain.js --presets env",
     "cmd": "npm run-script build && npm run-script cmd-p",
     "ui": "electron -r babel-register src/main/serverui/serverUI.js",
     "assetbuilder": "electron Utilities/AssetBuilder/AssetBuilder.js",

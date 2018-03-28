@@ -2,7 +2,7 @@
 
 import ClientEngine from 'lance/ClientEngine';
 import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
-const DDGameEngine = require('game/common/DDGameEngine');
+import DDGameEngine from 'game/common/DDGameEngine';
 
 class DDClientEngine extends ClientEngine {
 

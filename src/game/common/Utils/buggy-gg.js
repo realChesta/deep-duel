@@ -2,15 +2,56 @@
 
 // Serializer needs to be imported at the very beginning to work around a circular dependency issue with lance-gg
 import Serializer from 'lance/serialize/Serializer';
-
 import Serializable from 'lance/serialize/Serializable';
 import Utils from 'lance/lib/Utils';
+import NetworkTransmitter from 'lance/network/NetworkTransmitter';
+import process from 'process';
 
 
 /*
  * Utility fixing some things in lance-gg. To use, simply require it in any
  * class. As soon as this script is referenced/loaded, the patch will be applied
 */
+
+
+
+/*
+ * Not lance-gg, but this handles unhandled promise rejections
+ */
+
+ process.on('unhandledRejection', error => {
+   // Will print "unhandledRejection err is not defined"
+   console.log('Promise rejection', error.message);
+   console.log(error);
+ });
+
+
+
+/*
+ * Lance-gg can't deal with node-js buffers as returned by socket-io when not
+ * run in a browser. However, buffer.buffer returns an ArrayBuffer, which
+ * lance-gg understands
+ */
+NetworkTransmitter.prototype.deserializePayload = function(payload) {
+  // CHANGE START
+  let buf = payload.dataBuffer;
+  if (!(buf instanceof ArrayBuffer)) {
+    buf = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+  }
+  // CHANGE END
+
+  return this.serializer.deserialize(buf).obj;
+}
+
+
+ /*
+  * Match-making is broken and shit. Use our own. For this, we replace Utils.httpGetPromise(...), which is broken and shit too
+  */
+  Utils.httpGetPromise = function(url) {
+    return Promise.resolve( { serverURL: url, status: 'ok' } );
+  };
+
+
 
 
 
