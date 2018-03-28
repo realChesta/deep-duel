@@ -3,7 +3,7 @@
 import DDAIClientEngine from 'game/client/AIClient/DDAIClientEngine';
 import process from 'process';
 
-require('game/common/Utils/buggy-gg');
+require('game/common/Utils/ResourcePreloader');
 
 main();
 

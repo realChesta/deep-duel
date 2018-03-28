@@ -1,6 +1,8 @@
 'use strict';
 
 import DDRenderer from 'game/client/DDRenderer';
+import BackgroundContainer from 'game/client/DefaultClient/Rendering/BackgroundContainer';
+import pixiClear from 'game/client/DefaultClient/Rendering/pixiClear';
 const PIXI = require('pixi.js');
 import HealthBar from 'game/client/DefaultClient/Rendering/HealthBar';
 
@@ -11,18 +13,32 @@ class DDDefaultRenderer extends DDRenderer {
 
     const settings = this.gameEngine.settings;
 
+
+
+
     this.entirety = new PIXI.Container();
+
+    this.background = new BackgroundContainer(this.gameEngine);
+    this.entirety.addChild(this.background);
+
     this.stage = new PIXI.Container();
     this.entirety.addChild(this.stage);
+
     this.debugLayer = new PIXI.Graphics();
     this.entirety.addChild(this.debugLayer);
+
     this.uiLayer = new PIXI.Graphics();
     this.entirety.addChild(this.uiLayer);
+
 
 
     // Entirety (everything)
     this.entirety.scale.set(1, 1);
     initSuperLayer(this.entirety, this.stage);
+
+    // Background
+    this.background.scale.set(2, 2);
+    initSubLayer(this.background, this.stage);
 
     // Stage (the game)
     this.stage.scale.set(2, 2);
@@ -51,8 +67,8 @@ class DDDefaultRenderer extends DDRenderer {
     super.draw();
 
     if (this.debugMode)
-      DDDefaultRenderer.pixiClear(this.debugLayer);      // TODO Maybe we shouldn't clear all children here
-    DDDefaultRenderer.pixiClear(this.uiLayer);
+      pixiClear(this.debugLayer);      // TODO Maybe we shouldn't clear all children here
+    pixiClear(this.uiLayer);
 
     for (let key of Object.keys(this.renderedObjects)) {
       this.drawObject(this.gameEngine.world.objects[key]);
@@ -79,14 +95,6 @@ class DDDefaultRenderer extends DDRenderer {
       this.uiLayer.addChild(scoreText);
 
     }
-  }
-
-
-  static pixiClear(pixiW) {
-    for (var i = pixiW.children.length - 1; i >= 0; i--) {
-      pixiW.removeChild(pixiW.children[i]);
-    };
-    pixiW.clear();
   }
 
   drawObject(object) {

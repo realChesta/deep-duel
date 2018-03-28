@@ -3,8 +3,9 @@
 // Apply band-aid patch to lance-gg
 require('./Utils/buggy-gg');
 
-const DeepDuel = require('./DeepDuel');
-const ClassLoader = require('./Utils/ClassLoader');
+import DeepDuel from 'game/common/DeepDuel';
+import ClassLoader from 'game/common/Utils/ClassLoader';
+import TileMap from 'game/common/TileMap';
 import GameEngine from 'lance/GameEngine';
 import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
 import Serializer from 'lance/serialize/Serializer'
@@ -35,9 +36,11 @@ class DDGameEngine extends GameEngine {
 
     this.characters = {};
 
+    this.tileMap = new TileMap();
+
     this.settings = {
-      width: 256,
-      height: 256
+      width: this.tileMap.width * this.tileMap.tileWidth,
+      height: this.tileMap.height * this.tileMap.tileHeight
     };
 
     this.physicsEngine.collisionDetection = new DDCollisionDetection();
@@ -77,7 +80,7 @@ class DDGameEngine extends GameEngine {
   }
 
   onPlayerJoined(event) {
-    let character = new Player(this, 128, 128, event.playerId);
+    let character = new Player(this, this.settings.width/2, this.settings.height/2, event.playerId);
     this.addObjectToWorld(character);
   }
 

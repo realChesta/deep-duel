@@ -68,6 +68,10 @@ export default class Projectile extends Entity {
     this.detectCollision(gameEngine);
   }
 
+  isFlying() {
+    return true;
+  }
+
   detectCollision(gameEngine) {
     // TODO Move collision detection to its own class and make this a circle collider
 

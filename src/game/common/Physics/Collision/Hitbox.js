@@ -33,12 +33,12 @@ class Hitbox {
 
   getLowerLeft(pos) {
     pos = pos || {x: 0, y: 0};
-    return new TwoVector(this.getLeft(pos), this.getUpper(pos));
+    return new TwoVector(this.getLeft(pos), this.getLower(pos));
   }
 
   getLowerRight(pos) {
     pos = pos || {x: 0, y: 0};
-    return new TwoVector(this.getRight(pos), this.getUpper(pos));
+    return new TwoVector(this.getRight(pos), this.getLower(pos));
   }
 
 

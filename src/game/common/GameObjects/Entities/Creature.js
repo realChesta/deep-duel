@@ -29,6 +29,7 @@ class Creature extends Entity {
   }
 
   tick(gameEngine) {
+    super.tick(gameEngine);
     this.state.tick(gameEngine);
   }
 
@@ -96,11 +97,15 @@ class Creature extends Entity {
   takeDamage(damage) {
     super.takeDamage(damage);
     let r = this.state.healthResources.decrease(damage);
-    if (this.state.health <= 0) {
-      let deadAction = this.actionTypes.Dead;
-      if (deadAction) this.state.setMainActionType(deadAction);
+    if (this.state.health <= 0) {     // TODO Maybe move to CreatureState or some resource holder?
+      this.die();
     }
     return r;
+  }
+
+  die() {
+    let deadAction = this.actionTypes.Dead;
+    if (deadAction) this.state.setMainActionType(deadAction);
   }
 
 }

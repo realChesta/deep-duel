@@ -309,6 +309,7 @@ Character.ActionTypes = {
   Spawn: CreatureAction.Type.Spawn.clone(Character, 'Character'),
   Respawn: new CreatureAction.Type(Character, 'respawn')
       .onStart(function() { this.gameObject.respawn(); })
+      .setNextAction(null)
 };
 Character.ActionTypes.Dead.setNextAction(Character.ActionTypes.Respawn);
 

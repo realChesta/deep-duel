@@ -16,7 +16,15 @@ class Entity extends RenderedObject {
 
   isDamageable() { return false; }
   takeDamage(amount) { }
+  die() { }
+  isFlying() { return false; }
 
+
+  getHoldingPoints() {
+    return this.hitbox
+      ? [this.hitbox.getLowerLeft(this.position), this.hitbox.getLowerRight(this.position)]
+      : [this.position];
+  }
 
 
   onAddToWorld(gameEngine) {
@@ -32,7 +40,20 @@ class Entity extends RenderedObject {
     this.ddhandler_tickhandler = undefined;
   }
 
-  tick(gameEngine) { }
+  tick(gameEngine) {
+    if (!this.isFlying()) {
+      let tileMap = this.gameEngine.tileMap;
+      let tw = tileMap.tileWidth;
+      let th = tileMap.tileHeight;
+
+      for (let pos of this.getHoldingPoints())
+        if (tileMap.getTileAt(pos.x/tw, pos.y/th) !== 0) return;
+
+
+      // not on a tile
+      this.die();
+    }
+  }
 
 
 
@@ -48,7 +69,6 @@ class Entity extends RenderedObject {
       idText.position.y = 0;
       debugLayer.addChild(idText);
       if (this.hitbox) {
-        let corner = this.hitbox.getUpperLeft(this.position);
         let hb = this.hitbox;
         debugLayer.drawRect(-hb.w/2 + hb.xoff, -hb.h/2 + hb.yoff, hb.w, hb.h);
       }

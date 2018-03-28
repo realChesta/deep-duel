@@ -114,15 +114,18 @@ class CreatureAction extends Serializable {
 
 
   doTick() {
-    let ticksPassed = this.ticksPassed;
-    this.tick(ticksPassed);
+    this.tick(this.ticksPassed);
 
     if (this.hasNext) {         // TODO Move into its own event handler that can be attached/detached separately
-      while (ticksPassed >= this.switchIn) {
+      let i = 0;
+      while (this.ticksPassed >= this.switchIn) {
+        if (i++ >= 100000)
+          throw new Error("More than 100 000 recursive action calls - are you sure there's no infinity loop? (Use .nextAction(null) to disabled next action). Next action: " + switchTo.fullName);
+
         let switchTo = this.getNextAction();
-        if (!switchTo || this.type === switchTo) break;
+        if (!switchTo || null === switchTo) break;
         if (switchTo)
-          this.setType(switchTo);
+          if (!this.setType(switchTo)) break;
       }
     }
   }

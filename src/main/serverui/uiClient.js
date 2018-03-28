@@ -10,7 +10,7 @@ const NodeServer = require('main/server/nodeServer.js');
 
 require('game/common/Utils/SpriteLoader').setResourceDirectory('../../../');
 
-let spriteLoaderPromise = require('game/client/ResourcePreloader').preload();
+let spriteLoaderPromise = require('game/common/Utils/ResourcePreloader').preload();
 let buildServerPromise = buildServer();
 
 onReady();
