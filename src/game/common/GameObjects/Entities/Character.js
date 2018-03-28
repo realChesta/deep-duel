@@ -40,6 +40,7 @@ class Character extends Creature {
   }
 
 
+  // TODO Check again whether all input data is checked for correct format and nothing can crash
   processInput(inputData) {
     if (this.input === undefined) {
       this.input = {};

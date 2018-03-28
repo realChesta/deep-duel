@@ -1,7 +1,7 @@
 'use strict';
 
 const Character = require('./Character');
-const SpriteLoader = require('../../Utils/SpriteLoader');
+const SpriteLoader = require('game/common/Utils/SpriteLoader');
 
 class Player extends Character {
 
@@ -9,7 +9,7 @@ class Player extends Character {
   initRenderContainer(container, debugContainer) {
     super.initRenderContainer(container, debugContainer);
 
-    const MultiSprite = require('../../../client/Rendering/MultiSprite');
+    const MultiSprite = require('game/client/Rendering/MultiSprite');
     this.sprite = new MultiSprite(playerAssetsId);
     container.addChild(this.sprite);
   }
@@ -32,7 +32,7 @@ class Player extends Character {
 
 }
 
-const playerAssetsId = require('../../Utils/SpriteLoader').add('assets/playerv2/playerv2.json');
+const playerAssetsId = require('game/common/Utils/SpriteLoader').add('assets/playerv2/playerv2.json');
 
 require('../../Utils/ClassLoader').registerClass(Player);
 module.exports = Player;

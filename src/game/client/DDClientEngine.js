@@ -2,38 +2,15 @@
 
 import ClientEngine from 'lance/ClientEngine';
 import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
-const DDRenderer = require('./Rendering/DDRenderer');
-const DDGameEngine = require('../common/DDGameEngine');
-
-const toggleKeys = {
-  'up': [38, 87],
-  'down': [40, 83],
-  'left': [37, 65],
-  'right': [39, 68]
-};
-
-const pushKeys = {
-  'attack': [32],
-  'fire': [16],
-  'dash': [17]
-}
-
-const reversedToggleKeys = parseKeysObject(toggleKeys);
-const reversedPushKeys = parseKeysObject(pushKeys);
+const DDGameEngine = require('game/common/DDGameEngine');
 
 class DDClientEngine extends ClientEngine {
 
-  constructor(clientOptions) {
+  constructor(clientOptions, Renderer) {
     let options = DDClientEngine.getCustomizedOptions(clientOptions);
-    super(new DDGameEngine(options), options, DDRenderer);
+    super(new DDGameEngine(options), options, Renderer);
 
     this.gameEngine.on('preStep', this.preStep.bind(this));
-
-    this.pressedKeys = {};
-    for (let key of Object.keys(toggleKeys)) {
-      this.pressedKeys[key] = false;
-    }
-
   }
 
 
@@ -55,44 +32,6 @@ class DDClientEngine extends ClientEngine {
     return Object.assign(options, clientOptions);
   }
 
-
-  addInputEvents(to) {
-    let that = this;
-    to.onkeydown = (e) => {
-      that.onKeyChange.call(that, e, true);
-    };
-    to.onkeyup = (e) => {
-      that.onKeyChange.call(that, e, false);
-    };
-  }
-
-  onKeyChange(e, isDown) {
-    e = e || window.event;
-
-    let preventDefault = false;
-
-    if (reversedToggleKeys[e.keyCode]) {
-      this.handleKeyChange(reversedToggleKeys[e.keyCode], isDown);
-      preventDefault = true;
-    }
-
-    if (isDown && reversedPushKeys[e.keyCode]) {
-      if (!e.repeat)
-        this.sendInput(reversedPushKeys[e.keyCode], {});
-      preventDefault = true;
-    }
-
-    if (preventDefault)
-      e.preventDefault();
-  }
-
-  handleKeyChange(key, isDown) {
-    if (this.pressedKeys[key] !== isDown) {
-      this.pressedKeys[key] = isDown;
-      this.sendInput(key, {isDown: isDown})
-    }
-  }
-
   preStep() {
     if (this.gameEngine.world.stepCount % 20 == 0) {
       // send keep alive packet
@@ -100,6 +39,16 @@ class DDClientEngine extends ClientEngine {
       // TODO Check if client input and server inputDirection match, if not, fix that
     }
   }
+
+
+  sendPushKey(key) {
+    this.sendInput(key, {});
+  }
+
+  sendToggleKey(key, isDown) {
+    this.sendInput(key, {isDown: isDown});
+  }
+
 
 
   get character() {
@@ -117,18 +66,6 @@ class DDClientEngine extends ClientEngine {
     }, data));
   }
 
-}
-
-function parseKeysObject(keys) {
-  var keyDict = {};
-
-  for (var action of Object.keys(keys)) {
-    for (var key in keys[action]) {
-      keyDict[keys[action][key]] = action;
-    }
-  }
-
-  return keyDict;
 }
 
 module.exports = DDClientEngine;

@@ -1,7 +1,7 @@
 'use strict';
 
 const PIXI = require('pixi.js');
-const SpriteLoader = require('../../common/Utils/SpriteLoader');
+const SpriteLoader = require('game/common/Utils/SpriteLoader');
 
 class MultiSprite extends PIXI.Container {
   constructor(assetsId, defaultAction, defaultDirection) {

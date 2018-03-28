@@ -2,10 +2,10 @@
 
 require('./remoteConsole');
 
-import DDRenderer from 'game/client/Rendering/DDRenderer';
+import DDDefaultRenderer from 'game/client/DefaultClient/Rendering/DDDefaultRenderer';
 const $ = require('jquery');
 const {spawn} = require('child_process');
-const NodeServer = require('../server/nodeServer.js');
+const NodeServer = require('main/server/nodeServer.js');
 
 
 require('game/common/Utils/SpriteLoader').setResourceDirectory('../../../');
@@ -30,7 +30,7 @@ async function onReady() {
   loadingLabel.text("Finishing up...");
   let server = new NodeServer();
   server.start();
-  let renderer = new DDRenderer(server.getGameEngine(), undefined, true);
+  let renderer = new DDDefaultRenderer(server.getGameEngine(), undefined, true);
 
   var view = renderer.getView();
   var gameRenderer = $('#gameRenderer');

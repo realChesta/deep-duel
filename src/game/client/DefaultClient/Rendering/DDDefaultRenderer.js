@@ -1,17 +1,13 @@
 'use strict';
 
-import Renderer from 'lance/render/Renderer';
+import DDRenderer from 'game/client/DDRenderer';
 const PIXI = require('pixi.js');
-const RenderedObject = require('../../common/GameObjects/RenderedObject');
-const HealthBar = require('./HealthBar');
+import HealthBar from 'game/client/DefaultClient/Rendering/HealthBar';
 
-class DDRenderer extends Renderer {
-
-
+class DDDefaultRenderer extends DDRenderer {
   constructor(gameEngine, clientEngine, debugMode) {
-    super(gameEngine, clientEngine);
-    this.debugMode = debugMode || (clientEngine && clientEngine.options.debugMode === 'true');
-
+    console.log("sup");
+    super(gameEngine, clientEngine, debugMode);
 
     const settings = this.gameEngine.settings;
 
@@ -46,52 +42,20 @@ class DDRenderer extends Renderer {
 
 
 
-
-    if (!this.clientEngine) {
-      let renderLoop = (function() {
-        this.draw();
-        window.requestAnimationFrame(renderLoop);
-      }).bind(this);
-      this.init().then(() => window.requestAnimationFrame(renderLoop));
-    }
-
-
-    this.renderedObjects = {};    // TODO rename to renderedObjectContainers
-
-    // TODO When the renderer gets uninitialised/removed (especially on server UI), remove these handlers
-    this.gameEngine.on('objectAdded', this.onObjectAdded.bind(this));
-    this.gameEngine.on('objectDestroyed', this.onObjectDestroyed.bind(this));
-    this.gameEngine.on('postStep', this.postStep.bind(this));
-
-    if (this.gameEngine.world) {
-      for (let object of Object.values(this.gameEngine.world.objects)) {
-        this.onObjectAdded(object);
-      }
-    }
-
-  }
-
-  getView() {
-    return this.renderer.view;
+    this.initialize();
   }
 
 
-  postStep() {
-    for (let key of Object.keys(this.renderedObjects)) {
-      this.gameEngine.world.objects[key].tickSprite(this.gameEngine);
-    }
-  }
 
   draw() {
-    if (this.clientEngine)
-      super.draw();
+    super.draw();
 
     if (this.debugMode)
-      DDRenderer.pixiClear(this.debugLayer);      // TODO Maybe we shouldn't clear all children here
-    DDRenderer.pixiClear(this.uiLayer);
+      DDDefaultRenderer.pixiClear(this.debugLayer);      // TODO Maybe we shouldn't clear all children here
+    DDDefaultRenderer.pixiClear(this.uiLayer);
 
     for (let key of Object.keys(this.renderedObjects)) {
-      this.drawObject.call(this, this.gameEngine.world.objects[key]);
+      this.drawObject(this.gameEngine.world.objects[key]);
     }
 
     this.drawUI();
@@ -125,12 +89,6 @@ class DDRenderer extends Renderer {
     pixiW.clear();
   }
 
-
-  runClientStep() {
-    if (this.clientEngine)
-      super.runClientStep();
-  }
-
   drawObject(object) {
     var container = this.renderedObjects[object.id];
     container.parent.x = object.position.x;
@@ -138,15 +96,10 @@ class DDRenderer extends Renderer {
     object.drawSprite(container.normal, container.debug);
   }
 
-  onObjectAdded(object) {
-    if (object instanceof RenderedObject)
-      this.addRenderedObject(object);
-  }
 
-  onObjectDestroyed(object) {
-    if (object instanceof RenderedObject)
-      this.removeRenderedObject(object);
-  }
+
+
+
 
   addRenderedObject(object) {
     if (this.renderedObjects[object.id]) {
@@ -177,8 +130,9 @@ class DDRenderer extends Renderer {
     this.stage.removeChild(container.parent);
   }
 
-}
 
+
+}
 
 
 function initFixedLayer(layer, renderWidth, renderHeight) {
@@ -207,4 +161,7 @@ function initSubLayer(layer, parent) {
 }
 
 
-module.exports = DDRenderer;
+
+
+
+module.exports = DDDefaultRenderer;
