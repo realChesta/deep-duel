@@ -14,12 +14,14 @@ class Character extends Creature {
   static get netScheme() {
     return Object.assign({
       score: {type: Serializer.TYPES.INT32},
+      lastFire: {type: Serializer.TYPES.INT32},   // TODO Move this to some secondary effect instead of variable here
     }, super.netScheme);
   }
 
   syncTo(other) {
     super.syncTo(other);
     this.score = other.score;
+    this.lastFire = other.lastFire;
   }
 
   get actionTypes() {
@@ -31,6 +33,10 @@ class Character extends Creature {
     this.playerId = playerId;
     this.hitbox = new Hitbox(26, 52);
     this.score = 0;
+
+    this.input = {};
+    this.secondaryInput = {};
+    this.lastFire = -2000000;
   }
 
 
@@ -42,24 +48,42 @@ class Character extends Creature {
 
   // TODO Check again whether all input data is checked for correct format and nothing can crash
   processInput(inputData) {
-    if (this.input === undefined) {
-      this.input = {};
-    }
 
     if (inputData.options.isDown !== undefined) {   // Toggle/axis key
-      if (inputData.options.isDown === true)
-        this.input[inputData.input] = this.gameEngine.world.stepCount;
-      else
-        delete this.input[inputData.input];
+      switch (inputData.input) {
+      case 'up':
+      case 'down':
+      case 'left':
+      case 'right':
+        if (inputData.options.isDown === true) {
+          this.input[inputData.input] = this.gameEngine.world.stepCount;
+        } else {
+          delete this.input[inputData.input];
+        }
+        break;
+
+
+      case 'fire up':
+      case 'fire down':
+      case 'fire left':
+      case 'fire right':
+        if (inputData.options.isDown === true) {
+          this.secondaryInput[inputData.input.split(' ')[1]] = this.gameEngine.world.stepCount;
+        } else {
+          delete this.secondaryInput[inputData.input.split(' ')[1]];
+        }
+        break;
+
+      default:
+        console.error("Unknown input data " + inputData.input + " at Character - input data should be sanitized!", inputData);
+      }
     }
+
+
     else {          // Push key
-      switch (inputData.input)
-      {
+      switch (inputData.input) {
         case 'attack':
           this.attack();
-          break;
-        case 'fire':
-          this.fire();
           break;
         case 'dash':
           this.dash();
@@ -69,6 +93,9 @@ class Character extends Creature {
           break;
       }
     }
+
+
+
   }
 
 
@@ -79,7 +106,8 @@ class Character extends Creature {
   onFireTick(action, ticksPassed) {
     // TODO This assumes ticksPassed is confirmed to be equal to a given number at most once; is it?
     // TODO Move variables like radius, damage etc.
-    if (ticksPassed === 15) {
+    if (ticksPassed >= 14 && this.gameEngine.world.stepCount - this.lastFire >= 30) {
+      this.lastFire = this.gameEngine.world.stepCount;
       let pos = this.position.clone();
       let padd = this.facingDirection.vector.clone();
       padd.multiplyScalar(5);
@@ -157,27 +185,50 @@ class Character extends Creature {
   calcVelocity(gameEngine) {
     let action = this.state.mainAction;
 
-    if (this.input) {       // While we have input data, override input direction received by the server // TODO Think about this for another second
-      var arr = [];
-      for (let key of Object.keys(Direction.AXES)) {
-        if (this.input[key]) {
-          arr[arr.length] = Direction.AXES[key];
-        }
+
+
+
+    let arr = [];
+    for (let key of Object.keys(Direction.AXES)) {
+      if (this.input[key]) {
+        arr[arr.length] = Direction.AXES[key];
       }
-      this.inputDirection = Direction.getSum(arr);
+    }
+    this.inputDirection = Direction.getSum(arr);
+
+    arr = [];
+    for (let key of Object.keys(Direction.AXES)) {
+      if (this.secondaryInput[key]) {
+        arr[arr.length] = Direction.AXES[key];
+      }
+    }
+    this.secondaryInputDirection = Direction.getSum(arr);
+
+
+
+
+
+    if (this.secondaryInputDirection !== Direction.ZERO)
+        action.setOrRefreshType(Character.ActionTypes.Fire);
+    else if (this.inputDirection !== Direction.ZERO)
+        action.setOrRefreshType(Character.ActionTypes.Running);
+
+    if (!action.getFreezeMovingDirection()) {
+      this.movingDirection = this.inputDirection;
     }
 
-    if (this.inputDirection !== Direction.ZERO) {
-      action.setType(Character.ActionTypes.Running);
+    if (!action.getFreezeFacingDirection()) {
+      this.facingDirection = this.secondaryInputDirection;
+    } else if (!action.getFreezeMovingDirection()) {
+      this.facingDirection = this.movingDirection;
     }
 
-    if (!action.getFreezeDirection()) {
-      this.facingDirection = this.inputDirection;
-    }
+
+
 
     let targetV;
     if (action.getUseInputMovement()) {
-      targetV = this.facingDirection.vector.clone();
+      targetV = this.movingDirection.vector.clone();
       targetV.multiplyScalar(this.getSpeed());
       targetV.multiplyScalar(action.getInputMovementSpeed());
     } else {
@@ -191,6 +242,10 @@ class Character extends Creature {
     } else {
       this.velocity.add(dif.normalize().multiplyScalar(-frictionForce));
     }
+
+
+
+
   }
 
   // TODO move this to a cooler place, wherever we've moved the other stats
@@ -210,10 +265,6 @@ class Character extends Creature {
     for (let key of Object.keys(this.input)) {
       if (gameEngine.world.stepCount - this.input[key] >= Character.keyGravity)
         delete this.input[key];
-    }
-
-    if (Object.keys(this.input).length <= 0) {
-      delete this.input;
     }
   }
 
@@ -288,6 +339,17 @@ class Character extends Creature {
 Character.ActionTypes = {
   Idle: CreatureAction.Type.Idle.clone(Character, 'Character'),
   Running: CreatureAction.Type.Running.clone(Character, 'Character'),
+  Fire: new CreatureAction.Type(Character, 'running-firing') // TODO 'running-firing' until animations are here, then change to 'fire'
+      .setUseInputMovement(true)
+      .setInputMovementSpeed(0.2)
+      .setFreezeMovingDirection(false)
+      .setFreezeFacingDirection(false)
+      .setActionLength(1)
+      .onTick(function(ticksPassed) { this.gameObject.onFireTick(this, ticksPassed); })
+      .onPrepareEnd(function(next) {
+        if ((next === Character.ActionTypes.Idle || next === Character.ActionTypes.Running) && this.ticksPassed < 15)
+          return true;
+      }),
   Attack: new CreatureAction.Type(Character, 'attack')
       .setLockDuration(40)
       .setActionLength(45)
@@ -297,10 +359,6 @@ Character.ActionTypes = {
       .setLockDuration(40)
       .setActionLength(45)
       .onStart(function() { this.gameObject.doDash(this); }),
-  Fire: new CreatureAction.Type(Character, 'attack-fire') // TODO 'attack-fire' until animations are here, then remove attack
-      .setLockDuration(30)
-      .setActionLength(60)
-      .onTick(function(ticksPassed) { this.gameObject.onFireTick(this, ticksPassed); }),
   Dead: CreatureAction.Type.Dead.clone(Character, 'Character')
       .setLockDuration(180)
       .setActionLength(180)

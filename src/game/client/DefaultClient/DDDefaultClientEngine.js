@@ -4,16 +4,20 @@ import DDClientEngine from 'game/client/DDClientEngine';
 import DDDefaultRenderer from './Rendering/DDDefaultRenderer';
 
 const toggleKeys = {
-  'up': [38, 87],
-  'down': [40, 83],
-  'left': [37, 65],
-  'right': [39, 68]
+  'up': [87],
+  'down': [83],
+  'left': [65],
+  'right': [68],
+  
+  'fire up': [38],
+  'fire down': [40],
+  'fire left': [37],
+  'fire right': [39],
 };
 
 const pushKeys = {
   'attack': [32],
-  'fire': [16],
-  'dash': [17]
+  'dash': [16],
 }
 
 const reversedToggleKeys = parseKeysObject(toggleKeys);

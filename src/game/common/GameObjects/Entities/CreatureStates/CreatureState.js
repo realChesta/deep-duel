@@ -15,7 +15,9 @@ class CreatureState extends Serializable {
       mainAction: {type: Serializer.TYPES.CLASSINSTANCE},
       baseHealth: {type: Serializer.TYPES.CLASSINSTANCE},
       inputDirectionVector: {type: Serializer.TYPES.CLASSINSTANCE},
+      secondaryInputDirectionVector: {type: Serializer.TYPES.CLASSINSTANCE},
       facingDirectionVector: {type: Serializer.TYPES.CLASSINSTANCE},
+      movingDirectionVector: {type: Serializer.TYPES.CLASSINSTANCE},
     }, super.netScheme);
   }
 
@@ -36,8 +38,14 @@ class CreatureState extends Serializable {
     this.baseHealth = new CreatureResource(maxHealth);
 
     this.inputDirection = Direction.ZERO;
-    this.facingDirection = this.inputDirection;
+    this.secondaryInputDirection = Direction.ZERO;
+    this.facingDirection = this.secondaryInputDirection;
+    this.movingDirection = this.inputDirection;
   }
+
+
+
+
 
 
 
@@ -60,34 +68,26 @@ class CreatureState extends Serializable {
 
 
 
-  get inputDirectionVector() {
-    return this.inputDirection.vector;
-  }
 
-  set inputDirectionVector(val) {
-    this.inputDirection = Direction.getClosest(val);
-  }
 
-  get facingDirectionVector() {
-    return this.facingDirection.vector;
-  }
 
-  set facingDirectionVector(val) {
-    this.facingDirection = Direction.getClosest(val);
-  }
 
-  get inputDirection() {
-    return this._inputDirection;
-  }
+  get inputDirectionVector() { return this.inputDirection.vector; }
+  set inputDirectionVector(val) { this.inputDirection = Direction.getClosest(val); }
+  get inputDirection() { return this._inputDirection; }
+  set inputDirection(val) { this._inputDirection = val; }
 
-  set inputDirection(val) {
-    this._inputDirection = val;
-  }
+  get secondaryInputDirectionVector() { return this.secondaryInputDirection.vector; }
+  set secondaryInputDirectionVector(val) { this.secondaryInputDirection = Direction.getClosest(val); }
+  get secondaryInputDirection() { return this._secondaryInputDirection; }
+  set secondaryInputDirection(val) { this._secondaryInputDirection = val; }
 
-  get facingDirection() {
-    return this._facingDirection || Direction.DOWN;
-  }
 
+
+
+  get facingDirectionVector() { return this.facingDirection.vector; }
+  set facingDirectionVector(val) { this.facingDirection = Direction.getClosest(val); }
+  get facingDirection() { return this._facingDirection || Direction.DOWN; }
   set facingDirection(val) {
     if (val === Direction.ZERO)
       val = null;
@@ -96,6 +96,23 @@ class CreatureState extends Serializable {
     let niu = val || this.facingDirection;
     this._facingDirection = niu;
   }
+
+  get movingDirectionVector() { return this.movingDirection.vector; }
+  set movingDirectionVector(val) { this.movingDirection = Direction.getClosest(val); }
+  get movingDirection() { return this._movingDirection || Direction.DOWN; }
+  set movingDirection(val) {
+    if (val === this.movingDirection)
+      return;
+    let niu = val || this.movingDirection;
+    this._movingDirection = niu;
+  }
+
+
+
+
+
+
+
 
 
 

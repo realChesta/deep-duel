@@ -61,6 +61,22 @@ class CreatureAction extends Serializable {
     return this._type;
   }
 
+  setOrRefreshType(val) {
+    if (this.type === val) {
+      this.refresh();
+      return true;
+    } else {
+      return this.setType(val);
+    }
+  }
+
+  refresh(lock = false) {
+    let ticksPassed = this.ticksPassed;
+    if (lock) this.lockedFor = ticksPassed + this.getLockDuration();
+    this.switchIn = ticksPassed + this.getActionLength();
+    this.hasNext = this.getHasNextAction();
+  }
+
   setType(val) {
     if (this.type !== undefined) {
       if (this.prepareEnd(val)) {
@@ -70,10 +86,8 @@ class CreatureAction extends Serializable {
     }
 
     this.forceSetType(val);
-    this.lockedFor = this.getLockDuration();
-    this.switchIn = this.getActionLength();
     this.startedAt = this.stepCount();
-    this.hasNext = this.getHasNextAction();
+    this.refresh(true);
     this._actionId++;
     this.start();
     return true;
@@ -182,13 +196,14 @@ class Type {
 
 Type.defaultProperties = {
   lockDuration: 0,      // TODO Does it make sense for lock durations to be slightly longer on clients to combat lag?
-  hasNextAction: function() {return Boolean(this.getNextAction.call(this, arguments));},
-  nextAction: function() {return this.gameObject.actionTypes.Idle;},
+  hasNextAction: function() { return Boolean(this.getNextAction.call(this, arguments)); },
+  nextAction: function() { return this.gameObject.actionTypes.Idle; },
   actionLength: 2,
   animationName: null,
   useInputMovement: false,
   inputMovementSpeed: 0,
-  freezeDirection: true,
+  freezeMovingDirection: true,
+  freezeFacingDirection: true,
   frictionMultiplier: 1,
   isDamageable: true,
   forceTypeChange: false
@@ -255,11 +270,12 @@ function setFunction(cl, name, func) {
 Type.Idle = new Type(Creature, 'idle')
     .setUseInputMovement(false)
     .setNextAction(null)
-    .setFreezeDirection(false);
+    .setFreezeFacingDirection(false);
 Type.Running = new Type(Creature, 'running')
     .setUseInputMovement(true)
     .setInputMovementSpeed(1.0)
-    .setFreezeDirection(false);
+    .setFreezeMovingDirection(false)
+    .setActionLength(1);
 Type.Dead = new Type(Creature, 'dead')
     .setIsDamageable(false)
     .setForceTypeChange(true)

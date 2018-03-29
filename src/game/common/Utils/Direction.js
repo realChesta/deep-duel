@@ -79,6 +79,7 @@ Direction.UPRIGHT = new Direction('up-right', new TwoVector(1, -1));
 Direction.DOWNLEFT = new Direction('down-left', new TwoVector(-1, 1));
 
 Direction.AXES = {
+  'zero': Direction.ZERO,
   'up': Direction.UP,
   'down': Direction.DOWN,
   'left': Direction.LEFT,

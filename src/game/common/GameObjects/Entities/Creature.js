@@ -71,6 +71,18 @@ class Creature extends Entity {
   set inputDirection(val) {
     this.state.inputDirection = val;
   }
+  get secondaryInputDirection() {
+    return this.state.secondaryInputDirection;
+  }
+  set secondaryInputDirection(val) {
+    this.state.secondaryInputDirection = val;
+  }
+  get movingDirection() {
+    return this.state.movingDirection;
+  }
+  set movingDirection(val) {
+    this.state.movingDirection = val;
+  }
   get facingDirection() {
     return this.state.facingDirection;
   }
