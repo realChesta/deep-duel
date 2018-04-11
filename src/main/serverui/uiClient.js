@@ -54,9 +54,10 @@ function refreshServerList() {
   });
 
   let servers = Object.entries(server.serverEngines).map(s => {
+    let uuid = s[1].uuid;
     let a = $('<a href="javascript:void(0)">');
     a.text(s[0]);
-    a.click(() => showServer(server.getGameEngine(s[1].uuid)));
+    a.click(() => showServer(uuid));
     return a;
   });
   serversList.empty();
@@ -67,8 +68,8 @@ function refreshServerList() {
 }
 
 
-function showServer(gameEngine) {
-  let renderer = new DDDefaultRenderer(gameEngine, undefined, true);
+function showServer(uuid) {
+  let renderer = new DDDefaultRenderer(server.getGameEngine(uuid), undefined, true);
 
   var view = renderer.getView();
   var gameRenderer = $('#gameRenderer');
