@@ -12,40 +12,70 @@ require('game/common/Utils/SpriteLoader').setResourceDirectory('../../../');
 
 let spriteLoaderPromise = require('game/common/Utils/ResourcePreloader').preload();
 let buildServerPromise = buildServer();
+let server = undefined;
 
 onReady();
 
 async function onReady() {
   await new Promise(resolve => $(resolve));   // wrapper promise for $.ready(...)
 
-  $('#content').hide();
+  $('.startHidden').hide();
   let loadingLabel = $('.loadingLabel');
 
   loadingLabel.text("Loading sprites...");
   await spriteLoaderPromise;
 
-  loadingLabel.text("Preparing server...");
+  loadingLabel.text("Webpacking server...");
   await buildServerPromise;
 
   loadingLabel.text("Finishing up...");
-  let server = new NodeServer();
+  server = new NodeServer();
   server.start();
-  let renderer = new DDDefaultRenderer(server.getGameEngine(), undefined, true);
+
+  $('#serversRefresh').click(refreshServerList);
+  setInterval(refreshServerList, 1000);
+
+  $('#loading').remove();
+  $('.startHidden').show();
+}
+
+
+function refreshServerList() {
+  let serverInfo = $('#serverInfo');
+  let playersWaiting = $('#playersWaiting');
+  let serversList = $('#serversList');
+
+
+  let plw = server.matchmaker.playerQueue.map(s => document.createTextNode(s.conn.remoteAddress + " - " + s.conn.id));
+  playersWaiting.empty();
+  plw.forEach(p => {
+    playersWaiting.append(p);
+    playersWaiting.append($('<br>'));
+  });
+
+  let servers = Object.entries(server.serverEngines).map(s => {
+    let a = $('<a href="javascript:void(0)">');
+    a.text(s[0]);
+    a.click(() => showServer(server.getGameEngine(s[1].uuid)));
+    return a;
+  });
+  serversList.empty();
+  servers.forEach(a => {
+    serversList.append(a);
+    serversList.append($('<br>'));
+  });
+}
+
+
+function showServer(gameEngine) {
+  let renderer = new DDDefaultRenderer(gameEngine, undefined, true);
 
   var view = renderer.getView();
   var gameRenderer = $('#gameRenderer');
+  gameRenderer.empty();
   gameRenderer.append(view);
   gameRenderer.focus();
   gameRenderer.click((e) => gameRenderer.focus());
-
-  var reloadAll = $('.reloadAll');
-  reloadAll.click(function() {
-    console.log("Restarting server...");
-    location.reload(true);
-  });
-
-  $('#loading').remove();
-  $('#content').show();
 }
 
 

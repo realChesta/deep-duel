@@ -7,6 +7,8 @@ class DDServerEngine extends ServerEngine {
 
   constructor(io, inputOptions) {
     super(io, new DDGameEngine(), inputOptions);
+    this.stopHandlers = [];
+    this.io = io;
   }
 
   start() {
@@ -14,6 +16,8 @@ class DDServerEngine extends ServerEngine {
   }
 
   onPlayerConnected(socket) {
+    // TODO Only allow players to play that are actually playing
+
     super.onPlayerConnected(socket);
     let playerId = socket.playerId;
 
@@ -31,9 +35,23 @@ class DDServerEngine extends ServerEngine {
     super.onPlayerDisconnected(socketId, playerId);
   }
 
+  onStop(handler) {
+    this.stopHandlers.push(handler);
+  }
+
+  stop() {
+    super.stop.apply(this, arguments);
+
+    stopHandlers.forEach(s => s());
+
+    this.disconnectAllClients();
+    this.gameEngine.timer.destroy();
+    this.io.server.close();
+  }
 
   disconnectAllClients() {
-
+    super.disconnectAllClients.apply(this, arguments);
+    this.connectedPlayers.forEach(p => p.socket.destroy());
   }
 
 }

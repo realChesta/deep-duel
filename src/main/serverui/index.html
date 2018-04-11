@@ -2,7 +2,6 @@
 <head>
   <title>Deep Duel Server UI</title>
   <meta http-equiv="Cache-control" content="no-cache">
-  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
 </head>
 <body>
@@ -22,9 +21,22 @@
     </p>
   </div>
 
-  <div id="content" visibility="hidden">
-    <div id="gameRenderer" tabindex="1"></div><br>
-    <a href="javascript:void(0)" class="reloadAll">Restart Server</a><br>
+  <div id="content" class="startHidden">
+    <div id="gameRenderer" tabindex="1">Please select a server</div><br>
+  </div>
+
+  <a href="javascript:window.location.href=window.location.href" class="reloadAll">Restart</a><br>
+
+  <div id="serverInfo" class="startHidden" style="border: 1px solid white; margin-top: 20px; padding: 10px;">
+    Players waiting:
+    <div id="playersWaiting">
+      <a>(no players waiting atm)</a>
+    </div><br><br>
+    Servers:<br>
+    <div id="serversList">
+      <a>(no servers atm)</a><br>
+    </div><br>
+    <button id="serversRefresh">Refresh</button>
   </div>
 
 </body>

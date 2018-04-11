@@ -13,11 +13,11 @@ class DDAIClientEngine extends DDClientEngine {
   startRandomInputs() {
       setInterval(() => {
         if (!this.gameEngine.hasStarted) return;
-        if (Math.random() < 0.9) {
-          const toggleKeys = ['up', 'down', 'left', 'right'];
+        if (Math.random() < 0.95) {
+          const toggleKeys = ['up', 'down', 'left', 'right', 'fire up', 'fire down', 'fire left', 'fire right'];
           this.sendToggleKey(toggleKeys[Math.floor(Math.random() * toggleKeys.length)], Math.random() < 0.5);
         } else {
-          const pushKeys = ['attack', 'fire', 'dash'];
+          const pushKeys = ['attack', 'dash'];
           this.sendPushKey(pushKeys[Math.floor(Math.random() * pushKeys.length)]);
         }
       }, 50);

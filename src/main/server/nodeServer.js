@@ -5,9 +5,11 @@
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
-const GameServer = require('main/server/GameServer');
+const MultiGameServer = require('main/server/MultiGameServer');
 
 const DEFAULT_PORT = process.env.PORT || 3000;
+const GAMESERVER_PORT_RANGE_START = 49153;
+const GAMESERVER_PORT_RANGE_END = 52153;
 const INDEX = path.join(__dirname, '../client/index.html');
 const STYLE = path.join(__dirname, '../client/style.css');
 const BUNDLE = path.join(__dirname, '../../../dist/bundle.js');
@@ -26,7 +28,6 @@ Object.keys(files).forEach(
 );
 
 server.use('/assets', function(req, res, next) {
-  console.log("Responding to request from " + req.ip);
   res.sendFile(path.join(__dirname, '../../../assets' + req.path));
   // TODO Do we need next? If so, uncomment this: next();
 });
@@ -40,9 +41,9 @@ function getIO(port) {
 }
 
 
-class NodeServer extends GameServer {
-  constructor(port) {
-    super(getIO(port));
+class NodeServer extends MultiGameServer {
+  constructor() {
+    super(getIO(DEFAULT_PORT));
   }
 }
 

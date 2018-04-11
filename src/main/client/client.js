@@ -4,6 +4,7 @@ const DDDefaultClientEngine = require('game/client/DefaultClient/DDDefaultClient
 const DDGameEngine = require('game/common/DDGameEngine');
 const SpriteLoader = require('game/common/Utils/SpriteLoader');
 import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
+import DeepDuel from 'game/common/DeepDuel';
 const $ = require('jquery');
 
 const qsOptions = require('query-string').parse(location.search);
@@ -14,6 +15,7 @@ const qsOptions = require('query-string').parse(location.search);
 let spriteLoaderPromise = require('game/common/utils/ResourcePreloader').preload();
 SpriteLoader.onProgress(onSpriteLoadProgress);
 
+window.DeepDuel = DeepDuel;
 
 let isReady = false;
 onReady();
@@ -34,6 +36,7 @@ async function onReady() {
   gameRenderer.focus();
   gameRenderer.click((e) => gameRenderer.focus());
   clientEngine.start();
+  console.log("Started Deep Duel client!");
 }
 
 

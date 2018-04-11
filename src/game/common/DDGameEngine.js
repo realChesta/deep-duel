@@ -17,7 +17,7 @@ const Scarecrow = require('./GameObjects/Entities/Scarecrow');
 const DDCollisionDetection = require('./Physics/Collision/DDCollisionDetection');
 const Hitbox = require('./Physics/Collision/Hitbox');
 
-DeepDuel.gameEngines = [];
+DeepDuel.gameEngines = [];    // TODO weak set
 
 
 // TODO Rename playerId everywhere

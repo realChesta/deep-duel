@@ -3,6 +3,7 @@
 import ClientEngine from 'lance/ClientEngine';
 import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
 import DDGameEngine from 'game/common/DDGameEngine';
+import DDUtils from 'game/common/Utils/DDUtils';
 
 class DDClientEngine extends ClientEngine {
 
@@ -30,6 +31,14 @@ class DDClientEngine extends ClientEngine {
       options.physicsEngine = new SimplePhysicsEngine();*/
 
     return Object.assign(options, clientOptions);
+  }
+
+
+  async connect() {
+    await super.connect.apply(this, arguments);
+
+    await DDUtils.socketMessage(this.socket, 'jpq', 'matchmakingFound');
+    await DDUtils.socketMessage(this.socket, 'meReady', 'gameStarts');
   }
 
   preStep() {
