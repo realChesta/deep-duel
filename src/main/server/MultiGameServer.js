@@ -38,19 +38,22 @@ class MultiGameServer {
   }
 
   removeServer(uuid) {
-    let serverEngine = serverEngines[uuid];
+    let serverEngine = this.serverEngines[uuid];
     if (serverEngine === undefined) return;
 
     serverEngine.stop();
-    delete serverEngines[uuid];
-    this.openPorts.push(uuid);
+  }
+
+  onServerStop(serverEngine) {
+    let uuid = serverEngine.uuid;
+    delete this.serverEngines[uuid];
 
     console.log("Removed server engine with UUID " + uuid);
   }
 
   startServer(playerSockets) {
     let serverEngine = this.createServer();
-    serverEngine.onStop(() => this.removeServer(serverEngine.uuid));
+    serverEngine.onStop(() => this.onServerStop(serverEngine.uuid));
     serverEngine.start();
     playerSockets.forEach(s => {
       s.emit('gameStarts')

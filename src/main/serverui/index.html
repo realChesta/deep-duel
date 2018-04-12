@@ -22,12 +22,13 @@
   </div>
 
   <div id="content" class="startHidden">
+    <a id="serverUUID"></a>
     <div id="gameRenderer" tabindex="1">Please select a server</div><br>
   </div>
 
   <a href="javascript:window.location.href=window.location.href" class="reloadAll">Restart</a><br>
 
-  <div id="serverInfo" class="startHidden" style="border: 1px solid white; margin-top: 20px; padding: 10px;">
+  <div id="serverInfo" class="infoBox startHidden">
     Players waiting:
     <div id="playersWaiting">
       <a>(no players waiting atm)</a>
@@ -37,6 +38,13 @@
       <a>(no servers atm)</a><br>
     </div><br>
     <button id="serversRefresh">Refresh</button>
+  </div>
+
+  <div id="aiProcesses" class="infoBox startHidden">
+    AIs running:
+    <div id="aisRunning"></div><br>
+    <button id="startAI">Start AI</button><br><br>
+    AIs may not be killed in special cases. If you figure the AIs aren't cleaned up even after server shutdown, notify us!
   </div>
 
 </body>

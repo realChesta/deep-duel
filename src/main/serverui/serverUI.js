@@ -16,7 +16,7 @@ NodePatches.initInteractiveServerConsole((js, callback) => {
     mainWindow.webContents.executeJavaScript(js, false, callback);
 });
 
-function createWindow () {
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,

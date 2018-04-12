@@ -6,6 +6,9 @@ import DDRenderer from 'game/client/DDRenderer';
 
 class DDAIClientEngine extends DDClientEngine {
 
+
+  // TODO When the AI disconnects, shut it down
+
   constructor(clientOptions) {
     super(clientOptions, DDRenderer.DummyRenderer);
   }

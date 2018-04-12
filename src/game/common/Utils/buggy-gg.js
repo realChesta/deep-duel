@@ -105,17 +105,18 @@ Serializer.setClassRegisterer = setClassRegisterer;
 
 class ClassRegisterer {
   constructor(from) {
+    this.isHijackedRegisterer = true;
     if (from)
       Object.assign(this, from);
   }
 
-  registerClass(classObj, classId) {
+  static registerClass(classObj, classId) {
     classId = classId ? classId : Utils.hashStr(classObj.name);
     if (this[classId]) {
       console.error(`Serializer: accidental override of classId ${classId} when registering class`, classObj, new Error().stack);
     }
 
-    this[classId] = classObj;
+    ClassRegisterer.prototype[classId] = classObj;
   }
 }
 

@@ -21,3 +21,9 @@ a {
 .startHidden {
   display: none;
 }
+
+.infoBox {
+  border: 1px solid white;
+  margin-top: 20px;
+  padding: 10px;
+}

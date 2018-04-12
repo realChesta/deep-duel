@@ -40,9 +40,9 @@ class DDServerEngine extends ServerEngine {
   }
 
   stop() {
-    super.stop.apply(this, arguments);
+    if (super.stop) super.stop.apply(this, arguments);
 
-    stopHandlers.forEach(s => s());
+    this.stopHandlers.forEach(s => s(this));
 
     this.disconnectAllClients();
     this.gameEngine.timer.destroy();
@@ -50,8 +50,11 @@ class DDServerEngine extends ServerEngine {
   }
 
   disconnectAllClients() {
-    super.disconnectAllClients.apply(this, arguments);
-    this.connectedPlayers.forEach(p => p.socket.destroy());
+    if (super.disconnectAllClients) super.disconnectAllClients.apply(this, arguments);
+    Object.values(this.connectedPlayers).forEach(p => {
+      console.log(p.socket);
+      p.socket.disconnect(true);
+    });
   }
 
 }

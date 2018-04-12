@@ -2,7 +2,7 @@
 
 class TileMap {
   constructor() {
-    this.tiles = TileMap.defaultMap.splice(0);
+    this.tiles = TileMap.defaultMap.slice();
     this.width = TileMap.defaultWidth;
     this.height = TileMap.defaultHeight;
     this.tileWidth = TileMap.defaultTileWidth;

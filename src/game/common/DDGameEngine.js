@@ -122,9 +122,11 @@ class DDGameEngine extends GameEngine {
 
 
   registerClasses(serializer) {
+    if (serializer.isHijackedRegisterer === true) return;
+
+    super.registerClasses.apply(this, arguments);
     // All we do is hijack the serializer
-    Object.assign(ClassLoader.classRegisterer, serializer.registeredClasses);
-    Serializer.setClassRegisterer(serializer, ClassLoader.classRegisterer);
+    Serializer.setClassRegisterer(serializer, new Serializer.ClassRegisterer(serializer.registeredClasses));
   }
 
 }

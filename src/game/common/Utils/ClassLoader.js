@@ -6,7 +6,7 @@ import Serializable from 'lance/serialize/Serializable';
 
 class ClassLoader {
     static registerClass(c, id) {
-      ClassLoader.classRegisterer.registerClass(c, id);
+      Serializer.ClassRegisterer.registerClass(c, id);
       return ClassLoader;
     }
 }
