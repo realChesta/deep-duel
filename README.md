@@ -9,13 +9,15 @@ First get Node.js and npm [from here](https://nodejs.org/en/download/), then upd
 ```shell
 sudo npm cache clean -f
 sudo npm install -g n
-sudo n stable```
+sudo n stable
+```
 
 Then, cd to this directory and run `npm install`. To launch the server, use one of the following commands:
 
 ```shell
 npm run-script cmd-p # for the command-line server
-npm run-script ui # for the server UI```
+npm run-script ui # for the server UI
+```
 
 You can then connect to your server (default `127.0.0.1:3000`).
 
